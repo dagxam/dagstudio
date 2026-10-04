@@ -1,0 +1,29 @@
+# WordPress secrets / server configuration
+wp-config.php
+wp-config-*.php
+.env
+.env.*
+
+# Database dumps
+*.sql
+*.sql.gz
+*.dump
+
+# Runtime / cache / logs
+*.log
+cache/
+tmp/
+temp/
+sessions/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local backup archives
+*.zip
+*.tar
+*.tar.gz
+*.tgz
