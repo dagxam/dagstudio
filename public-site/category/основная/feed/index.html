@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>Основная &#8212; DagStudio — традиции в душе, технологии в руках.</title>
+	<atom:link href="https://dagstudio.ru/category/%d0%be%d1%81%d0%bd%d0%be%d0%b2%d0%bd%d0%b0%d1%8f/feed/" rel="self" type="application/rss+xml" />
+	<link>https://dagstudio.ru</link>
+	<description></description>
+	<lastBuildDate>Thu, 08 Jan 2026 07:37:48 +0000</lastBuildDate>
+	<language>ru-RU</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=7.1.2</generator>
+
+<image>
+	<url>https://dagstudio.ru/wp-content/uploads/2025/11/cropped-favicon-32x32.png</url>
+	<title>Основная &#8212; DagStudio — традиции в душе, технологии в руках.</title>
+	<link>https://dagstudio.ru</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Модуль Dle 19.0 «Фотоальбомы»</title>
+		<link>https://dagstudio.ru/%d0%bc%d0%be%d0%b4%d1%83%d0%bb%d1%8c-dle-19-0-%d1%84%d0%be%d1%82%d0%be%d0%b0%d0%bb%d1%8c%d0%b1%d0%be%d0%bc%d1%8b/</link>
+					<comments>https://dagstudio.ru/%d0%bc%d0%be%d0%b4%d1%83%d0%bb%d1%8c-dle-19-0-%d1%84%d0%be%d1%82%d0%be%d0%b0%d0%bb%d1%8c%d0%b1%d0%be%d0%bc%d1%8b/#respond</comments>
+		
+		<dc:creator><![CDATA[dagstudio]]></dc:creator>
+		<pubDate>Mon, 01 Dec 2025 09:04:56 +0000</pubDate>
+				<category><![CDATA[Основная]]></category>
+		<guid isPermaLink="false">https://dagstudio.ru/?p=50</guid>
+
+					<description><![CDATA[Стандартные возможности DLE (DataLife Engine) часто ограничивают владельцев сайтов: создание галереи превращается...]]></description>
+										<content:encoded><![CDATA[
+<style>
+    /* Сетка галереи */
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Две колонки */
+        gap: 20px;
+        margin: 40px 0;
+    }
+    
+    .gallery-item {
+        background: #f9f9f9;
+        padding: 15px; /* Чуть больше отступ внутри */
+        border: 1px solid #ddd;
+        cursor: pointer;
+        transition: transform 0.2s;
+        
+        /* ЦЕНТРИРОВАНИЕ СОДЕРЖИМОГО */
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Центрирует картинку по горизонтали */
+        text-align: center;  /* Центрирует текст */
+    }
+
+    .gallery-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        border-color: #b85c38;
+    }
+
+    .gallery-item img {
+        width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto; /* Дополнительная гарантия центра */
+        border-radius: 4px;
+    }
+
+    .gallery-caption {
+        font-size: 12px;
+        color: #777;
+        margin-top: 10px;
+        line-height: 1.4;
+    }
+
+    /* Лайтбокс (Модальное окно) */
+    .lightbox {
+        display: none; /* Скрыто */
+        position: fixed;
+        z-index: 99999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        
+        /* ЦЕНТРИРОВАНИЕ БОЛЬШОЙ КАРТИНКИ */
+        justify-content: center; /* По горизонтали */
+        align-items: center;     /* По вертикали */
+    }
+
+    .lightbox-content {
+        max-width: 90%;
+        max-height: 90vh;
+        object-fit: contain;
+        border-radius: 4px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        animation: zoom 0.3s;
+    }
+
+    .close-lightbox {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        color: #fff;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+        cursor: pointer;
+        z-index: 100000;
+        line-height: 1;
+    }
+
+    .close-lightbox:hover {
+        color: #b85c38;
+    }
+
+    @keyframes zoom {
+        from {transform:scale(0.8); opacity: 0;} 
+        to {transform:scale(1); opacity: 1;}
+    }
+
+    @media (max-width: 700px) {
+        .gallery-grid { grid-template-columns: 1fr; } /* Одна колонка на телефоне */
+    }
+</style>
+
+<p>Стандартные возможности DLE (DataLife Engine) часто ограничивают владельцев сайтов: создание галереи превращается в рутину, а результат выглядит устаревшим. Загрузка по одной картинке, отсутствие мобильной версии и сложные настройки отнимают драгоценное время.</p>
+
+<p>Мы решили эту проблему кардинально. Представляем <strong>Модуль «Фотоальбомы Pro v.2.0» для DLE</strong> — профессиональный инструмент для работы с медиа-контентом, который устанавливается в один клик.</p>
+
+<div class="gallery-grid">
+    <div class="gallery-item" onclick="openLightbox('https://dagstudio.ru/wp-content/uploads/2025/12/albom.png')">
+        <img decoding="async" src="https://dagstudio.ru/wp-content/uploads/2025/12/albom.png" alt="Внешний вид альбома на сайте">
+        <p class="gallery-caption">Адаптивная сетка альбомов<br>(Нажмите для увеличения)</p>
+    </div>
+    <div class="gallery-item" onclick="openLightbox('https://dagstudio.ru/wp-content/uploads/2025/12/adminka.png')">
+        <img decoding="async" src="https://dagstudio.ru/wp-content/uploads/2025/12/adminka.png" alt="Удобная админка модуля">
+        <p class="gallery-caption">Интуитивно понятная панель управления<br>(Нажмите для увеличения)</p>
+    </div>
+</div>
+
+<h2>Что умеет этот модуль?</h2>
+
+<p>Мы разработали его с упором на скорость и удобство. Вам больше не нужно править код движка или искать сторонние скрипты. Всё работает «из коробки».</p>
+
+<ul style="list-style: none; padding: 0;">
+    <li style="margin-bottom: 15px; padding-left: 25px; position: relative;">
+        <span style="color: #b85c38; position: absolute; left: 0; font-weight: bold;">✓</span>
+        <strong>Массовая загрузка:</strong> Просто перетащите сотню фотографий в окно браузера, и модуль загрузит их автоматически.
+    </li>
+    <li style="margin-bottom: 15px; padding-left: 25px; position: relative;">
+        <span style="color: #b85c38; position: absolute; left: 0; font-weight: bold;">✓</span>
+        <strong>Лайтбокс (Просмотрщик):</strong> Стильное всплывающее окно для просмотра фото с поддержкой свайпов на телефонах.
+    </li>
+    <li style="margin-bottom: 15px; padding-left: 25px; position: relative;">
+        <span style="color: #b85c38; position: absolute; left: 0; font-weight: bold;">✓</span>
+        <strong>Рейтинг и Лайки:</strong> Встроенная система оценок для каждого фото и альбома.
+    </li>
+    <li style="margin-bottom: 15px; padding-left: 25px; position: relative;">
+        <span style="color: #b85c38; position: absolute; left: 0; font-weight: bold;">✓</span>
+        <strong>Защита контента:</strong> Автоматическое наложение водяных знаков (Watermark).
+    </li>
+</ul>
+
+<blockquote style="border-left: 4px solid #b85c38; margin: 30px 0; padding: 20px 30px; background: #f9f9f9; font-style: italic; color: #555;">
+    «Модуль полностью адаптирован под DLE 19.0 и выше. Он не создает лишней нагрузки на базу данных и работает даже на недорогих хостингах».
+</blockquote>
+
+<h2>Админ-панель: Полный контроль</h2>
+<p>Управление альбомами стало простым как никогда. В админке вы видите список всех альбомов, можете менять их статус, редактировать описание и обложку в пару кликов.</p>
+
+<h3>Технические требования:</h3>
+<ul>
+    <li>Версия DLE: <strong>13.0 &#8212; 19.0+</strong></li>
+    <li>Версия PHP: <strong>7.4 &#8212; 8.2</strong></li>
+    <li>Установка: Через систему плагинов</li>
+</ul>
+
+<div style="background: #1a1512; color: #fff; padding: 40px; text-align: center; margin-top: 50px; border-radius: 4px;">
+    <h3 style="color: #fff; margin-bottom: 15px;">Готовы улучшить свой сайт на DLE?</h3>
+    <p style="color: #ccc; margin-bottom: 30px;">Получите модуль с пожизненной лицензией и бесплатной поддержкой.</p>
+    
+    <a href="https://dagstudio.ru/скрипты/" class="btn-submit" style="display: inline-block; width: auto; padding: 15px 40px; text-decoration: none; border: 2px solid #b85c38; color: #fff;">Перейти к покупке за 1 500 ₽</a>
+</div>
+
+<div id="imgLightbox" class="lightbox" onclick="closeLightbox()">
+  <span class="close-lightbox">&times;</span>
+  <img class="lightbox-content" id="img01">
+</div>
+
+<script>
+function openLightbox(src) {
+    var modal = document.getElementById("imgLightbox");
+    var modalImg = document.getElementById("img01");
+    // Используем flex, чтобы сработали justify-content и align-items
+    modal.style.display = "flex"; 
+    modalImg.src = src;
+}
+function closeLightbox() {
+    var modal = document.getElementById("imgLightbox");
+    modal.style.display = "none";
+}
+</script>
+]]></content:encoded>
+					
+					<wfw:commentRss>https://dagstudio.ru/%d0%bc%d0%be%d0%b4%d1%83%d0%bb%d1%8c-dle-19-0-%d1%84%d0%be%d1%82%d0%be%d0%b0%d0%bb%d1%8c%d0%b1%d0%be%d0%bc%d1%8b/feed/</wfw:commentRss>
+			<slash:comments>0</slash:comments>
+		
+		
+			</item>
+	</channel>
+</rss>
