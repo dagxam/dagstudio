@@ -1,0 +1,70 @@
+name: Import live dagstudio.ru
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/import-live-site.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  import-site:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Mirror public website
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf _mirror public-site
+          mkdir -p _mirror public-site
+          wget \
+            --mirror \
+            --page-requisites \
+            --convert-links \
+            --adjust-extension \
+            --no-parent \
+            --domains=dagstudio.ru,www.dagstudio.ru \
+            --timeout=20 \
+            --tries=3 \
+            --directory-prefix=_mirror \
+            https://dagstudio.ru/
+
+          if [ -d "_mirror/dagstudio.ru" ]; then
+            cp -a _mirror/dagstudio.ru/. public-site/
+          elif [ -d "_mirror/www.dagstudio.ru" ]; then
+            cp -a _mirror/www.dagstudio.ru/. public-site/
+          else
+            echo "Mirror directory was not created" >&2
+            find _mirror -maxdepth 3 -type f -print || true
+            exit 1
+          fi
+
+          rm -rf _mirror
+
+      - name: Record import metadata
+        shell: bash
+        run: |
+          {
+            echo "Source: https://dagstudio.ru/"
+            echo "Imported at (UTC): $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            echo "Mode: public HTTP mirror"
+          } > public-site/.import-info.txt
+
+      - name: Commit mirrored site
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public-site
+          if git diff --cached --quiet; then
+            echo "No site changes to commit"
+            exit 0
+          fi
+          git commit -m "Import public dagstudio.ru snapshot"
+          git push
