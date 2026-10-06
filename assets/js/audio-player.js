@@ -2,6 +2,12 @@
   const roots = [...document.querySelectorAll('.ds-audio-player')];
   if (!roots.length) return;
 
+  const musicModal = document.getElementById('musicWarningModal');
+  const musicTrack = musicModal?.querySelector('[data-music-warning-track]');
+  const musicContinue = musicModal?.querySelector('[data-music-warning-continue]');
+  let pendingRoot = null;
+  let pendingAudio = null;
+
   const formatTime = seconds => {
     if (!Number.isFinite(seconds) || seconds < 0) return '--:--';
     const total = Math.floor(seconds);
@@ -14,6 +20,52 @@
     const safe = Math.max(0, Math.min(100, Number.isFinite(percent) ? percent : 0));
     input.style.setProperty('--range-progress', safe + '%');
   };
+
+  const closeMusicWarning = () => {
+    if (!musicModal) return;
+    musicModal.classList.remove('is-open');
+    musicModal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('music-warning-open');
+    pendingRoot = null;
+    pendingAudio = null;
+  };
+
+  const playConfirmedMusic = () => {
+    if (!pendingRoot || !pendingAudio) return closeMusicWarning();
+    const root = pendingRoot;
+    const audio = pendingAudio;
+    root.dataset.musicConfirmed = '1';
+    closeMusicWarning();
+    audio.play().catch(() => {});
+  };
+
+  const openMusicWarning = (root, audio) => {
+    const title = root.dataset.trackTitle || 'Аудиозапись';
+
+    if (!musicModal) {
+      if (window.confirm('Внимание: эта аудиозапись содержит музыку. Продолжить воспроизведение?')) {
+        root.dataset.musicConfirmed = '1';
+        audio.play().catch(() => {});
+      }
+      return;
+    }
+
+    pendingRoot = root;
+    pendingAudio = audio;
+    if (musicTrack) musicTrack.textContent = title;
+    musicModal.classList.add('is-open');
+    musicModal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('music-warning-open');
+    window.setTimeout(() => musicContinue?.focus(), 60);
+  };
+
+  musicContinue?.addEventListener('click', playConfirmedMusic);
+  musicModal?.querySelectorAll('[data-music-warning-close]').forEach(el => {
+    el.addEventListener('click', closeMusicWarning);
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && musicModal?.classList.contains('is-open')) closeMusicWarning();
+  });
 
   roots.forEach(root => {
     const audio = root.querySelector('audio');
@@ -47,6 +99,8 @@
     const muteButton = ui.querySelector('.ds-mute-toggle');
     const volume = ui.querySelector('.ds-volume');
 
+    const requiresMusicWarning = () => root.dataset.musicWarning === '1' && root.dataset.musicConfirmed !== '1';
+
     const syncPlayState = () => {
       const playing = !audio.paused && !audio.ended;
       root.classList.toggle('is-playing', playing);
@@ -73,6 +127,10 @@
 
     playButton.addEventListener('click', () => {
       if (audio.paused || audio.ended) {
+        if (requiresMusicWarning()) {
+          openMusicWarning(root, audio);
+          return;
+        }
         audio.play().catch(() => {});
       } else {
         audio.pause();
@@ -107,6 +165,11 @@
     audio.addEventListener('timeupdate', syncTime);
     audio.addEventListener('volumechange', syncVolume);
     audio.addEventListener('play', () => {
+      if (requiresMusicWarning()) {
+        audio.pause();
+        openMusicWarning(root, audio);
+        return;
+      }
       roots.forEach(otherRoot => {
         if (otherRoot === root) return;
         const otherAudio = otherRoot.querySelector('audio');

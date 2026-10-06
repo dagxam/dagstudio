@@ -181,7 +181,7 @@ if (is_file($audioFile)) {
                   <?php if (!empty($item['allow_download'])): ?><span class="audio-tag">Скачивание доступно</span><?php endif; ?>
                 </div>
                 <?php if (!empty($item['description'])): ?><p class="public-audio-description"><?= nl2br(h_audio((string)$item['description'])) ?></p><?php endif; ?>
-                <div class="ds-audio-player public-player"><audio controls preload="metadata" src="<?= h_audio($url) ?>"></audio></div>
+                <div class="ds-audio-player public-player" data-music-warning="<?= !empty($item['contains_music']) ? '1' : '0' ?>" data-track-title="<?= h_audio((string)($item['title'] ?? 'Аудиозапись')) ?>"><audio controls preload="metadata" src="<?= h_audio($url) ?>"></audio></div>
                 <div class="public-audio-actions">
                   <div class="public-audio-meta">
                   <?php if ($size > 0): ?><span><?= h_audio(number_format($size / 1048576, 1, ',', ' ')) ?> МБ</span><?php endif; ?>
@@ -204,6 +204,22 @@ if (is_file($audioFile)) {
     </div>
   </section>
 </main>
+
+<div class="music-warning-modal" id="musicWarningModal" aria-hidden="true">
+  <div class="music-warning-backdrop" data-music-warning-close></div>
+  <section class="music-warning-panel" role="dialog" aria-modal="true" aria-labelledby="musicWarningTitle">
+    <button class="music-warning-close" type="button" aria-label="Закрыть" data-music-warning-close>×</button>
+    <div class="music-warning-icon" aria-hidden="true">♫</div>
+    <p class="eyebrow">Предупреждение</p>
+    <h2 id="musicWarningTitle">Аудио содержит музыку</h2>
+    <p class="music-warning-text">В этой аудиозаписи присутствует музыкальное сопровождение.</p>
+    <div class="music-warning-track" data-music-warning-track></div>
+    <div class="music-warning-actions">
+      <button class="btn btn-primary" type="button" data-music-warning-continue>Продолжить</button>
+      <button class="btn btn-outline" type="button" data-music-warning-close>Не воспроизводить</button>
+    </div>
+  </section>
+</div>
 
 <footer class="site-footer">
   <div class="container footer-grid">
