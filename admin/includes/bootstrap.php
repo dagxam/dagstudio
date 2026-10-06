@@ -124,6 +124,7 @@ function site_settings(): array {
     $defaults = [
         'site_name' => 'DAG STUDIO',
         'email' => 'admin@dagstudio.ru',
+        'admin_email' => 'admin@dagstudio.ru',
         'phone' => '+7 (928) 809-50-18',
         'location' => "Россия, Дагестан\nг. Махачкала",
         'telegram' => '',
