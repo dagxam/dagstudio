@@ -8,6 +8,15 @@ $defaults = [
     'telegram' => '',
     'whatsapp' => '',
     'behance' => '',
+    'theme_scheme' => 'copper',
+    'theme_accent' => '#c96f41',
+    'theme_bg' => '#050505',
+    'theme_panel' => '#1c1c1c',
+    'theme_text' => '#f7f7f5',
+    'logo_dark' => '/assets/img/logo-horizontal-dark.svg',
+    'logo_light' => '/assets/img/logo-horizontal.svg',
+    'logo_admin' => '/assets/img/logo-horizontal-dark.svg',
+    'logo_mark' => '/assets/img/logo-mark-square.svg',
 ];
 $settings = $defaults;
 $settingsFile = __DIR__ . '/storage/settings.json';
@@ -19,6 +28,20 @@ if (is_file($settingsFile)) {
 function h(string $value): string {
     return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
+function site_hex(string $value, string $fallback): string {
+    return preg_match('/^#[0-9a-fA-F]{6}$/', $value) ? strtolower($value) : $fallback;
+}
+function site_asset(string $value, string $fallback): string {
+    if ($value === '' || str_contains($value, '..') || !str_starts_with($value, '/')) return $fallback;
+    if (!str_starts_with($value, '/assets/') && !str_starts_with($value, '/uploads/branding/')) return $fallback;
+    return $value;
+}
+$themeAccent = site_hex((string)$settings['theme_accent'], '#c96f41');
+$themeBg = site_hex((string)$settings['theme_bg'], '#050505');
+$themePanel = site_hex((string)$settings['theme_panel'], '#1c1c1c');
+$themeText = site_hex((string)$settings['theme_text'], '#f7f7f5');
+$logoDark = site_asset((string)$settings['logo_dark'], '/assets/img/logo-horizontal-dark.svg');
+$logoMark = site_asset((string)$settings['logo_mark'], '/assets/img/logo-mark-square.svg');
 $phoneHref = preg_replace('/[^+0-9]/', '', (string)$settings['phone']) ?: '';
 $audioPluginEnabled = true;
 $pluginStateFile = __DIR__ . '/storage/plugins.json';
@@ -35,21 +58,22 @@ if (is_file($pluginStateFile)) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#050505">
+  <meta name="theme-color" content="<?= h($themeBg) ?>">
   <meta name="description" content="DAG STUDIO — создание сайтов, дизайн, скрипты и IT-сервис в Дагестане.">
   <title><?= h($settings['site_name']) ?> — создание сайтов & IT-сервис</title>
-  <link rel="icon" type="image/svg+xml" href="assets/img/logo-mark-square.svg">
-  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="<?= h($logoMark) ?>">
+  <link rel="manifest" href="/manifest.php">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
+  <style>:root{--accent:<?= h($themeAccent) ?>;--bg:<?= h($themeBg) ?>;--bg-soft:<?= h($themeBg) ?>;--panel:<?= h($themePanel) ?>;--text:<?= h($themeText) ?>}</style>
 </head>
 <body>
   <header class="site-header" id="top">
     <div class="container header-inner">
       <a class="brand" href="#top" aria-label="DAG STUDIO — главная">
-        <img src="assets/img/logo-horizontal-dark.svg" alt="DAG STUDIO">
+        <img src="<?= h($logoDark) ?>" alt="DAG STUDIO">
       </a>
       <button class="menu-toggle" type="button" aria-label="Открыть меню" aria-expanded="false">
         <span></span><span></span><span></span>
@@ -79,7 +103,7 @@ if (is_file($pluginStateFile)) {
         </div>
         <div class="hero-art reveal" aria-hidden="true">
           <div class="hero-glow"></div>
-          <img src="assets/img/logo-mark-square.svg" alt="">
+          <img src="<?= h($logoMark) ?>" alt="">
         </div>
       </div>
     </section>
@@ -96,7 +120,7 @@ if (is_file($pluginStateFile)) {
           </ul>
         </div>
         <div class="about-mark reveal">
-          <img src="assets/img/logo-mark-square.svg" alt="Фирменный знак DAG STUDIO">
+          <img src="<?= h($logoMark) ?>" alt="Фирменный знак DAG STUDIO">
         </div>
       </div>
     </section>
@@ -154,7 +178,7 @@ if (is_file($pluginStateFile)) {
   <footer class="site-footer">
     <div class="container footer-grid">
       <div class="footer-brand">
-        <img src="assets/img/logo-horizontal-dark.svg" alt="DAG STUDIO">
+        <img src="<?= h($logoDark) ?>" alt="DAG STUDIO">
         <p>Digital-ателье.<br>Шьем сайты по лекалам высоких технологий.</p>
       </div>
       <div class="footer-col"><h4>Навигация</h4><a href="#top">Главная</a><a href="#services">Услуги</a><a href="#about">Портфолио</a><a href="#contacts">Контакты</a></div>

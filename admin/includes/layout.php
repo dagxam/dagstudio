@@ -6,23 +6,30 @@ function admin_header(string $title, string $active = ''): void {
     $flashes = take_flashes();
     $plugins = plugin_definitions();
     $states = plugin_states();
+    $accent = setting_color($settings, 'theme_accent', '#c96f41');
+    $bg = setting_color($settings, 'theme_bg', '#050505');
+    $panel = setting_color($settings, 'theme_panel', '#1c1c1c');
+    $text = setting_color($settings, 'theme_text', '#f7f7f5');
+    $adminLogo = setting_asset($settings, 'logo_admin', '/assets/img/logo-horizontal-dark.svg');
+    $markLogo = setting_asset($settings, 'logo_mark', '/assets/img/logo-mark-square.svg');
     ?>
 <!doctype html>
 <html lang="ru">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#070707">
+  <meta name="theme-color" content="<?= e($bg) ?>">
   <meta name="robots" content="noindex,nofollow">
   <title><?= e($title) ?> — DAG STUDIO</title>
-  <link rel="icon" type="image/svg+xml" href="/assets/img/logo-mark-square.svg">
+  <link rel="icon" href="<?= e($markLogo) ?>">
   <link rel="stylesheet" href="/admin/assets/admin.css">
+  <style>:root{--admin-accent:<?= e($accent) ?>;--admin-bg:<?= e($bg) ?>;--admin-panel:<?= e($panel) ?>;--admin-text:<?= e($text) ?>}</style>
 </head>
 <body>
 <div class="admin-shell">
   <aside class="admin-sidebar" id="adminSidebar">
     <a class="admin-brand" href="/admin/">
-      <img src="/assets/img/logo-horizontal-dark.svg" alt="DAG STUDIO">
+      <img src="<?= e($adminLogo) ?>" alt="DAG STUDIO">
     </a>
     <nav class="admin-nav">
       <a class="<?= $active === 'dashboard' ? 'active' : '' ?>" href="/admin/"><span>◫</span>Обзор</a>

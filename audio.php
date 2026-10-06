@@ -9,6 +9,15 @@ $defaults = [
     'telegram' => '',
     'whatsapp' => '',
     'behance' => '',
+    'theme_scheme' => 'copper',
+    'theme_accent' => '#c96f41',
+    'theme_bg' => '#050505',
+    'theme_panel' => '#1c1c1c',
+    'theme_text' => '#f7f7f5',
+    'logo_dark' => '/assets/img/logo-horizontal-dark.svg',
+    'logo_light' => '/assets/img/logo-horizontal.svg',
+    'logo_admin' => '/assets/img/logo-horizontal-dark.svg',
+    'logo_mark' => '/assets/img/logo-mark-square.svg',
 ];
 $settings = $defaults;
 $settingsFile = __DIR__ . '/storage/settings.json';
@@ -21,6 +30,20 @@ if (is_file($settingsFile)) {
 function h_audio(string $value): string {
     return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
+function audio_hex(string $value, string $fallback): string {
+    return preg_match('/^#[0-9a-fA-F]{6}$/', $value) ? strtolower($value) : $fallback;
+}
+function audio_asset(string $value, string $fallback): string {
+    if ($value === '' || str_contains($value, '..') || !str_starts_with($value, '/')) return $fallback;
+    if (!str_starts_with($value, '/assets/') && !str_starts_with($value, '/uploads/branding/')) return $fallback;
+    return $value;
+}
+$themeAccent = audio_hex((string)$settings['theme_accent'], '#c96f41');
+$themeBg = audio_hex((string)$settings['theme_bg'], '#050505');
+$themePanel = audio_hex((string)$settings['theme_panel'], '#1c1c1c');
+$themeText = audio_hex((string)$settings['theme_text'], '#f7f7f5');
+$logoDark = audio_asset((string)$settings['logo_dark'], '/assets/img/logo-horizontal-dark.svg');
+$logoMark = audio_asset((string)$settings['logo_mark'], '/assets/img/logo-mark-square.svg');
 
 $audioPluginEnabled = true;
 $pluginStateFile = __DIR__ . '/storage/plugins.json';
@@ -55,19 +78,20 @@ if (is_file($audioFile)) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#050505">
+  <meta name="theme-color" content="<?= h_audio($themeBg) ?>">
   <meta name="description" content="Наши аудио — DAG STUDIO. Аудиоработы, музыка и звуковые проекты студии.">
   <title>Наши аудио — <?= h_audio((string)$settings['site_name']) ?></title>
-  <link rel="icon" type="image/svg+xml" href="/assets/img/logo-mark-square.svg">
+  <link rel="icon" href="<?= h_audio($logoMark) ?>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/style.css">
+  <style>:root{--accent:<?= h_audio($themeAccent) ?>;--bg:<?= h_audio($themeBg) ?>;--bg-soft:<?= h_audio($themeBg) ?>;--panel:<?= h_audio($themePanel) ?>;--text:<?= h_audio($themeText) ?>}</style>
 </head>
 <body>
 <header class="site-header" id="top">
   <div class="container header-inner">
-    <a class="brand" href="/" aria-label="DAG STUDIO — главная"><img src="/assets/img/logo-horizontal-dark.svg" alt="DAG STUDIO"></a>
+    <a class="brand" href="/" aria-label="DAG STUDIO — главная"><img src="<?= h_audio($logoDark) ?>" alt="DAG STUDIO"></a>
     <button class="menu-toggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span></span><span></span><span></span></button>
     <nav class="main-nav" aria-label="Главная навигация">
       <a href="/">Главная</a>
@@ -158,7 +182,7 @@ if (is_file($audioFile)) {
 
 <footer class="site-footer">
   <div class="container footer-grid">
-    <div class="footer-brand"><img src="/assets/img/logo-horizontal-dark.svg" alt="DAG STUDIO"><p>Digital-ателье.<br>Шьем сайты по лекалам высоких технологий.</p></div>
+    <div class="footer-brand"><img src="<?= h_audio($logoDark) ?>" alt="DAG STUDIO"><p>Digital-ателье.<br>Шьем сайты по лекалам высоких технологий.</p></div>
     <div class="footer-col"><h4>Навигация</h4><a href="/">Главная</a><a href="/#services">Услуги</a><a href="/audio.php">Наши аудио</a><a href="/#contacts">Контакты</a></div>
     <div class="footer-col"><h4>Контакты</h4><p><?= nl2br(h_audio((string)$settings['location'])) ?></p>
       <?php if ($settings['telegram'] !== ''): ?><a href="<?= h_audio((string)$settings['telegram']) ?>" target="_blank" rel="noopener">Telegram</a><?php endif; ?>

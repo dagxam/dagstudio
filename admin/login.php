@@ -8,6 +8,12 @@ if (admin_is_authenticated()) {
 
 $settings = site_settings();
 $adminEmail = strtolower(trim((string)($settings['admin_email'] ?? 'admin@dagstudio.ru')));
+$accent = setting_color($settings, 'theme_accent', '#c96f41');
+$bg = setting_color($settings, 'theme_bg', '#050505');
+$panel = setting_color($settings, 'theme_panel', '#1c1c1c');
+$text = setting_color($settings, 'theme_text', '#f7f7f5');
+$adminLogo = setting_asset($settings, 'logo_admin', '/assets/img/logo-horizontal-dark.svg');
+$markLogo = setting_asset($settings, 'logo_mark', '/assets/img/logo-mark-square.svg');
 $error = '';
 $stage = !empty($_SESSION['otp_hash']) ? 'verify' : 'request';
 
@@ -87,12 +93,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Вход — DAG STUDIO</title>
-  <link rel="icon" type="image/svg+xml" href="/assets/img/logo-mark-square.svg">
+  <link rel="icon" href="<?= e($markLogo) ?>">
   <link rel="stylesheet" href="/admin/assets/admin.css">
+  <style>:root{--admin-accent:<?= e($accent) ?>;--admin-bg:<?= e($bg) ?>;--admin-panel:<?= e($panel) ?>;--admin-text:<?= e($text) ?>}</style>
 </head>
 <body class="login-body">
   <section class="login-card">
-    <img class="login-logo" src="/assets/img/logo-horizontal-dark.svg" alt="DAG STUDIO">
+    <img class="login-logo" src="<?= e($adminLogo) ?>" alt="DAG STUDIO">
     <h1>Вход в админку</h1>
     <p>Доступ подтверждается одноразовым кодом, который отправляется на административную почту сайта.</p>
 

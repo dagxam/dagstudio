@@ -30,3 +30,4 @@ jobs:
             storage/audio.json
             storage/audit.log
             uploads/audio/**
+            uploads/branding/**

@@ -130,8 +130,29 @@ function site_settings(): array {
         'telegram' => '',
         'whatsapp' => '',
         'behance' => '',
+        'theme_scheme' => 'copper',
+        'theme_accent' => '#c96f41',
+        'theme_bg' => '#050505',
+        'theme_panel' => '#1c1c1c',
+        'theme_text' => '#f7f7f5',
+        'logo_dark' => '/assets/img/logo-horizontal-dark.svg',
+        'logo_light' => '/assets/img/logo-horizontal.svg',
+        'logo_admin' => '/assets/img/logo-horizontal-dark.svg',
+        'logo_mark' => '/assets/img/logo-mark-square.svg',
     ];
     return array_merge($defaults, storage_read_json('settings.json', []));
+}
+
+function setting_color(array $settings, string $key, string $fallback): string {
+    $value = (string)($settings[$key] ?? '');
+    return preg_match('/^#[0-9a-fA-F]{6}$/', $value) ? strtolower($value) : $fallback;
+}
+
+function setting_asset(array $settings, string $key, string $fallback): string {
+    $value = trim((string)($settings[$key] ?? ''));
+    if ($value === '' || str_contains($value, '..') || !str_starts_with($value, '/')) return $fallback;
+    if (!str_starts_with($value, '/assets/') && !str_starts_with($value, '/uploads/branding/')) return $fallback;
+    return $value;
 }
 
 function plugin_definitions(): array {
