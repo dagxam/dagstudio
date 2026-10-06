@@ -48,6 +48,10 @@ function works_menu_url(string $value): string {
     if (preg_match('#^https?://#i', $value)) return $value;
     return '#';
 }
+function works_screenshot_url(string $url): string {
+    return 'https://s.wordpress.com/mshots/v1/' . rawurlencode($url) . '?w=1200';
+}
+
 function works_portfolio_menu(array $menu): array {
     foreach ($menu as &$item) {
         if (!is_array($item)) continue;
@@ -210,8 +214,17 @@ $works = [
             <div class="work-browser">
               <div class="work-browser-bar"><i></i><i></i><i></i><span><?= h_works($work['domain']) ?></span></div>
               <div class="work-browser-screen">
-                <div class="work-mark"><?= h_works($work['mark']) ?></div>
-                <div class="work-lines"><b></b><b></b><b></b><em></em></div>
+                <div class="work-preview-fallback" aria-hidden="true">
+                  <div class="work-mark"><?= h_works($work['mark']) ?></div>
+                  <div class="work-lines"><b></b><b></b><b></b><em></em></div>
+                </div>
+                <img class="work-preview-image"
+                     src="<?= h_works(works_screenshot_url((string)$work['url'])) ?>"
+                     alt="Предпросмотр сайта <?= h_works($work['domain']) ?>"
+                     loading="lazy"
+                     decoding="async"
+                     referrerpolicy="no-referrer">
+                <span class="work-preview-label">Предпросмотр сайта</span>
               </div>
             </div>
             <div class="work-card-copy">
