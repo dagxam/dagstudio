@@ -9,6 +9,12 @@ $states = plugin_states();
 $activePlugins = 0;
 foreach ($plugins as $plugin) if (plugin_enabled($plugin, $states)) $activePlugins++;
 $settings = site_settings();
+$audioData = storage_read_json('audio.json', ['items' => []]);
+$audioItems = is_array($audioData['items'] ?? null) ? $audioData['items'] : [];
+$audioPublished = 0;
+foreach ($audioItems as $audioItem) {
+    if (!empty($audioItem['published'])) $audioPublished++;
+}
 $recent = audit_recent(8);
 
 admin_header('Обзор', 'dashboard');
@@ -22,8 +28,8 @@ admin_header('Обзор', 'dashboard');
 
 <div class="grid stats-grid">
   <div class="stat-card"><small>Плагины</small><strong><?= count($plugins) ?></strong><span><?= $activePlugins ?> активных</span></div>
+  <div class="stat-card"><small>Аудио</small><strong><?= count($audioItems) ?></strong><span><?= $audioPublished ?> опубликовано</span></div>
   <div class="stat-card"><small>PHP</small><strong><?= e(PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION) ?></strong><span>Сервер работает</span></div>
-  <div class="stat-card"><small>Админ</small><strong>OTP</strong><span>Вход по коду</span></div>
   <div class="stat-card"><small>Сайт</small><strong>ONLINE</strong><span><?= e($settings['site_name']) ?></span></div>
 </div>
 
@@ -31,6 +37,7 @@ admin_header('Обзор', 'dashboard');
   <section class="panel">
     <h2>Быстрые действия</h2>
     <div class="quick-actions">
+      <a href="/admin/audio.php"><strong>Аудио</strong><span>Загружать треки и управлять публикацией</span></a>
       <a href="/admin/plugins.php"><strong>Функции и плагины</strong><span>Включать и отключать установленные модули</span></a>
       <a href="/admin/settings.php"><strong>Настройки сайта</strong><span>Контакты и основные данные проекта</span></a>
       <a href="/" target="_blank" rel="noopener"><strong>Открыть сайт</strong><span>Посмотреть публичную версию в новой вкладке</span></a>

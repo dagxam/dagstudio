@@ -48,7 +48,7 @@ $phoneHref = preg_replace('/[^+0-9]/', '', (string)$settings['phone']) ?: '';
       <nav class="main-nav" aria-label="Главная навигация">
         <a href="#top">Главная</a>
         <a href="#about">Блог</a>
-        <a href="#services">Наши аудио</a>
+        <a href="/audio.php">Наши аудио</a>
         <a href="#services">Скрипты</a>
         <a href="#about">О студии</a>
       </nav>
