@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require __DIR__ . '/includes/works-data.php';
+
 $defaults = [
     'site_name' => 'DAG STUDIO',
     'email' => 'admin@dagstudio.ru',
@@ -86,63 +88,21 @@ if (is_file($stateFile)) {
     }
 }
 
-$works = [
-    [
-        'number' => '01',
-        'title' => 'АХИХЪАН',
-        'domain' => 'akhikhan.ru',
-        'url' => 'https://akhikhan.ru/',
-        'category' => 'Сетевое издание',
-        'description' => 'Новостной сайт районного издания: публикации, документы, фотоматериалы и электронные выпуски.',
-        'mark' => 'АХ',
-    ],
-    [
-        'number' => '02',
-        'title' => 'UROVIA',
-        'domain' => 'urovia.ru',
-        'url' => 'https://urovia.ru/login.html',
-        'category' => 'Образовательная платформа',
-        'description' => 'Цифровая платформа для учителей и учеников: задания, выполнение работ, результаты и учебный журнал.',
-        'mark' => 'UR',
-    ],
-    [
-        'number' => '03',
-        'title' => 'DAG STUDIO GAME',
-        'domain' => 'game.dagstudio.ru',
-        'url' => 'https://game.dagstudio.ru/',
-        'category' => 'Интерактивный проект',
-        'description' => 'Отдельный игровой веб-проект в инфраструктуре DAG STUDIO с собственным интерфейсом и логикой.',
-        'mark' => 'DG',
-    ],
-    [
-        'number' => '04',
-        'title' => 'Дахадаевский район',
-        'domain' => 'mo-urkarakh.ru',
-        'url' => 'http://mo-urkarakh.ru/',
-        'category' => 'Муниципальный сайт',
-        'description' => 'Официальный информационный ресурс муниципального образования: новости, документы и сервисные разделы.',
-        'mark' => 'МО',
-    ],
-    [
-        'number' => '05',
-        'title' => 'Школа искусств',
-        'domain' => 'dshi-im-g-magomedovicha.ru',
-        'url' => 'https://dshi-im-g-magomedovicha.ru/',
-        'category' => 'Образование',
-        'description' => 'Сайт школы искусств Унцукульского района с новостями учреждения и информационными разделами.',
-        'mark' => 'ДШ',
-    ],
-    [
-        'number' => '06',
-        'title' => 'Зуберха.ру',
-        'domain' => 'zuberkha.ru',
-        'url' => 'http://zuberkha.ru/',
-        'category' => 'Сетевое издание',
-        'description' => 'Интернет-издание с муниципальными и республиканскими новостями, документами и выпусками газеты.',
-        'mark' => 'ЗБ',
-    ],
-];
-?>
+$worksPluginEnabled = true;
+if (is_file($stateFile)) {
+    $raw = @file_get_contents($stateFile);
+    $states = $raw !== false ? json_decode($raw, true) : null;
+    if (is_array($states) && array_key_exists('works', $states)) {
+        $worksPluginEnabled = (bool)$states['works'];
+    }
+}
+if (!$worksPluginEnabled) {
+    http_response_code(404);
+    exit('Раздел «Наши работы» отключён.');
+}
+
+$works = array_values(array_filter(ds_works_read(__DIR__), static fn($item) => !empty($item['published'])));
+$worksCount = count($works);?>
 <!doctype html>
 <html lang="ru">
 <head>
@@ -190,7 +150,7 @@ $works = [
         <h1>Наши<br><span>работы</span></h1>
       </div>
       <div class="works-hero-copy">
-        <strong>06 проектов</strong>
+        <strong><?= $worksCount ?> <?= $worksCount === 1 ? 'проект' : ($worksCount >= 2 && $worksCount <= 4 ? 'проекта' : 'проектов') ?></strong>
         <p>Сайты и цифровые продукты для образования, муниципальных организаций, сетевых изданий и собственных проектов.</p>
       </div>
     </div>
@@ -204,23 +164,28 @@ $works = [
       </div>
 
       <div class="works-grid">
-        <?php foreach ($works as $work): ?>
+        <?php foreach ($works as $index => $work):
+          $url = (string)($work['url'] ?? '');
+          $domain = ds_works_domain($url);
+          $preview = ds_works_preview($url, (string)($work['preview_url'] ?? ''));
+          $mark = ds_works_mark((string)($work['title'] ?? ''));
+        ?>
           <a class="work-card reveal" href="<?= h_works($work['url']) ?>" target="_blank" rel="noopener">
             <div class="work-card-top">
-              <span class="work-number"><?= h_works($work['number']) ?></span>
+              <span class="work-number"><?= str_pad((string)($index + 1), 2, '0', STR_PAD_LEFT) ?></span>
               <span class="work-category"><?= h_works($work['category']) ?></span>
               <span class="work-arrow">↗</span>
             </div>
             <div class="work-browser">
-              <div class="work-browser-bar"><i></i><i></i><i></i><span><?= h_works($work['domain']) ?></span></div>
+              <div class="work-browser-bar"><i></i><i></i><i></i><span><?= h_works($domain) ?></span></div>
               <div class="work-browser-screen">
                 <div class="work-preview-fallback" aria-hidden="true">
-                  <div class="work-mark"><?= h_works($work['mark']) ?></div>
+                  <div class="work-mark"><?= h_works($mark) ?></div>
                   <div class="work-lines"><b></b><b></b><b></b><em></em></div>
                 </div>
                 <img class="work-preview-image"
-                     src="<?= h_works(works_screenshot_url((string)$work['url'])) ?>"
-                     alt="Предпросмотр сайта <?= h_works($work['domain']) ?>"
+                     src="<?= h_works($preview) ?>"
+                     alt="Предпросмотр сайта <?= h_works($domain) ?>"
                      loading="lazy"
                      decoding="async"
                      referrerpolicy="no-referrer">
@@ -230,7 +195,7 @@ $works = [
             <div class="work-card-copy">
               <h2><?= h_works($work['title']) ?></h2>
               <p><?= h_works($work['description']) ?></p>
-              <div class="work-domain"><?= h_works($work['domain']) ?><span>Открыть сайт</span></div>
+              <div class="work-domain"><?= h_works($domain) ?><span>Открыть сайт</span></div>
             </div>
           </a>
         <?php endforeach; ?>

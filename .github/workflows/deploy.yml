@@ -29,6 +29,7 @@ jobs:
             storage/plugins.json
             storage/audio.json
             storage/pages.json
+            storage/works.json
             storage/audit.log
             uploads/audio/**
             uploads/branding/**

@@ -76,6 +76,7 @@ $logoMark = audio_asset((string)$settings['logo_mark'], '/assets/img/logo-mark-s
 
 $audioPluginEnabled = true;
 $pagesPluginEnabled = true;
+$worksPluginEnabled = true;
 $pluginStateFile = __DIR__ . '/storage/plugins.json';
 if (is_file($pluginStateFile)) {
     $rawPlugins = @file_get_contents($pluginStateFile);
@@ -85,6 +86,9 @@ if (is_file($pluginStateFile)) {
     }
     if (is_array($pluginStates) && array_key_exists('pages', $pluginStates)) {
         $pagesPluginEnabled = (bool)$pluginStates['pages'];
+    }
+    if (is_array($pluginStates) && array_key_exists('works', $pluginStates)) {
+        $worksPluginEnabled = (bool)$pluginStates['works'];
     }
 }
 if (!$audioPluginEnabled) {
@@ -133,6 +137,7 @@ if (is_file($audioFile)) {
         $menuPath = parse_url($menuUrl, PHP_URL_PATH);
         if (!$audioPluginEnabled && $menuPath === '/audio.php') continue;
         if (!$pagesPluginEnabled && $menuPath === '/page.php') continue;
+        if (!$worksPluginEnabled && $menuPath === '/works.php') continue;
         $menuLabel = trim((string)($menuItem['label'] ?? ''));
         if ($menuLabel === '') continue;
         $newTab = !empty($menuItem['new_tab']);

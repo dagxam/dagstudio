@@ -62,6 +62,7 @@ if (is_file($pluginsFile)) {
 }
 $pagesEnabled = !array_key_exists('pages', $pluginStates) || !empty($pluginStates['pages']);
 $audioEnabled = !array_key_exists('audio', $pluginStates) || !empty($pluginStates['audio']);
+$worksEnabled = !array_key_exists('works', $pluginStates) || !empty($pluginStates['works']);
 if (!$pagesEnabled) {
     http_response_code(404);
     exit('Страница не найдена.');
@@ -151,6 +152,7 @@ $contentHtml = ds_bbcode_render((string)($page['content'] ?? ''));
         $path = parse_url($menuUrl, PHP_URL_PATH);
         if (!$audioEnabled && $path === '/audio.php') continue;
         if (!$pagesEnabled && $path === '/page.php') continue;
+        if (!$worksEnabled && $path === '/works.php') continue;
         $menuLabel = trim((string)($menuItem['label'] ?? ''));
         if ($menuLabel === '') continue;
         $newTab = !empty($menuItem['new_tab']);

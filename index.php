@@ -74,6 +74,7 @@ $logoMark = site_asset((string)$settings['logo_mark'], '/assets/img/logo-mark-sq
 $phoneHref = preg_replace('/[^+0-9]/', '', (string)$settings['phone']) ?: '';
 $audioPluginEnabled = true;
 $pagesPluginEnabled = true;
+$worksPluginEnabled = true;
 $pluginStateFile = __DIR__ . '/storage/plugins.json';
 if (is_file($pluginStateFile)) {
     $rawPlugins = @file_get_contents($pluginStateFile);
@@ -83,6 +84,9 @@ if (is_file($pluginStateFile)) {
     }
     if (is_array($pluginStates) && array_key_exists('pages', $pluginStates)) {
         $pagesPluginEnabled = (bool)$pluginStates['pages'];
+    }
+    if (is_array($pluginStates) && array_key_exists('works', $pluginStates)) {
+        $worksPluginEnabled = (bool)$pluginStates['works'];
     }
 }
 ?>
@@ -118,6 +122,7 @@ if (is_file($pluginStateFile)) {
           $menuPath = parse_url($menuUrl, PHP_URL_PATH);
           if (!$audioPluginEnabled && $menuPath === '/audio.php') continue;
           if (!$pagesPluginEnabled && $menuPath === '/page.php') continue;
+          if (!$worksPluginEnabled && $menuPath === '/works.php') continue;
           $menuLabel = trim((string)($menuItem['label'] ?? ''));
           if ($menuLabel === '') continue;
           $newTab = !empty($menuItem['new_tab']);
@@ -137,7 +142,7 @@ if (is_file($pluginStateFile)) {
           <h1>Создание сайтов<br><span>&amp; IT-сервис</span></h1>
           <p class="hero-text">Разрабатываем сайты с уникальным характером, пишем код и оживляем технику. Сочетаем монументальность традиций и скорость современных технологий.</p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="/works.php">Смотреть работы</a>
+            <?php if ($worksPluginEnabled): ?><a class="btn btn-primary" href="/works.php">Смотреть работы</a><?php endif; ?>
             <button class="btn btn-outline" type="button" data-order-open>Заказать услуги</button>
           </div>
         </div>
