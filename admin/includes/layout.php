@@ -26,12 +26,11 @@ function admin_header(string $title, string $active = ''): void {
     </a>
     <nav class="admin-nav">
       <a class="<?= $active === 'dashboard' ? 'active' : '' ?>" href="/admin/"><span>◫</span>Обзор</a>
-      <a class="<?= $active === 'audio' ? 'active' : '' ?>" href="/admin/audio.php"><span>♫</span>Аудио</a>
       <a class="<?= $active === 'settings' ? 'active' : '' ?>" href="/admin/settings.php"><span>⚙</span>Настройки</a>
       <a class="<?= $active === 'plugins' ? 'active' : '' ?>" href="/admin/plugins.php"><span>◆</span>Функции и плагины</a>
       <?php foreach ($plugins as $plugin): ?>
         <?php if (plugin_enabled($plugin, $states) && !empty($plugin['menu'])): ?>
-          <a class="<?= $active === 'plugin-' . $plugin['id'] ? 'active' : '' ?>" href="/admin/plugin.php?id=<?= e($plugin['id']) ?>"><span>+</span><?= e((string)$plugin['menu']) ?></a>
+          <a class="<?= $active === 'plugin-' . $plugin['id'] ? 'active' : '' ?>" href="/admin/plugin.php?id=<?= e($plugin['id']) ?>"><span><?= e((string)($plugin['icon'] ?? '+')) ?></span><?= e((string)$plugin['menu']) ?></a>
         <?php endif; ?>
       <?php endforeach; ?>
     </nav>

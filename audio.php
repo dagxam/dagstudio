@@ -22,6 +22,20 @@ function h_audio(string $value): string {
     return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
+$audioPluginEnabled = true;
+$pluginStateFile = __DIR__ . '/storage/plugins.json';
+if (is_file($pluginStateFile)) {
+    $rawPlugins = @file_get_contents($pluginStateFile);
+    $pluginStates = $rawPlugins !== false ? json_decode($rawPlugins, true) : null;
+    if (is_array($pluginStates) && array_key_exists('audio', $pluginStates)) {
+        $audioPluginEnabled = (bool)$pluginStates['audio'];
+    }
+}
+if (!$audioPluginEnabled) {
+    http_response_code(404);
+    exit('Раздел аудио отключён.');
+}
+
 $items = [];
 $audioFile = __DIR__ . '/storage/audio.json';
 if (is_file($audioFile)) {
@@ -113,11 +127,18 @@ if (is_file($audioFile)) {
                   </div>
                   <span class="audio-disc" aria-hidden="true">♫</span>
                 </div>
+                <div class="public-audio-tags">
+                  <?php if (!empty($item['contains_music'])): ?><span class="audio-tag music">♫ Содержит музыку</span><?php endif; ?>
+                  <?php if (!empty($item['allow_download'])): ?><span class="audio-tag">Скачивание доступно</span><?php endif; ?>
+                </div>
                 <?php if (!empty($item['description'])): ?><p class="public-audio-description"><?= nl2br(h_audio((string)$item['description'])) ?></p><?php endif; ?>
                 <div class="ds-audio-player public-player"><audio controls preload="metadata" src="<?= h_audio($url) ?>"></audio></div>
-                <div class="public-audio-meta">
+                <div class="public-audio-actions">
+                  <div class="public-audio-meta">
                   <?php if ($size > 0): ?><span><?= h_audio(number_format($size / 1048576, 1, ',', ' ')) ?> МБ</span><?php endif; ?>
                   <?php if (!empty($item['uploaded_at'])): ?><span><?= h_audio(date('d.m.Y', strtotime((string)$item['uploaded_at']))) ?></span><?php endif; ?>
+                  </div>
+                  <?php if (!empty($item['allow_download'])): ?><a class="audio-download-btn" href="/audio-download.php?id=<?= rawurlencode((string)$item['id']) ?>">↓ Скачать</a><?php endif; ?>
                 </div>
               </div>
             </article>

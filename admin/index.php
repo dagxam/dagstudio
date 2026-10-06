@@ -37,7 +37,7 @@ admin_header('Обзор', 'dashboard');
   <section class="panel">
     <h2>Быстрые действия</h2>
     <div class="quick-actions">
-      <a href="/admin/audio.php"><strong>Аудио</strong><span>Загружать треки и управлять публикацией</span></a>
+      <?php if (isset($plugins['audio']) && plugin_enabled($plugins['audio'], $states)): ?><a href="/admin/plugin.php?id=audio"><strong>Аудио</strong><span>Загружать, редактировать и публиковать треки</span></a><?php endif; ?>
       <a href="/admin/plugins.php"><strong>Функции и плагины</strong><span>Включать и отключать установленные модули</span></a>
       <a href="/admin/settings.php"><strong>Настройки сайта</strong><span>Контакты и основные данные проекта</span></a>
       <a href="/" target="_blank" rel="noopener"><strong>Открыть сайт</strong><span>Посмотреть публичную версию в новой вкладке</span></a>

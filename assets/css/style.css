@@ -57,3 +57,6 @@ a{color:inherit;text-decoration:none} img{display:block;max-width:100%} button,i
 
 .public-player.ds-audio-player{margin-top:24px;padding:0;background:linear-gradient(135deg,#0b0b0b,#12100f);border-color:#31251f}
 .public-player.ds-audio-player:hover{border-color:#6f3d27}
+
+.public-audio-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.audio-tag{display:inline-flex;align-items:center;min-height:28px;padding:0 10px;border:1px solid #3b302b;color:#8b817c;font-family:"Oswald",Arial,sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.06em}.audio-tag.music{border-color:#6b3d27;color:#c96f41;background:#120e0c}.public-audio-actions{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:15px}.public-audio-actions .public-audio-meta{margin-top:0}.audio-download-btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:0 15px;border:1px solid #6e3d27;color:#c96f41;font-family:"Oswald",Arial,sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:.05em;transition:.2s}.audio-download-btn:hover{background:#c96f41;color:#090909;border-color:#c96f41}
+@media(max-width:560px){.public-audio-actions{align-items:flex-start;flex-direction:column}.audio-download-btn{width:100%}}

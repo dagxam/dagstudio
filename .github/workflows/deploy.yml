@@ -25,3 +25,8 @@ jobs:
             **/.git*
             **/.git*/**
             **/README.md
+            storage/settings.json
+            storage/plugins.json
+            storage/audio.json
+            storage/audit.log
+            uploads/audio/**

@@ -20,6 +20,15 @@ function h(string $value): string {
     return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 $phoneHref = preg_replace('/[^+0-9]/', '', (string)$settings['phone']) ?: '';
+$audioPluginEnabled = true;
+$pluginStateFile = __DIR__ . '/storage/plugins.json';
+if (is_file($pluginStateFile)) {
+    $rawPlugins = @file_get_contents($pluginStateFile);
+    $pluginStates = $rawPlugins !== false ? json_decode($rawPlugins, true) : null;
+    if (is_array($pluginStates) && array_key_exists('audio', $pluginStates)) {
+        $audioPluginEnabled = (bool)$pluginStates['audio'];
+    }
+}
 ?>
 <!doctype html>
 <html lang="ru">
@@ -48,7 +57,7 @@ $phoneHref = preg_replace('/[^+0-9]/', '', (string)$settings['phone']) ?: '';
       <nav class="main-nav" aria-label="Главная навигация">
         <a href="#top">Главная</a>
         <a href="#about">Блог</a>
-        <a href="/audio.php">Наши аудио</a>
+        <?php if ($audioPluginEnabled): ?><a href="/audio.php">Наши аудио</a><?php endif; ?>
         <a href="#services">Скрипты</a>
         <a href="#about">О студии</a>
       </nav>
