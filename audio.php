@@ -20,7 +20,7 @@ $defaults = [
     'logo_mark' => '/assets/img/logo-mark-square.svg',
     'main_menu' => [
         ['label' => 'Главная', 'url' => '/#top', 'visible' => true, 'new_tab' => false],
-        ['label' => 'Блог', 'url' => '/#about', 'visible' => true, 'new_tab' => false],
+        ['label' => 'Наши работы', 'url' => '/works.php', 'visible' => true, 'new_tab' => false],
         ['label' => 'Наши аудио', 'url' => '/audio.php', 'visible' => true, 'new_tab' => false],
         ['label' => 'Скрипты', 'url' => '/#services', 'visible' => true, 'new_tab' => false],
         ['label' => 'О студии', 'url' => '/#about', 'visible' => true, 'new_tab' => false],
@@ -51,6 +51,22 @@ function audio_menu_url(string $value): string {
     if (preg_match('#^https?://#i', $value)) return $value;
     return '#';
 }
+
+function audio_portfolio_menu(array $menu): array {
+    foreach ($menu as &$item) {
+        if (!is_array($item)) continue;
+        if (mb_strtolower(trim((string)($item['label'] ?? ''))) === 'блог') {
+            $item['label'] = 'Наши работы';
+            $item['url'] = '/works.php';
+            $item['visible'] = true;
+            $item['new_tab'] = false;
+        }
+    }
+    unset($item);
+    return $menu;
+}
+
+$settings['main_menu'] = audio_portfolio_menu(is_array($settings['main_menu'] ?? null) ? $settings['main_menu'] : []);
 $themeAccent = audio_hex((string)$settings['theme_accent'], '#c96f41');
 $themeBg = audio_hex((string)$settings['theme_bg'], '#050505');
 $themePanel = audio_hex((string)$settings['theme_panel'], '#1c1c1c');

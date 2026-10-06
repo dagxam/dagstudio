@@ -19,7 +19,7 @@ $defaults = [
     'logo_mark' => '/assets/img/logo-mark-square.svg',
     'main_menu' => [
         ['label' => 'Главная', 'url' => '/#top', 'visible' => true, 'new_tab' => false],
-        ['label' => 'Блог', 'url' => '/#about', 'visible' => true, 'new_tab' => false],
+        ['label' => 'Наши работы', 'url' => '/works.php', 'visible' => true, 'new_tab' => false],
         ['label' => 'Наши аудио', 'url' => '/audio.php', 'visible' => true, 'new_tab' => false],
         ['label' => 'Скрипты', 'url' => '/#services', 'visible' => true, 'new_tab' => false],
         ['label' => 'О студии', 'url' => '/#about', 'visible' => true, 'new_tab' => false],
@@ -49,6 +49,22 @@ function site_menu_url(string $value): string {
     if (preg_match('#^https?://#i', $value)) return $value;
     return '#';
 }
+
+function site_portfolio_menu(array $menu): array {
+    foreach ($menu as &$item) {
+        if (!is_array($item)) continue;
+        if (mb_strtolower(trim((string)($item['label'] ?? ''))) === 'блог') {
+            $item['label'] = 'Наши работы';
+            $item['url'] = '/works.php';
+            $item['visible'] = true;
+            $item['new_tab'] = false;
+        }
+    }
+    unset($item);
+    return $menu;
+}
+
+$settings['main_menu'] = site_portfolio_menu(is_array($settings['main_menu'] ?? null) ? $settings['main_menu'] : []);
 $themeAccent = site_hex((string)$settings['theme_accent'], '#c96f41');
 $themeBg = site_hex((string)$settings['theme_bg'], '#050505');
 $themePanel = site_hex((string)$settings['theme_panel'], '#1c1c1c');
@@ -121,7 +137,7 @@ if (is_file($pluginStateFile)) {
           <h1>Создание сайтов<br><span>&amp; IT-сервис</span></h1>
           <p class="hero-text">Разрабатываем сайты с уникальным характером, пишем код и оживляем технику. Сочетаем монументальность традиций и скорость современных технологий.</p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="#services">Смотреть работы</a>
+            <a class="btn btn-primary" href="/works.php">Смотреть работы</a>
             <button class="btn btn-outline" type="button" data-order-open>Заказать услуги</button>
           </div>
         </div>
@@ -232,7 +248,7 @@ if (is_file($pluginStateFile)) {
         <img src="<?= h($logoDark) ?>" alt="DAG STUDIO">
         <p>Digital-ателье.<br>Шьем сайты по лекалам высоких технологий.</p>
       </div>
-      <div class="footer-col"><h4>Навигация</h4><a href="#top">Главная</a><a href="#services">Услуги</a><a href="#about">Портфолио</a><a href="#contacts">Контакты</a></div>
+      <div class="footer-col"><h4>Навигация</h4><a href="#top">Главная</a><a href="#services">Услуги</a><a href="/works.php">Наши работы</a><a href="#contacts">Контакты</a></div>
       <div class="footer-col"><h4>Контакты</h4><p><?= nl2br(h((string)$settings['location'])) ?></p>
         <?php if ($settings['telegram'] !== ''): ?><a href="<?= h((string)$settings['telegram']) ?>" target="_blank" rel="noopener">Telegram</a><?php endif; ?>
         <?php if ($settings['whatsapp'] !== ''): ?><a href="<?= h((string)$settings['whatsapp']) ?>" target="_blank" rel="noopener">WhatsApp</a><?php endif; ?>

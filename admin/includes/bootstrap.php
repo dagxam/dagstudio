@@ -120,6 +120,21 @@ function audit_recent(int $limit = 8): array {
     return $out;
 }
 
+function ds_portfolio_menu(array $menu): array {
+    foreach ($menu as &$item) {
+        if (!is_array($item)) continue;
+        $label = mb_strtolower(trim((string)($item['label'] ?? '')));
+        if ($label === 'блог') {
+            $item['label'] = 'Наши работы';
+            $item['url'] = '/works.php';
+            $item['visible'] = true;
+            $item['new_tab'] = false;
+        }
+    }
+    unset($item);
+    return $menu;
+}
+
 function site_settings(): array {
     $defaults = [
         'site_name' => 'DAG STUDIO',
@@ -141,13 +156,15 @@ function site_settings(): array {
         'logo_mark' => '/assets/img/logo-mark-square.svg',
         'main_menu' => [
             ['label' => 'Главная', 'url' => '/#top', 'visible' => true, 'new_tab' => false],
-            ['label' => 'Блог', 'url' => '/#about', 'visible' => true, 'new_tab' => false],
+            ['label' => 'Наши работы', 'url' => '/works.php', 'visible' => true, 'new_tab' => false],
             ['label' => 'Наши аудио', 'url' => '/audio.php', 'visible' => true, 'new_tab' => false],
             ['label' => 'Скрипты', 'url' => '/#services', 'visible' => true, 'new_tab' => false],
             ['label' => 'О студии', 'url' => '/#about', 'visible' => true, 'new_tab' => false],
         ],
     ];
-    return array_merge($defaults, storage_read_json('settings.json', []));
+    $settings = array_merge($defaults, storage_read_json('settings.json', []));
+    $settings['main_menu'] = ds_portfolio_menu(is_array($settings['main_menu'] ?? null) ? $settings['main_menu'] : $defaults['main_menu']);
+    return $settings;
 }
 
 function setting_color(array $settings, string $key, string $fallback): string {
