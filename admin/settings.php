@@ -6,6 +6,19 @@ admin_require_auth();
 
 $settings = site_settings();
 
+$pagePluginDefs = plugin_definitions();
+$pagePluginStates = plugin_states();
+$pagesPluginEnabled = isset($pagePluginDefs['pages']) && plugin_enabled($pagePluginDefs['pages'], $pagePluginStates);
+$pagesData = storage_read_json('pages.json', ['items' => []]);
+$publishedPages = [];
+foreach (($pagesData['items'] ?? []) as $staticPage) {
+    if (!is_array($staticPage) || empty($staticPage['published'])) continue;
+    $title = trim((string)($staticPage['title'] ?? ''));
+    $slug = trim((string)($staticPage['slug'] ?? ''));
+    if ($title === '' || $slug === '') continue;
+    $publishedPages[] = ['title' => $title, 'slug' => $slug];
+}
+
 $logoDefaults = [
     'logo_dark' => '/assets/img/logo-horizontal-dark.svg',
     'logo_light' => '/assets/img/logo-horizontal.svg',
@@ -233,6 +246,24 @@ admin_header('Настройки', 'settings');
           </div>
           <button class="btn secondary menu-add-btn" type="button" data-menu-add>+ Добавить пункт</button>
         </div>
+
+        <?php if ($pagesPluginEnabled && $publishedPages): ?>
+          <div class="menu-page-picker">
+            <div>
+              <strong>Добавить статичную страницу</strong>
+              <span>Выберите созданную страницу — название и ссылка подставятся автоматически.</span>
+            </div>
+            <select data-menu-page-select>
+              <option value="">Выберите страницу</option>
+              <?php foreach ($publishedPages as $staticPage): ?>
+                <option value="/page.php?slug=<?= rawurlencode((string)$staticPage['slug']) ?>" data-title="<?= e((string)$staticPage['title']) ?>"><?= e((string)$staticPage['title']) ?></option>
+              <?php endforeach; ?>
+            </select>
+            <button class="toggle-btn" type="button" data-menu-add-page>Добавить в меню</button>
+          </div>
+        <?php elseif ($pagesPluginEnabled): ?>
+          <div class="menu-page-picker is-empty"><span>В плагине «Статичные страницы» пока нет опубликованных страниц.</span><a href="/admin/plugin.php?id=pages&new=1">Создать страницу →</a></div>
+        <?php endif; ?>
 
         <div class="menu-editor" data-menu-editor>
           <?php foreach (($settings['main_menu'] ?? []) as $menuIndex => $menuItem): ?>

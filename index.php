@@ -57,12 +57,16 @@ $logoDark = site_asset((string)$settings['logo_dark'], '/assets/img/logo-horizon
 $logoMark = site_asset((string)$settings['logo_mark'], '/assets/img/logo-mark-square.svg');
 $phoneHref = preg_replace('/[^+0-9]/', '', (string)$settings['phone']) ?: '';
 $audioPluginEnabled = true;
+$pagesPluginEnabled = true;
 $pluginStateFile = __DIR__ . '/storage/plugins.json';
 if (is_file($pluginStateFile)) {
     $rawPlugins = @file_get_contents($pluginStateFile);
     $pluginStates = $rawPlugins !== false ? json_decode($rawPlugins, true) : null;
     if (is_array($pluginStates) && array_key_exists('audio', $pluginStates)) {
         $audioPluginEnabled = (bool)$pluginStates['audio'];
+    }
+    if (is_array($pluginStates) && array_key_exists('pages', $pluginStates)) {
+        $pagesPluginEnabled = (bool)$pluginStates['pages'];
     }
 }
 ?>
@@ -95,7 +99,9 @@ if (is_file($pluginStateFile)) {
         <?php foreach (($settings['main_menu'] ?? []) as $menuItem):
           if (!is_array($menuItem) || empty($menuItem['visible'])) continue;
           $menuUrl = site_menu_url((string)($menuItem['url'] ?? '#'));
-          if (!$audioPluginEnabled && parse_url($menuUrl, PHP_URL_PATH) === '/audio.php') continue;
+          $menuPath = parse_url($menuUrl, PHP_URL_PATH);
+          if (!$audioPluginEnabled && $menuPath === '/audio.php') continue;
+          if (!$pagesPluginEnabled && $menuPath === '/page.php') continue;
           $menuLabel = trim((string)($menuItem['label'] ?? ''));
           if ($menuLabel === '') continue;
           $newTab = !empty($menuItem['new_tab']);

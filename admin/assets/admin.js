@@ -150,16 +150,99 @@
       return;
     }
     const fragment = menuTemplate.content.cloneNode(true);
-    const row = fragment.querySelector('[data-menu-row]');
-    if (!row) return;
     menuEditor.appendChild(fragment);
     const added = menuEditor.lastElementChild;
+    if (!added) return;
     bindMenuRow(added);
     renumberMenu();
     added.querySelector('input[data-menu-field="label"]')?.focus();
   });
 
+  const addMenuRow = (label = '', url = '#') => {
+    if (!menuEditor || !menuTemplate) return null;
+    if (menuEditor.querySelectorAll('[data-menu-row]').length >= 12) {
+      alert('Можно добавить не более 12 пунктов меню.');
+      return null;
+    }
+    const fragment = menuTemplate.content.cloneNode(true);
+    menuEditor.appendChild(fragment);
+    const added = menuEditor.lastElementChild;
+    if (!added) return null;
+    bindMenuRow(added);
+    const labelInput = added.querySelector('[data-menu-field="label"]');
+    const urlInput = added.querySelector('[data-menu-field="url"]');
+    if (labelInput) labelInput.value = label;
+    if (urlInput) urlInput.value = url;
+    renumberMenu();
+    return added;
+  };
+
+  const pageSelect = document.querySelector('[data-menu-page-select]');
+  const pageAdd = document.querySelector('[data-menu-add-page]');
+  pageAdd?.addEventListener('click', () => {
+    if (!pageSelect || !pageSelect.value) return;
+    const selected = pageSelect.options[pageSelect.selectedIndex];
+    const title = selected?.dataset?.title || selected?.textContent || 'Страница';
+    const row = addMenuRow(title.trim(), pageSelect.value);
+    row?.querySelector('input[name^="menu_label"]')?.focus();
+    pageSelect.value = '';
+  });
+
   settingsForm?.addEventListener('submit', renumberMenu);
+
+  const bbTextarea = document.querySelector('[data-bb-textarea]');
+  const bbToolbar = document.querySelector('[data-bb-toolbar]');
+  if (bbTextarea && bbToolbar) {
+    const wrapSelection = (open, close, placeholder = 'Текст') => {
+      const start = bbTextarea.selectionStart ?? bbTextarea.value.length;
+      const end = bbTextarea.selectionEnd ?? start;
+      const selected = bbTextarea.value.slice(start, end) || placeholder;
+      const replacement = open + selected + close;
+      bbTextarea.setRangeText(replacement, start, end, 'select');
+      bbTextarea.focus();
+      const selectionStart = start + open.length;
+      bbTextarea.setSelectionRange(selectionStart, selectionStart + selected.length);
+    };
+
+    bbToolbar.querySelectorAll('[data-bb-tag]').forEach(button => {
+      button.addEventListener('click', () => {
+        const tag = button.dataset.bbTag;
+        if (!tag) return;
+        wrapSelection('[' + tag + ']', '[/' + tag + ']', tag === 'code' ? 'Код' : 'Текст');
+      });
+    });
+
+    bbToolbar.querySelector('[data-bb-link]')?.addEventListener('click', () => {
+      const url = prompt('Введите ссылку:', 'https://');
+      if (!url) return;
+      wrapSelection('[url=' + url.trim() + ']', '[/url]', 'Текст ссылки');
+    });
+
+    bbToolbar.querySelector('[data-bb-image]')?.addEventListener('click', () => {
+      const url = prompt('Введите прямую ссылку на изображение:', 'https://');
+      if (!url) return;
+      const start = bbTextarea.selectionStart ?? bbTextarea.value.length;
+      bbTextarea.setRangeText('[img]' + url.trim() + '[/img]', start, bbTextarea.selectionEnd ?? start, 'end');
+      bbTextarea.focus();
+    });
+
+    bbToolbar.querySelector('[data-bb-color]')?.addEventListener('click', () => {
+      const color = prompt('Цвет в формате #RRGGBB:', '#c96f41');
+      if (!color || !/^#[0-9a-fA-F]{6}$/.test(color.trim())) return;
+      wrapSelection('[color=' + color.trim() + ']', '[/color]', 'Цветной текст');
+    });
+
+    bbToolbar.querySelector('[data-bb-list]')?.addEventListener('click', () => {
+      const start = bbTextarea.selectionStart ?? bbTextarea.value.length;
+      const end = bbTextarea.selectionEnd ?? start;
+      const selected = bbTextarea.value.slice(start, end).trim();
+      const content = selected
+        ? selected.split(/\n+/).map(line => '[*]' + line.replace(/^\[\*\]/, '')).join('\n')
+        : '[*]Первый пункт\n[*]Второй пункт';
+      bbTextarea.setRangeText('[list]\n' + content + '\n[/list]', start, end, 'select');
+      bbTextarea.focus();
+    });
+  }
 
   applyThemePreview();
 })();
