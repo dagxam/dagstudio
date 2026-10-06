@@ -116,7 +116,7 @@ if (is_file($pluginStateFile)) {
           <p class="hero-text">Разрабатываем сайты с уникальным характером, пишем код и оживляем технику. Сочетаем монументальность традиций и скорость современных технологий.</p>
           <div class="hero-actions">
             <a class="btn btn-primary" href="#services">Смотреть работы</a>
-            <a class="btn btn-outline" href="#contacts">Заказать услуги</a>
+            <button class="btn btn-outline" type="button" data-order-open>Заказать услуги</button>
           </div>
         </div>
         <div class="hero-art reveal" aria-hidden="true">
@@ -168,14 +168,16 @@ if (is_file($pluginStateFile)) {
             <div><small>Телефон</small><a href="tel:<?= h($phoneHref) ?>"><?= h((string)$settings['phone']) ?></a></div>
             <div><small>Емайл</small><a href="mailto:<?= h((string)$settings['email']) ?>"><?= h((string)$settings['email']) ?></a></div>
           </div>
-          <form class="request-form" action="send.php" method="post" novalidate>
+          <form class="request-form" action="/send.php" method="post">
+            <input type="hidden" name="source" value="contact">
             <div class="form-row">
-              <label><span class="sr-only">Ваше имя</span><input type="text" name="name" maxlength="80" placeholder="ВАШЕ ИМЯ" required></label>
-              <label><span class="sr-only">Ваш телефон</span><input type="tel" name="phone" maxlength="40" placeholder="ВАШ ТЕЛЕФОН" required></label>
+              <label><span class="sr-only">ФИО</span><input type="text" name="name" maxlength="120" autocomplete="name" placeholder="ФИО" required></label>
+              <label><span class="sr-only">Ваш телефон</span><input type="tel" name="phone" maxlength="40" autocomplete="tel" placeholder="ВАШ ТЕЛЕФОН" required></label>
             </div>
-            <label><span class="sr-only">Опишите задачу</span><textarea name="message" maxlength="1500" placeholder="ОПИШИТЕ ЗАДАЧУ" required></textarea></label>
+            <label><span class="sr-only">Ваша почта</span><input type="email" name="email" maxlength="120" autocomplete="email" placeholder="ВАША ПОЧТА" required></label>
+            <label><span class="sr-only">Опишите задачу</span><textarea name="message" maxlength="2000" placeholder="ОПИШИТЕ ЗАДАЧУ" required></textarea></label>
             <label class="honeypot" aria-hidden="true">Сайт<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
-            <button class="btn btn-outline submit-btn" type="submit">Отправить заявку</button>
+            <button class="btn btn-outline submit-btn" type="submit">Оставить заявку</button>
             <p class="form-status" role="status" aria-live="polite"></p>
           </form>
         </div>
@@ -192,6 +194,31 @@ if (is_file($pluginStateFile)) {
       </div>
     </section>
   </main>
+
+  <div class="order-modal" id="orderModal" aria-hidden="true">
+    <div class="order-modal-backdrop" data-order-close></div>
+    <section class="order-modal-panel" role="dialog" aria-modal="true" aria-labelledby="orderModalTitle">
+      <button class="order-modal-close" type="button" aria-label="Закрыть" data-order-close>×</button>
+      <div class="order-modal-brand"><img src="<?= h($logoDark) ?>" alt="DAG STUDIO"></div>
+      <p class="eyebrow">Новый проект</p>
+      <h2 id="orderModalTitle">Заказать услуги</h2>
+      <p class="order-modal-lead">Оставьте контакты и кратко опишите задачу. Заявка придёт напрямую в DAG STUDIO.</p>
+      <form class="request-form order-form" action="/send.php" method="post">
+        <input type="hidden" name="source" value="modal">
+        <div class="form-row">
+          <label><span class="sr-only">ФИО</span><input type="text" name="name" maxlength="120" autocomplete="name" placeholder="ФИО" required></label>
+          <label><span class="sr-only">Ваш телефон</span><input type="tel" name="phone" maxlength="40" autocomplete="tel" placeholder="ВАШ ТЕЛЕФОН" required></label>
+        </div>
+        <label><span class="sr-only">Ваша почта</span><input type="email" name="email" maxlength="120" autocomplete="email" placeholder="ВАША ПОЧТА" required></label>
+        <label><span class="sr-only">Опишите задачу</span><textarea name="message" maxlength="2000" placeholder="ОПИШИТЕ ЗАДАЧУ" required></textarea></label>
+        <label class="honeypot" aria-hidden="true">Сайт<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+        <button class="btn btn-primary order-submit" type="submit">Отправить заявку</button>
+        <p class="form-status order-form-status" role="status" aria-live="polite"></p>
+      </form>
+      <div class="order-modal-note">Ответ придёт на указанную вами почту или по телефону.</div>
+    </section>
+  </div>
+  <div class="site-toast" id="siteToast" role="status" aria-live="polite"></div>
 
   <footer class="site-footer">
     <div class="container footer-grid">

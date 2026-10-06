@@ -27,13 +27,79 @@
     reveal.forEach(el => el.classList.add('is-visible'));
   }
 
+  const modal = document.getElementById('orderModal');
+  const modalStatus = modal?.querySelector('.order-form-status');
+  const firstModalInput = modal?.querySelector('input[name="name"]');
+  const openModal = () => {
+    if (!modal) return;
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    window.setTimeout(() => firstModalInput?.focus(), 80);
+  };
+  const closeModal = () => {
+    if (!modal) return;
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+  };
+
+  document.querySelectorAll('[data-order-open]').forEach(button => button.addEventListener('click', openModal));
+  document.querySelectorAll('[data-order-close]').forEach(button => button.addEventListener('click', closeModal));
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && modal?.classList.contains('is-open')) closeModal();
+  });
+
+  document.querySelectorAll('.request-form').forEach(form => {
+    form.addEventListener('submit', () => {
+      const button = form.querySelector('button[type="submit"]');
+      if (!button || !form.checkValidity()) return;
+      button.disabled = true;
+      button.classList.add('is-loading');
+      button.dataset.originalText = button.textContent;
+      button.textContent = 'Отправляем...';
+    });
+  });
+
   const params = new URLSearchParams(location.search);
-  const status = document.querySelector('.form-status');
-  if (status && params.get('sent') === '1') {
-    status.textContent = 'Заявка отправлена. Мы свяжемся с вами.';
-    history.replaceState({}, '', location.pathname + location.hash);
+  const sent = params.get('sent');
+  const source = params.get('source') || 'contact';
+  const contactStatus = document.querySelector('#contacts .form-status');
+  const toast = document.getElementById('siteToast');
+
+  const showToast = (text, type = 'success') => {
+    if (!toast) return;
+    toast.textContent = text;
+    toast.className = 'site-toast is-visible ' + type;
+    window.setTimeout(() => toast.classList.remove('is-visible'), 5500);
+  };
+
+  if (sent === '1') {
+    const message = 'Заявка отправлена. Мы свяжемся с вами.';
+    if (source === 'modal') {
+      showToast(message, 'success');
+      closeModal();
+    } else if (contactStatus) {
+      contactStatus.textContent = message;
+      contactStatus.classList.add('success');
+      showToast(message, 'success');
+    }
+    history.replaceState({}, '', location.pathname + (source === 'contact' ? '#contacts' : ''));
   }
-  if (status && params.get('sent') === '0') {
-    status.textContent = 'Не удалось отправить заявку. Напишите на admin@dagstudio.ru.';
+
+  if (sent === '0') {
+    const message = 'Не удалось отправить заявку. Попробуйте ещё раз или напишите на admin@dagstudio.ru.';
+    if (source === 'modal') {
+      openModal();
+      if (modalStatus) {
+        modalStatus.textContent = message;
+        modalStatus.classList.add('error');
+      }
+    } else if (contactStatus) {
+      contactStatus.textContent = message;
+      contactStatus.classList.add('error');
+    }
+    showToast(message, 'error');
+    history.replaceState({}, '', location.pathname + (source === 'contact' ? '#contacts' : ''));
   }
 })();
