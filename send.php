@@ -28,11 +28,19 @@ if ($name === '' || $phone === '' || $message === '') {
 }
 
 $to = 'admin@dagstudio.ru';
+$settingsFile = __DIR__ . '/storage/settings.json';
+if (is_file($settingsFile)) {
+    $raw = @file_get_contents($settingsFile);
+    $cfg = $raw !== false ? json_decode($raw, true) : null;
+    if (is_array($cfg) && !empty($cfg['email']) && filter_var($cfg['email'], FILTER_VALIDATE_EMAIL)) {
+        $to = (string)$cfg['email'];
+    }
+}
 $subject = 'Новая заявка с сайта DAG STUDIO';
 $body = "Имя: {$name}\nТелефон: {$phone}\n\nЗадача:\n{$message}\n";
 $headers = [
     'From: DAG STUDIO <no-reply@dagstudio.ru>',
-    'Reply-To: admin@dagstudio.ru',
+    'Reply-To: ' . $to,
     'Content-Type: text/plain; charset=UTF-8'
 ];
 
