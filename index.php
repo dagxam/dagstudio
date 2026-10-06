@@ -17,6 +17,13 @@ $defaults = [
     'logo_light' => '/assets/img/logo-horizontal.svg',
     'logo_admin' => '/assets/img/logo-horizontal-dark.svg',
     'logo_mark' => '/assets/img/logo-mark-square.svg',
+    'main_menu' => [
+        ['label' => 'Главная', 'url' => '/#top', 'visible' => true, 'new_tab' => false],
+        ['label' => 'Блог', 'url' => '/#about', 'visible' => true, 'new_tab' => false],
+        ['label' => 'Наши аудио', 'url' => '/audio.php', 'visible' => true, 'new_tab' => false],
+        ['label' => 'Скрипты', 'url' => '/#services', 'visible' => true, 'new_tab' => false],
+        ['label' => 'О студии', 'url' => '/#about', 'visible' => true, 'new_tab' => false],
+    ],
 ];
 $settings = $defaults;
 $settingsFile = __DIR__ . '/storage/settings.json';
@@ -35,6 +42,12 @@ function site_asset(string $value, string $fallback): string {
     if ($value === '' || str_contains($value, '..') || !str_starts_with($value, '/')) return $fallback;
     if (!str_starts_with($value, '/assets/') && !str_starts_with($value, '/uploads/branding/')) return $fallback;
     return $value;
+}
+function site_menu_url(string $value): string {
+    $value = trim($value);
+    if (str_starts_with($value, '/') || str_starts_with($value, '#')) return $value;
+    if (preg_match('#^https?://#i', $value)) return $value;
+    return '#';
 }
 $themeAccent = site_hex((string)$settings['theme_accent'], '#c96f41');
 $themeBg = site_hex((string)$settings['theme_bg'], '#050505');
@@ -79,11 +92,16 @@ if (is_file($pluginStateFile)) {
         <span></span><span></span><span></span>
       </button>
       <nav class="main-nav" aria-label="Главная навигация">
-        <a href="#top">Главная</a>
-        <a href="#about">Блог</a>
-        <?php if ($audioPluginEnabled): ?><a href="/audio.php">Наши аудио</a><?php endif; ?>
-        <a href="#services">Скрипты</a>
-        <a href="#about">О студии</a>
+        <?php foreach (($settings['main_menu'] ?? []) as $menuItem):
+          if (!is_array($menuItem) || empty($menuItem['visible'])) continue;
+          $menuUrl = site_menu_url((string)($menuItem['url'] ?? '#'));
+          if (!$audioPluginEnabled && parse_url($menuUrl, PHP_URL_PATH) === '/audio.php') continue;
+          $menuLabel = trim((string)($menuItem['label'] ?? ''));
+          if ($menuLabel === '') continue;
+          $newTab = !empty($menuItem['new_tab']);
+        ?>
+          <a href="<?= h($menuUrl) ?>"<?= $newTab ? ' target="_blank" rel="noopener"' : '' ?>><?= h($menuLabel) ?></a>
+        <?php endforeach; ?>
       </nav>
       <a class="login-btn" href="/admin/">Вход</a>
     </div>

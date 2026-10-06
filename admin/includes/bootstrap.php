@@ -139,6 +139,13 @@ function site_settings(): array {
         'logo_light' => '/assets/img/logo-horizontal.svg',
         'logo_admin' => '/assets/img/logo-horizontal-dark.svg',
         'logo_mark' => '/assets/img/logo-mark-square.svg',
+        'main_menu' => [
+            ['label' => 'Главная', 'url' => '/#top', 'visible' => true, 'new_tab' => false],
+            ['label' => 'Блог', 'url' => '/#about', 'visible' => true, 'new_tab' => false],
+            ['label' => 'Наши аудио', 'url' => '/audio.php', 'visible' => true, 'new_tab' => false],
+            ['label' => 'Скрипты', 'url' => '/#services', 'visible' => true, 'new_tab' => false],
+            ['label' => 'О студии', 'url' => '/#about', 'visible' => true, 'new_tab' => false],
+        ],
     ];
     return array_merge($defaults, storage_read_json('settings.json', []));
 }

@@ -93,5 +93,73 @@
     });
   });
 
+  const menuEditor = document.querySelector('[data-menu-editor]');
+  const menuTemplate = document.getElementById('menu-row-template');
+  const menuAdd = document.querySelector('[data-menu-add]');
+  const settingsForm = document.querySelector('.settings-form');
+
+  const renumberMenu = () => {
+    if (!menuEditor) return;
+    [...menuEditor.querySelectorAll('[data-menu-row]')].forEach((row, index) => {
+      const label = row.querySelector('input[name^="menu_label"], [data-menu-field="label"]');
+      const url = row.querySelector('input[name^="menu_url"], [data-menu-field="url"]');
+      const visible = row.querySelector('input[name^="menu_visible"], [data-menu-field="visible"]');
+      const newTab = row.querySelector('input[name^="menu_new_tab"], [data-menu-field="new_tab"]');
+      if (label) label.name = 'menu_label[' + index + ']';
+      if (url) url.name = 'menu_url[' + index + ']';
+      if (visible) visible.name = 'menu_visible[' + index + ']';
+      if (newTab) newTab.name = 'menu_new_tab[' + index + ']';
+
+      const up = row.querySelector('[data-menu-up]');
+      const down = row.querySelector('[data-menu-down]');
+      if (up) up.disabled = index === 0;
+      if (down) down.disabled = index === menuEditor.querySelectorAll('[data-menu-row]').length - 1;
+    });
+  };
+
+  const bindMenuRow = row => {
+    const remove = row.querySelector('[data-menu-delete]');
+    const up = row.querySelector('[data-menu-up]');
+    const down = row.querySelector('[data-menu-down]');
+
+    remove?.addEventListener('click', () => {
+      row.remove();
+      renumberMenu();
+    });
+    up?.addEventListener('click', () => {
+      const prev = row.previousElementSibling;
+      if (prev) menuEditor.insertBefore(row, prev);
+      renumberMenu();
+    });
+    down?.addEventListener('click', () => {
+      const next = row.nextElementSibling;
+      if (next) menuEditor.insertBefore(next, row);
+      renumberMenu();
+    });
+  };
+
+  if (menuEditor) {
+    menuEditor.querySelectorAll('[data-menu-row]').forEach(bindMenuRow);
+    renumberMenu();
+  }
+
+  menuAdd?.addEventListener('click', () => {
+    if (!menuEditor || !menuTemplate) return;
+    if (menuEditor.querySelectorAll('[data-menu-row]').length >= 12) {
+      alert('Можно добавить не более 12 пунктов меню.');
+      return;
+    }
+    const fragment = menuTemplate.content.cloneNode(true);
+    const row = fragment.querySelector('[data-menu-row]');
+    if (!row) return;
+    menuEditor.appendChild(fragment);
+    const added = menuEditor.lastElementChild;
+    bindMenuRow(added);
+    renumberMenu();
+    added.querySelector('input[data-menu-field="label"]')?.focus();
+  });
+
+  settingsForm?.addEventListener('submit', renumberMenu);
+
   applyThemePreview();
 })();

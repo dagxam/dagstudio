@@ -18,6 +18,14 @@ function settings_hex(string $value, string $fallback): string {
     return preg_match('/^#[0-9a-f]{6}$/', $value) ? $value : $fallback;
 }
 
+function settings_menu_url(string $value): string {
+    $value = trim($value);
+    if ($value === '') return '#';
+    if (str_starts_with($value, '/') || str_starts_with($value, '#')) return mb_substr($value, 0, 300);
+    if (preg_match('#^https?://#i', $value)) return mb_substr($value, 0, 300);
+    return '#';
+}
+
 function settings_custom_logo_path(string $path): ?string {
     if (!str_starts_with($path, '/uploads/branding/')) return null;
     $name = basename($path);
@@ -82,6 +90,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $next['telegram'] = mb_substr(trim((string)($_POST['telegram'] ?? '')), 0, 250);
     $next['whatsapp'] = mb_substr(trim((string)($_POST['whatsapp'] ?? '')), 0, 250);
     $next['behance'] = mb_substr(trim((string)($_POST['behance'] ?? '')), 0, 250);
+
+    $menuLabels = is_array($_POST['menu_label'] ?? null) ? $_POST['menu_label'] : [];
+    $menuUrls = is_array($_POST['menu_url'] ?? null) ? $_POST['menu_url'] : [];
+    $menuVisible = is_array($_POST['menu_visible'] ?? null) ? $_POST['menu_visible'] : [];
+    $menuNewTab = is_array($_POST['menu_new_tab'] ?? null) ? $_POST['menu_new_tab'] : [];
+    $mainMenu = [];
+    foreach ($menuLabels as $index => $rawLabel) {
+        if (count($mainMenu) >= 12) break;
+        $label = mb_substr(trim(strip_tags((string)$rawLabel)), 0, 50);
+        if ($label === '') continue;
+        $mainMenu[] = [
+            'label' => $label,
+            'url' => settings_menu_url((string)($menuUrls[$index] ?? '#')),
+            'visible' => isset($menuVisible[$index]) && (string)$menuVisible[$index] === '1',
+            'new_tab' => isset($menuNewTab[$index]) && (string)$menuNewTab[$index] === '1',
+        ];
+    }
+    $next['main_menu'] = $mainMenu;
 
     $schemes = ['copper', 'gold', 'emerald', 'sapphire', 'crimson', 'custom'];
     $scheme = (string)($_POST['theme_scheme'] ?? 'copper');
@@ -193,9 +219,69 @@ admin_header('Настройки', 'settings');
       </div>
     </details>
 
-    <details class="settings-section" data-settings-section="colors">
+    <details class="settings-section" data-settings-section="menu">
       <summary>
         <span class="settings-index">03</span>
+        <span class="settings-summary-copy"><strong>Главное меню</strong><small>Добавление, удаление, порядок и ссылки пунктов меню</small></span>
+        <span class="settings-chevron">⌄</span>
+      </summary>
+      <div class="settings-section-body">
+        <div class="menu-settings-head">
+          <div>
+            <strong>Пункты главного меню</strong>
+            <p>Меню выводится в шапке сайта на компьютере и телефоне. Можно менять название, ссылку, порядок и видимость.</p>
+          </div>
+          <button class="btn secondary menu-add-btn" type="button" data-menu-add>+ Добавить пункт</button>
+        </div>
+
+        <div class="menu-editor" data-menu-editor>
+          <?php foreach (($settings['main_menu'] ?? []) as $menuIndex => $menuItem): ?>
+            <article class="menu-editor-row" data-menu-row>
+              <span class="menu-drag" title="Порядок">⋮⋮</span>
+              <div class="field menu-name-field">
+                <label>Название</label>
+                <input name="menu_label[<?= (int)$menuIndex ?>]" maxlength="50" value="<?= e((string)($menuItem['label'] ?? '')) ?>" placeholder="Например: Портфолио">
+              </div>
+              <div class="field menu-url-field">
+                <label>Ссылка</label>
+                <input name="menu_url[<?= (int)$menuIndex ?>]" maxlength="300" value="<?= e((string)($menuItem['url'] ?? '#')) ?>" placeholder="/portfolio.php или https://...">
+              </div>
+              <div class="menu-row-options">
+                <label class="menu-check"><input type="checkbox" name="menu_visible[<?= (int)$menuIndex ?>]" value="1" <?= !array_key_exists('visible', $menuItem) || !empty($menuItem['visible']) ? 'checked' : '' ?>><span>Показывать</span></label>
+                <label class="menu-check"><input type="checkbox" name="menu_new_tab[<?= (int)$menuIndex ?>]" value="1" <?= !empty($menuItem['new_tab']) ? 'checked' : '' ?>><span>Новая вкладка</span></label>
+              </div>
+              <div class="menu-row-actions">
+                <button type="button" class="menu-order-btn" data-menu-up title="Выше">↑</button>
+                <button type="button" class="menu-order-btn" data-menu-down title="Ниже">↓</button>
+                <button type="button" class="menu-delete-btn" data-menu-delete title="Удалить">×</button>
+              </div>
+            </article>
+          <?php endforeach; ?>
+        </div>
+
+        <template id="menu-row-template">
+          <article class="menu-editor-row" data-menu-row>
+            <span class="menu-drag" title="Порядок">⋮⋮</span>
+            <div class="field menu-name-field"><label>Название</label><input data-menu-field="label" maxlength="50" placeholder="Новый пункт"></div>
+            <div class="field menu-url-field"><label>Ссылка</label><input data-menu-field="url" maxlength="300" value="#" placeholder="/page.php или https://..."></div>
+            <div class="menu-row-options">
+              <label class="menu-check"><input type="checkbox" data-menu-field="visible" value="1" checked><span>Показывать</span></label>
+              <label class="menu-check"><input type="checkbox" data-menu-field="new_tab" value="1"><span>Новая вкладка</span></label>
+            </div>
+            <div class="menu-row-actions">
+              <button type="button" class="menu-order-btn" data-menu-up title="Выше">↑</button>
+              <button type="button" class="menu-order-btn" data-menu-down title="Ниже">↓</button>
+              <button type="button" class="menu-delete-btn" data-menu-delete title="Удалить">×</button>
+            </div>
+          </article>
+        </template>
+        <p class="settings-note">До 12 пунктов. Внутренние ссылки можно указывать как <code>/audio.php</code> или <code>/#contacts</code>. Для внешних ссылок используйте полный адрес с https://.</p>
+      </div>
+    </details>
+
+    <details class="settings-section" data-settings-section="colors">
+      <summary>
+        <span class="settings-index">04</span>
         <span class="settings-summary-copy"><strong>Цветовые схемы</strong><small>Готовые варианты и точная ручная настройка цветов</small></span>
         <span class="settings-chevron">⌄</span>
       </summary>
@@ -236,7 +322,7 @@ admin_header('Настройки', 'settings');
 
     <details class="settings-section" data-settings-section="logos">
       <summary>
-        <span class="settings-index">04</span>
+        <span class="settings-index">05</span>
         <span class="settings-summary-copy"><strong>Логотипы</strong><small>Главная страница, светлая версия, админка и favicon</small></span>
         <span class="settings-chevron">⌄</span>
       </summary>

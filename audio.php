@@ -18,6 +18,13 @@ $defaults = [
     'logo_light' => '/assets/img/logo-horizontal.svg',
     'logo_admin' => '/assets/img/logo-horizontal-dark.svg',
     'logo_mark' => '/assets/img/logo-mark-square.svg',
+    'main_menu' => [
+        ['label' => 'Главная', 'url' => '/#top', 'visible' => true, 'new_tab' => false],
+        ['label' => 'Блог', 'url' => '/#about', 'visible' => true, 'new_tab' => false],
+        ['label' => 'Наши аудио', 'url' => '/audio.php', 'visible' => true, 'new_tab' => false],
+        ['label' => 'Скрипты', 'url' => '/#services', 'visible' => true, 'new_tab' => false],
+        ['label' => 'О студии', 'url' => '/#about', 'visible' => true, 'new_tab' => false],
+    ],
 ];
 $settings = $defaults;
 $settingsFile = __DIR__ . '/storage/settings.json';
@@ -37,6 +44,12 @@ function audio_asset(string $value, string $fallback): string {
     if ($value === '' || str_contains($value, '..') || !str_starts_with($value, '/')) return $fallback;
     if (!str_starts_with($value, '/assets/') && !str_starts_with($value, '/uploads/branding/')) return $fallback;
     return $value;
+}
+function audio_menu_url(string $value): string {
+    $value = trim($value);
+    if (str_starts_with($value, '/') || str_starts_with($value, '#')) return $value;
+    if (preg_match('#^https?://#i', $value)) return $value;
+    return '#';
 }
 $themeAccent = audio_hex((string)$settings['theme_accent'], '#c96f41');
 $themeBg = audio_hex((string)$settings['theme_bg'], '#050505');
@@ -94,11 +107,17 @@ if (is_file($audioFile)) {
     <a class="brand" href="/" aria-label="DAG STUDIO — главная"><img src="<?= h_audio($logoDark) ?>" alt="DAG STUDIO"></a>
     <button class="menu-toggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span></span><span></span><span></span></button>
     <nav class="main-nav" aria-label="Главная навигация">
-      <a href="/">Главная</a>
-      <a href="/#about">Блог</a>
-      <a class="active" href="/audio.php">Наши аудио</a>
-      <a href="/#services">Скрипты</a>
-      <a href="/#about">О студии</a>
+      <?php foreach (($settings['main_menu'] ?? []) as $menuItem):
+        if (!is_array($menuItem) || empty($menuItem['visible'])) continue;
+        $menuUrl = audio_menu_url((string)($menuItem['url'] ?? '#'));
+        if (!$audioPluginEnabled && parse_url($menuUrl, PHP_URL_PATH) === '/audio.php') continue;
+        $menuLabel = trim((string)($menuItem['label'] ?? ''));
+        if ($menuLabel === '') continue;
+        $newTab = !empty($menuItem['new_tab']);
+        $isActive = parse_url($menuUrl, PHP_URL_PATH) === '/audio.php';
+      ?>
+        <a<?= $isActive ? ' class="active"' : '' ?> href="<?= h_audio($menuUrl) ?>"<?= $newTab ? ' target="_blank" rel="noopener"' : '' ?>><?= h_audio($menuLabel) ?></a>
+      <?php endforeach; ?>
     </nav>
     <a class="login-btn" href="/admin/">Вход</a>
   </div>
