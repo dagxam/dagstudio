@@ -53,7 +53,7 @@ if (is_file($audioFile)) {
 <body>
 <header class="site-header" id="top">
   <div class="container header-inner">
-    <a class="brand" href="/" aria-label="DAG STUDIO — главная"><img src="/assets/img/logo-horizontal.svg" alt="DAG STUDIO"></a>
+    <a class="brand" href="/" aria-label="DAG STUDIO — главная"><img src="/assets/img/logo-horizontal-dark.svg" alt="DAG STUDIO"></a>
     <button class="menu-toggle" type="button" aria-label="Открыть меню" aria-expanded="false"><span></span><span></span><span></span></button>
     <nav class="main-nav" aria-label="Главная навигация">
       <a href="/">Главная</a>
@@ -139,7 +139,7 @@ if (is_file($audioFile)) {
 
 <footer class="site-footer">
   <div class="container footer-grid">
-    <div class="footer-brand"><img src="/assets/img/logo-horizontal.svg" alt="DAG STUDIO"><p>Digital-ателье.<br>Шьем сайты по лекалам высоких технологий.</p></div>
+    <div class="footer-brand"><img src="/assets/img/logo-horizontal-dark.svg" alt="DAG STUDIO"><p>Digital-ателье.<br>Шьем сайты по лекалам высоких технологий.</p></div>
     <div class="footer-col"><h4>Навигация</h4><a href="/">Главная</a><a href="/#services">Услуги</a><a href="/audio.php">Наши аудио</a><a href="/#contacts">Контакты</a></div>
     <div class="footer-col"><h4>Контакты</h4><p><?= nl2br(h_audio((string)$settings['location'])) ?></p>
       <?php if ($settings['telegram'] !== ''): ?><a href="<?= h_audio((string)$settings['telegram']) ?>" target="_blank" rel="noopener">Telegram</a><?php endif; ?>

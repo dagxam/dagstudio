@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body class="login-body">
   <section class="login-card">
-    <img class="login-logo" src="/assets/img/logo-horizontal.svg" alt="DAG STUDIO">
+    <img class="login-logo" src="/assets/img/logo-horizontal-dark.svg" alt="DAG STUDIO">
     <h1>Вход в админку</h1>
     <p>Доступ подтверждается одноразовым кодом, который отправляется на административную почту сайта.</p>
 

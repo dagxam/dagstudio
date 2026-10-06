@@ -22,7 +22,7 @@ function admin_header(string $title, string $active = ''): void {
 <div class="admin-shell">
   <aside class="admin-sidebar" id="adminSidebar">
     <a class="admin-brand" href="/admin/">
-      <img src="/assets/img/logo-horizontal.svg" alt="DAG STUDIO">
+      <img src="/assets/img/logo-horizontal-dark.svg" alt="DAG STUDIO">
     </a>
     <nav class="admin-nav">
       <a class="<?= $active === 'dashboard' ? 'active' : '' ?>" href="/admin/"><span>◫</span>Обзор</a>
