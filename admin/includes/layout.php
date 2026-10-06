@@ -67,6 +67,7 @@ function admin_footer(): void {
   </div>
 </div>
 <script src="/admin/assets/admin.js"></script>
+<script src="/assets/js/audio-player.js"></script>
 </body>
 </html>
     <?php

@@ -227,7 +227,7 @@ admin_header('Аудио', 'audio');
             </div>
             <span class="badge <?= $published ? 'on' : 'off' ?>"><?= $published ? 'Опубликовано' : 'Скрыто' ?></span>
           </div>
-          <audio controls preload="metadata" src="<?= e($url) ?>"></audio>
+          <div class="ds-audio-player ds-audio-player--compact"><audio controls preload="metadata" src="<?= e($url) ?>"></audio></div>
           <div class="audio-row-meta">
             <span><?= e(number_format(((int)($item['size'] ?? 0)) / 1048576, 1, ',', ' ')) ?> МБ</span>
             <span><?= e((string)($item['original_name'] ?? '')) ?></span>

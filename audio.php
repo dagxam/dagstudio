@@ -114,9 +114,7 @@ if (is_file($audioFile)) {
                   <span class="audio-disc" aria-hidden="true">♫</span>
                 </div>
                 <?php if (!empty($item['description'])): ?><p class="public-audio-description"><?= nl2br(h_audio((string)$item['description'])) ?></p><?php endif; ?>
-                <div class="public-player">
-                  <audio controls preload="metadata" src="<?= h_audio($url) ?>"></audio>
-                </div>
+                <div class="ds-audio-player public-player"><audio controls preload="metadata" src="<?= h_audio($url) ?>"></audio></div>
                 <div class="public-audio-meta">
                   <?php if ($size > 0): ?><span><?= h_audio(number_format($size / 1048576, 1, ',', ' ')) ?> МБ</span><?php endif; ?>
                   <?php if (!empty($item['uploaded_at'])): ?><span><?= h_audio(date('d.m.Y', strtotime((string)$item['uploaded_at']))) ?></span><?php endif; ?>
@@ -151,6 +149,6 @@ if (is_file($audioFile)) {
 </footer>
 
 <script src="/assets/js/main.js"></script>
-<script src="/assets/js/audio.js"></script>
+<script src="/assets/js/audio-player.js"></script>
 </body>
 </html>
