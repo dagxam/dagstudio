@@ -7,7 +7,7 @@ if (admin_is_authenticated()) {
 }
 
 $settings = site_settings();
-$adminEmail = strtolower(trim((string)$settings['email']));
+$adminEmail = strtolower(trim((string)($settings['admin_email'] ?? 'admin@dagstudio.ru')));
 $error = '';
 $stage = !empty($_SESSION['otp_hash']) ? 'verify' : 'request';
 
