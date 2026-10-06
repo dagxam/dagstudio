@@ -17,13 +17,27 @@ $markLogo = setting_asset($settings, 'logo_mark', '/assets/img/logo-mark-square.
 $error = '';
 $stage = !empty($_SESSION['otp_hash']) ? 'verify' : 'request';
 
+function login_mask_email(string $email): string {
+    [$local, $domain] = array_pad(explode('@', $email, 2), 2, '');
+    if ($local === '' || $domain === '') return '••••••';
+    $visible = mb_substr($local, 0, min(2, mb_strlen($local)));
+    return $visible . str_repeat('•', max(4, mb_strlen($local) - mb_strlen($visible))) . '@' . $domain;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verify();
     $action = (string)($_POST['action'] ?? '');
 
     if ($action === 'send') {
         $last = (int)($_SESSION['otp_sent_at'] ?? 0);
-        if ($last > 0 && time() - $last < 60) {
+        $ipAllowed = ds_rate_limit(DS_ROOT, 'admin_otp_send_ip', 5, 900, 'send', true);
+        $globalAllowed = ds_rate_limit(DS_ROOT, 'admin_otp_send_global', 30, 3600, $adminEmail, false);
+
+        if (!$ipAllowed || !$globalAllowed) {
+            http_response_code(429);
+            ds_security_log(DS_ROOT, 'auth.otp_rate_limited');
+            $error = 'Слишком много запросов кода. Попробуйте позже.';
+        } elseif ($last > 0 && time() - $last < 60) {
             $error = 'Подождите минуту перед повторной отправкой кода.';
         } else {
             $code = (string)random_int(100000, 999999);
@@ -43,7 +57,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 audit_log('auth.code_sent');
                 $stage = 'verify';
             } else {
-                unset($_SESSION['otp_hash'], $_SESSION['otp_expires'], $_SESSION['otp_attempts']);
+                unset($_SESSION['otp_hash'], $_SESSION['otp_expires'], $_SESSION['otp_attempts'], $_SESSION['otp_sent_at']);
+                ds_security_log(DS_ROOT, 'auth.otp_mail_failed');
                 $error = 'Сервер не смог отправить код на почту. Проверьте почтовую функцию хостинга.';
                 $stage = 'request';
             }
@@ -52,11 +67,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($action === 'verify') {
         $stage = 'verify';
+
+        if (!ds_rate_limit(DS_ROOT, 'admin_otp_verify_ip', 15, 900, 'verify', true)) {
+            http_response_code(429);
+            ds_security_log(DS_ROOT, 'auth.verify_rate_limited');
+            $error = 'Слишком много попыток входа. Попробуйте позже.';
+        }
+
         $expires = (int)($_SESSION['otp_expires'] ?? 0);
         $attempts = (int)($_SESSION['otp_attempts'] ?? 0);
         $code = preg_replace('/\D+/', '', (string)($_POST['code'] ?? ''));
 
-        if ($expires < time()) {
+        if ($error !== '') {
+            // Persistent rate limit already blocked this attempt.
+        } elseif ($expires < time()) {
             $error = 'Код истёк. Запросите новый.';
             unset($_SESSION['otp_hash'], $_SESSION['otp_expires'], $_SESSION['otp_attempts']);
             $stage = 'request';
@@ -66,11 +90,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stage = 'request';
         } elseif (strlen($code) !== 6 || empty($_SESSION['otp_hash']) || !password_verify($code, (string)$_SESSION['otp_hash'])) {
             $_SESSION['otp_attempts'] = $attempts + 1;
+            ds_security_log(DS_ROOT, 'auth.invalid_otp', ['attempt' => (string)($attempts + 1)]);
             $error = 'Неверный код.';
         } else {
             session_regenerate_id(true);
+            $now = time();
             $_SESSION['admin_authenticated'] = true;
-            $_SESSION['admin_login_at'] = time();
+            $_SESSION['admin_login_at'] = $now;
+            $_SESSION['admin_session_started'] = $now;
+            $_SESSION['admin_last_activity'] = $now;
+            $_SESSION['admin_session_rotated'] = $now;
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
             unset($_SESSION['otp_hash'], $_SESSION['otp_expires'], $_SESSION['otp_attempts'], $_SESSION['otp_sent_at']);
             audit_log('auth.login');
             $target = (string)($_SESSION['after_login'] ?? '/admin/');
@@ -81,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($action === 'reset') {
-        unset($_SESSION['otp_hash'], $_SESSION['otp_expires'], $_SESSION['otp_attempts']);
+        unset($_SESSION['otp_hash'], $_SESSION['otp_expires'], $_SESSION['otp_attempts'], $_SESSION['otp_sent_at']);
         $stage = 'request';
     }
 }
@@ -111,7 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="hidden" name="action" value="send">
         <div class="field">
           <label>Административная почта</label>
-          <input type="email" value="<?= e($adminEmail) ?>" readonly>
+          <input type="text" value="<?= e(login_mask_email($adminEmail)) ?>" readonly aria-label="Скрытый адрес административной почты">
         </div>
         <button class="btn" type="submit">Получить код</button>
       </form>

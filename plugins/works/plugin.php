@@ -1,6 +1,11 @@
 <?php
 declare(strict_types=1);
 
+if (!defined('DS_ROOT')) {
+    http_response_code(404);
+    exit;
+}
+
 require_once DS_ROOT . '/includes/works-data.php';
 
 if (!function_exists('ds_work_clean')) {

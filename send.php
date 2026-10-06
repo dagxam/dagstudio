@@ -1,9 +1,25 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/includes/security.php';
+ds_public_security_headers();
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: /');
+    header('Location: /', true, 303);
     exit;
+}
+
+if (!ds_same_origin_request()) {
+    ds_security_log(__DIR__, 'form.cross_origin_blocked');
+    http_response_code(403);
+    exit('Запрос отклонён.');
+}
+
+if ((int)($_SERVER['CONTENT_LENGTH'] ?? 0) > 32768) {
+    ds_security_log(__DIR__, 'form.body_too_large');
+    http_response_code(413);
+    exit('Слишком большой запрос.');
 }
 
 function clean_line(string $value, int $max): string {
@@ -27,7 +43,8 @@ $source = in_array($source, ['contact', 'modal'], true) ? $source : 'contact';
 $anchor = $source === 'contact' ? '#contacts' : '#top';
 
 if (!empty($_POST['website'] ?? '')) {
-    header('Location: /?sent=1&source=' . rawurlencode($source) . $anchor);
+    ds_security_log(__DIR__, 'form.honeypot');
+    header('Location: /?sent=1&source=' . rawurlencode($source) . $anchor, true, 303);
     exit;
 }
 
@@ -36,8 +53,20 @@ $phone = clean_line((string)($_POST['phone'] ?? ''), 40);
 $email = strtolower(clean_line((string)($_POST['email'] ?? ''), 120));
 $message = clean_text((string)($_POST['message'] ?? ''), 2000);
 
-if ($name === '' || $phone === '' || $message === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    header('Location: /?sent=0&source=' . rawurlencode($source) . $anchor);
+$phoneDigits = preg_replace('/\D+/', '', $phone) ?? '';
+
+if ($name === '' || mb_strlen($name) < 2 || strlen($phoneDigits) < 6 || $message === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    ds_security_log(__DIR__, 'form.invalid_input');
+    header('Location: /?sent=0&source=' . rawurlencode($source) . $anchor, true, 303);
+    exit;
+}
+
+$shortWindow = ds_rate_limit(__DIR__, 'contact_form_short', 5, 900, 'contact', true);
+$hourWindow = ds_rate_limit(__DIR__, 'contact_form_hour', 20, 3600, 'contact', true);
+$globalWindow = ds_rate_limit(__DIR__, 'contact_form_global', 60, 3600, 'contact', false);
+if (!$shortWindow || !$hourWindow || !$globalWindow) {
+    ds_security_log(__DIR__, 'form.rate_limited');
+    header('Location: /?sent=0&source=' . rawurlencode($source) . $anchor, true, 303);
     exit;
 }
 
@@ -133,5 +162,6 @@ $headers = [
 $encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
 $ok = @mail($to, $encodedSubject, $html, implode("\r\n", $headers));
 
-header('Location: /?sent=' . ($ok ? '1' : '0') . '&source=' . rawurlencode($source) . $anchor);
+ds_security_log(__DIR__, $ok ? 'form.mail_sent' : 'form.mail_failed', ['source' => $source]);
+header('Location: /?sent=' . ($ok ? '1' : '0') . '&source=' . rawurlencode($source) . $anchor, true, 303);
 exit;

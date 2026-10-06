@@ -1,3 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /storage/
+Disallow: /plugins/
+Disallow: /includes/
 Sitemap: https://dagstudio.ru/sitemap.xml

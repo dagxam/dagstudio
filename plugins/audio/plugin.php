@@ -1,6 +1,11 @@
 <?php
 declare(strict_types=1);
 
+if (!defined('DS_ROOT')) {
+    http_response_code(404);
+    exit;
+}
+
 if (!function_exists('ds_audio_dir')) {
     function ds_audio_dir(): string {
         $dir = DS_ROOT . '/uploads/audio';

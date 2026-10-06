@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/includes/security.php';
+ds_public_security_headers();
+
 require __DIR__ . '/includes/works-data.php';
 
 $defaults = [
@@ -31,6 +34,13 @@ if (is_file($settingsFile)) {
     $raw = @file_get_contents($settingsFile);
     $decoded = $raw !== false ? json_decode($raw, true) : null;
     if (is_array($decoded)) $settings = array_merge($settings, $decoded);
+}
+
+foreach (['telegram', 'whatsapp', 'behance'] as $socialKey) {
+    $socialValue = trim((string)($settings[$socialKey] ?? ''));
+    if ($socialValue !== '' && (!filter_var($socialValue, FILTER_VALIDATE_URL) || !preg_match('#^https://#i', $socialValue))) {
+        $settings[$socialKey] = '';
+    }
 }
 
 function h_works(string $value): string {

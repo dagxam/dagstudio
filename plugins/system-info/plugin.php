@@ -1,6 +1,11 @@
 <?php
 declare(strict_types=1);
 
+if (!defined('DS_ROOT')) {
+    http_response_code(404);
+    exit;
+}
+
 return [
     'id' => 'system-info',
     'name' => 'Состояние системы',

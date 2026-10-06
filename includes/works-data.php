@@ -1,6 +1,11 @@
 <?php
 declare(strict_types=1);
 
+if (realpath((string)($_SERVER['SCRIPT_FILENAME'] ?? '')) === __FILE__) {
+    http_response_code(404);
+    exit;
+}
+
 if (!function_exists('ds_works_defaults')) {
     function ds_works_defaults(): array {
         return [

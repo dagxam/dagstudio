@@ -1,30 +1,41 @@
 <?php
 declare(strict_types=1);
 
+if (realpath((string)($_SERVER['SCRIPT_FILENAME'] ?? '')) === __FILE__) {
+    http_response_code(404);
+    exit;
+}
+
 define('DS_ROOT', dirname(__DIR__, 2));
 define('DS_STORAGE', DS_ROOT . '/storage');
 define('DS_PLUGINS', DS_ROOT . '/plugins');
+require_once DS_ROOT . '/includes/security.php';
 
 if (!is_dir(DS_STORAGE)) {
-    @mkdir(DS_STORAGE, 0755, true);
+    @mkdir(DS_STORAGE, 0750, true);
 }
+@chmod(DS_STORAGE, 0750);
 
+ini_set('display_errors', '0');
+ini_set('display_startup_errors', '0');
+ini_set('log_errors', '1');
 ini_set('session.use_strict_mode', '1');
 ini_set('session.use_only_cookies', '1');
 session_name('dagstudio_admin');
 session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/admin',
-    'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+    'secure' => ds_is_https(),
     'httponly' => true,
     'samesite' => 'Strict',
 ]);
 session_start();
 
-header('X-Content-Type-Options: nosniff');
-header('X-Frame-Options: SAMEORIGIN');
-header('Referrer-Policy: same-origin');
-header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
+ds_admin_security_headers();
+
+const DS_ADMIN_IDLE_TIMEOUT = 1800;
+const DS_ADMIN_ABSOLUTE_TIMEOUT = 28800;
+const DS_ADMIN_ROTATE_INTERVAL = 900;
 
 function e(string $value): string {
     return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
@@ -36,7 +47,26 @@ function admin_redirect(string $path): never {
 }
 
 function admin_is_authenticated(): bool {
-    return !empty($_SESSION['admin_authenticated']);
+    if (empty($_SESSION['admin_authenticated'])) return false;
+
+    $now = time();
+    $started = (int)($_SESSION['admin_session_started'] ?? $_SESSION['admin_login_at'] ?? 0);
+    $last = (int)($_SESSION['admin_last_activity'] ?? $started);
+
+    if ($started <= 0 || $now - $started > DS_ADMIN_ABSOLUTE_TIMEOUT || ($last > 0 && $now - $last > DS_ADMIN_IDLE_TIMEOUT)) {
+        $_SESSION = [];
+        if (session_status() === PHP_SESSION_ACTIVE) @session_regenerate_id(true);
+        return false;
+    }
+
+    $rotated = (int)($_SESSION['admin_session_rotated'] ?? $started);
+    if ($rotated <= 0 || $now - $rotated > DS_ADMIN_ROTATE_INTERVAL) {
+        @session_regenerate_id(true);
+        $_SESSION['admin_session_rotated'] = $now;
+    }
+
+    $_SESSION['admin_last_activity'] = $now;
+    return true;
 }
 
 function admin_require_auth(): void {
@@ -58,8 +88,15 @@ function csrf_field(): string {
 }
 
 function csrf_verify(): void {
+    if (!ds_same_origin_request()) {
+        ds_security_log(DS_ROOT, 'csrf.cross_origin_blocked', ['path' => (string)($_SERVER['REQUEST_URI'] ?? '')]);
+        http_response_code(403);
+        exit('Запрос отклонён.');
+    }
+
     $posted = (string)($_POST['csrf_token'] ?? '');
     if ($posted === '' || !hash_equals(csrf_token(), $posted)) {
+        ds_security_log(DS_ROOT, 'csrf.invalid', ['path' => (string)($_SERVER['REQUEST_URI'] ?? '')]);
         http_response_code(419);
         exit('Сессия устарела. Обновите страницу и повторите действие.');
     }
@@ -98,6 +135,7 @@ function audit_log(string $action, array $context = []): void {
     $record = [
         'time' => gmdate('c'),
         'action' => $action,
+        'ip_hash' => ds_ip_hash(),
         'context' => $context,
     ];
     $line = json_encode($record, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

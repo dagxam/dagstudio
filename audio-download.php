@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/includes/security.php';
+ds_public_security_headers();
+
 $enabled = true;
 $stateFile = __DIR__ . '/storage/plugins.json';
 if (is_file($stateFile)) {

@@ -1,13 +1,47 @@
 Options -Indexes
 DirectoryIndex index.php index.html
 
-<IfModule mod_headers.c>
-  Header always set X-Content-Type-Options "nosniff"
-  Header always set X-Frame-Options "SAMEORIGIN"
-  Header always set Referrer-Policy "strict-origin-when-cross-origin"
-  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Canonical HTTPS for the production host.
+  RewriteCond %{HTTP_HOST} ^www\.dagstudio\.ru$ [NC]
+  RewriteRule ^ https://dagstudio.ru%{REQUEST_URI} [R=301,L,NE]
+
+  RewriteCond %{HTTP_HOST} ^dagstudio\.ru$ [NC]
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !^https$ [NC]
+  RewriteRule ^ https://dagstudio.ru%{REQUEST_URI} [R=301,L,NE]
+
+  # Disable legacy HTTP methods commonly used for probing.
+  RewriteCond %{REQUEST_METHOD} ^(?:TRACE|TRACK)$ [NC]
+  RewriteRule ^ - [R=405,L]
+
+  # Never expose internal application directories directly.
+  RewriteRule ^(?:storage|plugins|includes|admin/includes|\.github)(?:/|$) - [F,L,NC]
+  RewriteRule "(^|/)\.(?!well-known(?:/|$))" - [F,L]
 </IfModule>
 
-<FilesMatch "(^\.|composer\.(json|lock)$|package(-lock)?\.json$)">
-  Require all denied
-</FilesMatch>
+<IfModule mod_headers.c>
+  Header always set Strict-Transport-Security "max-age=31536000"
+  Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; media-src 'self' blob:; connect-src 'self'; frame-src https://yandex.ru https://*.yandex.ru; manifest-src 'self'; worker-src 'self';"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "accelerometer=(), autoplay=(self), camera=(), display-capture=(), encrypted-media=(), fullscreen=(self), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), picture-in-picture=(), publickey-credentials-get=(self), usb=()"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  Header always set Cross-Origin-Resource-Policy "same-origin"
+  Header always set X-Permitted-Cross-Domain-Policies "none"
+  Header always unset X-Powered-By
+</IfModule>
+
+<IfModule mod_authz_core.c>
+  <FilesMatch "(^\.|composer\.(json|lock)$|package(-lock)?\.json$|.*\.(?:bak|backup|conf|dist|ini|log|sql|sqlite|sqlite3|yml|yaml|sh|md)$)">
+    Require all denied
+  </FilesMatch>
+</IfModule>
+<IfModule !mod_authz_core.c>
+  <FilesMatch "(^\.|composer\.(json|lock)$|package(-lock)?\.json$|.*\.(?:bak|backup|conf|dist|ini|log|sql|sqlite|sqlite3|yml|yaml|sh|md)$)">
+    Deny from all
+  </FilesMatch>
+</IfModule>

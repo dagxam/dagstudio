@@ -1,6 +1,11 @@
 <?php
 declare(strict_types=1);
 
+if (!defined('DS_ROOT')) {
+    http_response_code(404);
+    exit;
+}
+
 if (!function_exists('ds_pages_items')) {
     function ds_pages_items(): array {
         $data = storage_read_json('pages.json', ['items' => []]);

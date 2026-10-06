@@ -39,6 +39,14 @@ function settings_menu_url(string $value): string {
     return '#';
 }
 
+function settings_external_url(string $value): string {
+    $value = trim($value);
+    if ($value === '') return '';
+    if (!filter_var($value, FILTER_VALIDATE_URL)) return '';
+    if (!preg_match('#^https://#i', $value)) return '';
+    return mb_substr($value, 0, 250);
+}
+
 function settings_custom_logo_path(string $path): ?string {
     if (!str_starts_with($path, '/uploads/branding/')) return null;
     $name = basename($path);
@@ -100,9 +108,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $next['admin_email'] = mb_substr(trim((string)($_POST['admin_email'] ?? '')), 0, 120);
     $next['phone'] = mb_substr(trim((string)($_POST['phone'] ?? '')), 0, 60);
     $next['location'] = mb_substr(trim((string)($_POST['location'] ?? '')), 0, 250);
-    $next['telegram'] = mb_substr(trim((string)($_POST['telegram'] ?? '')), 0, 250);
-    $next['whatsapp'] = mb_substr(trim((string)($_POST['whatsapp'] ?? '')), 0, 250);
-    $next['behance'] = mb_substr(trim((string)($_POST['behance'] ?? '')), 0, 250);
+    $rawTelegram = trim((string)($_POST['telegram'] ?? ''));
+    $rawWhatsapp = trim((string)($_POST['whatsapp'] ?? ''));
+    $rawBehance = trim((string)($_POST['behance'] ?? ''));
+    $next['telegram'] = settings_external_url($rawTelegram);
+    $next['whatsapp'] = settings_external_url($rawWhatsapp);
+    $next['behance'] = settings_external_url($rawBehance);
 
     $menuLabels = is_array($_POST['menu_label'] ?? null) ? $_POST['menu_label'] : [];
     $menuUrls = is_array($_POST['menu_url'] ?? null) ? $_POST['menu_url'] : [];
@@ -134,6 +145,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($next['site_name'] === '') $errors[] = 'Укажите название сайта.';
     if (!filter_var($next['email'], FILTER_VALIDATE_EMAIL)) $errors[] = 'Укажите корректный публичный email.';
     if (!filter_var($next['admin_email'], FILTER_VALIDATE_EMAIL)) $errors[] = 'Укажите корректный email администратора.';
+    if ($rawTelegram !== '' && $next['telegram'] === '') $errors[] = 'Telegram должен быть корректной HTTPS-ссылкой.';
+    if ($rawWhatsapp !== '' && $next['whatsapp'] === '') $errors[] = 'WhatsApp должен быть корректной HTTPS-ссылкой.';
+    if ($rawBehance !== '' && $next['behance'] === '') $errors[] = 'Behance должен быть корректной HTTPS-ссылкой.';
 
     $newFiles = [];
     $oldFilesToDelete = [];

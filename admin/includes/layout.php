@@ -1,6 +1,11 @@
 <?php
 declare(strict_types=1);
 
+if (realpath((string)($_SERVER['SCRIPT_FILENAME'] ?? '')) === __FILE__) {
+    http_response_code(404);
+    exit;
+}
+
 function admin_header(string $title, string $active = ''): void {
     $settings = site_settings();
     $flashes = take_flashes();

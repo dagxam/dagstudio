@@ -5,7 +5,14 @@ if (admin_is_authenticated()) audit_log('auth.logout');
 $_SESSION = [];
 if (ini_get('session.use_cookies')) {
     $p = session_get_cookie_params();
-    setcookie(session_name(), '', time() - 42000, $p['path'], $p['domain'] ?? '', (bool)$p['secure'], (bool)$p['httponly']);
+    setcookie(session_name(), '', [
+        'expires' => time() - 42000,
+        'path' => (string)($p['path'] ?? '/admin'),
+        'domain' => (string)($p['domain'] ?? ''),
+        'secure' => (bool)($p['secure'] ?? ds_is_https()),
+        'httponly' => true,
+        'samesite' => 'Strict',
+    ]);
 }
 session_destroy();
 header('Location: /admin/login.php');

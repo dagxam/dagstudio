@@ -1,0 +1,4 @@
+Contact: mailto:admin@dagstudio.ru
+Canonical: https://dagstudio.ru/.well-known/security.txt
+Preferred-Languages: ru, en
+Expires: 2027-10-06T00:00:00Z

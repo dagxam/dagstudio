@@ -1,6 +1,11 @@
 <?php
 declare(strict_types=1);
 
+if (realpath((string)($_SERVER['SCRIPT_FILENAME'] ?? '')) === __FILE__) {
+    http_response_code(404);
+    exit;
+}
+
 if (!function_exists('ds_bbcode_render')) {
     function ds_bbcode_safe_url(string $url): ?string {
         $url = trim(html_entity_decode($url, ENT_QUOTES | ENT_HTML5, 'UTF-8'));

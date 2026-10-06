@@ -1,5 +1,8 @@
 <?php
 declare(strict_types=1);
+
+require_once __DIR__ . '/includes/security.php';
+ds_public_security_headers();
 $defaults = [
     'site_name' => 'DAG STUDIO',
     'email' => 'admin@dagstudio.ru',
@@ -32,6 +35,13 @@ if (is_file($settingsFile)) {
     $decoded = $raw !== false ? json_decode($raw, true) : null;
     if (is_array($decoded)) $settings = array_merge($settings, $decoded);
 }
+foreach (['telegram', 'whatsapp', 'behance'] as $socialKey) {
+    $socialValue = trim((string)($settings[$socialKey] ?? ''));
+    if ($socialValue !== '' && (!filter_var($socialValue, FILTER_VALIDATE_URL) || !preg_match('#^https://#i', $socialValue))) {
+        $settings[$socialKey] = '';
+    }
+}
+
 function h(string $value): string {
     return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }

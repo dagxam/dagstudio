@@ -9,11 +9,21 @@ on:
       - ".github/workflows/php-lint.yml"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
       - name: Check PHP syntax
+        shell: bash
         run: |
+          set -euo pipefail
           find . -type f -name "*.php" -print0 | xargs -0 -n1 php -l
