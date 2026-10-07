@@ -161,9 +161,9 @@ $publicFormToken = $requestsPluginEnabled ? ds_form_token(__DIR__, 'contact') : 
             <?php if ($requestsPluginEnabled): ?><button class="btn btn-outline" type="button" data-order-open>Заказать услуги</button><?php endif; ?>
           </div>
         </div>
-        <div class="hero-art reveal" aria-hidden="true">
-          <div class="hero-glow"></div>
-          <img src="<?= h($logoMark) ?>" alt="">
+        <div class="hero-art reveal">
+          <div class="hero-glow" aria-hidden="true"></div>
+          <img class="hero-ornament" src="/assets/img/hero-ornament.svg" alt="Дагестанский орнамент DAG STUDIO">
         </div>
       </div>
     </section>

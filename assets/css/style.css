@@ -333,3 +333,36 @@ button,.btn,.login-btn,.menu-toggle{touch-action:manipulation}
 
 /* Keep portfolio screenshots filling their browser frame. */
 .work-preview-image{height:100%}
+
+
+/* Hero ornament from the supplied DAG pattern */
+.hero-art{perspective:1000px}
+.hero-art .hero-ornament{
+  width:min(88%,560px);
+  max-height:590px;
+  object-fit:contain;
+  transform:rotate(0deg);
+  transform-origin:50% 50%;
+  transition:transform 1.15s cubic-bezier(.22,.75,.22,1),filter .35s ease;
+  filter:drop-shadow(0 24px 42px rgba(0,0,0,.48));
+  will-change:transform;
+}
+@media(hover:hover) and (pointer:fine){
+  .hero-art:hover .hero-ornament{
+    transform:rotate(360deg);
+    filter:drop-shadow(0 28px 48px color-mix(in srgb,var(--accent) 18%,rgba(0,0,0,.55)));
+  }
+}
+@media(max-width:1024px){
+  .hero-art .hero-ornament{width:min(76%,470px);max-height:500px}
+}
+@media(max-width:768px){
+  .hero-art .hero-ornament{width:min(70vw,390px);max-height:410px}
+}
+@media(max-width:520px){
+  .hero-art .hero-ornament{width:min(76vw,330px);max-height:350px}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-art .hero-ornament{transition:none}
+  .hero-art:hover .hero-ornament{transform:none}
+}
