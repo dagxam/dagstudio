@@ -52,6 +52,7 @@ admin_header('Обзор', 'dashboard');
       <?php if (isset($plugins['audio']) && plugin_enabled($plugins['audio'], $states)): ?><a href="/admin/plugin.php?id=audio"><strong>Аудио</strong><span>Загружать, редактировать и публиковать треки</span></a><?php endif; ?>
       <a href="/admin/plugins.php"><strong>Функции и плагины</strong><span>Включать и отключать установленные модули</span></a>
       <a href="/admin/settings.php"><strong>Настройки сайта</strong><span>Контакты и основные данные проекта</span></a>
+      <a href="/admin/security.php"><strong>Безопасность</strong><span>Google Authenticator, 2FAS, резервные коды и защита входа</span></a>
       <a href="/" target="_blank" rel="noopener"><strong>Открыть сайт</strong><span>Посмотреть публичную версию в новой вкладке</span></a>
       <a href="/admin/plugin.php?id=system-info"><strong>Состояние системы</strong><span>PHP, каталог хранения и доступность записи</span></a>
     </div>

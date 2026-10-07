@@ -325,5 +325,32 @@
     refreshSidebarOrderButtons();
   }
 
+  document.querySelectorAll('[data-copy-value]').forEach(button => {
+    button.addEventListener('click', async () => {
+      const value = button.getAttribute('data-copy-value') || '';
+      if (!value) return;
+      try {
+        await navigator.clipboard.writeText(value);
+        const old = button.textContent;
+        button.textContent = 'Скопировано';
+        setTimeout(() => { button.textContent = old; }, 1400);
+      } catch (_) {}
+    });
+  });
+
+  const copyRecovery = document.querySelector('[data-copy-recovery]');
+  if (copyRecovery) {
+    copyRecovery.addEventListener('click', async () => {
+      const codes = [...document.querySelectorAll('[data-recovery-codes] code')].map(el => el.textContent.trim()).filter(Boolean);
+      if (!codes.length) return;
+      try {
+        await navigator.clipboard.writeText(codes.join('\n'));
+        const old = copyRecovery.textContent;
+        copyRecovery.textContent = 'Скопировано';
+        setTimeout(() => { copyRecovery.textContent = old; }, 1400);
+      } catch (_) {}
+    });
+  }
+
   applyThemePreview();
 })();

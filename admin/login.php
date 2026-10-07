@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 require __DIR__ . '/includes/bootstrap.php';
 
 if (admin_is_authenticated()) {
@@ -14,8 +15,11 @@ $panel = setting_color($settings, 'theme_panel', '#1c1c1c');
 $text = setting_color($settings, 'theme_text', '#f7f7f5');
 $adminLogo = setting_asset($settings, 'logo_admin', '/assets/img/logo-horizontal-dark.svg');
 $markLogo = setting_asset($settings, 'logo_mark', '/assets/img/logo-mark-square.svg');
+
+$authConfig = admin_auth_config();
+$totpEnabled = !empty($authConfig['totp_enabled']);
 $error = '';
-$stage = !empty($_SESSION['otp_hash']) ? 'verify' : 'request';
+$stage = $totpEnabled ? 'totp' : (!empty($_SESSION['otp_hash']) ? 'verify' : 'request');
 
 function login_mask_email(string $email): string {
     [$local, $domain] = array_pad(explode('@', $email, 2), 2, '');
@@ -28,7 +32,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verify();
     $action = (string)($_POST['action'] ?? '');
 
-    if ($action === 'send') {
+    if ($totpEnabled && $action === 'verify_totp') {
+        $stage = 'totp';
+        $allowed = ds_rate_limit(DS_ROOT, 'admin_totp_verify_ip', 12, 900, 'totp', true);
+        if (!$allowed) {
+            http_response_code(429);
+            ds_security_log(DS_ROOT, 'auth.totp_rate_limited');
+            $error = 'Слишком много попыток входа. Попробуйте позже.';
+        } else {
+            $rawCode = trim((string)($_POST['code'] ?? ''));
+            $digits = preg_replace('/\D+/', '', $rawCode) ?? '';
+            $secret = admin_decrypt_totp_secret((string)($authConfig['totp_secret'] ?? ''));
+            $valid = $secret !== '' && strlen($digits) === 6 && admin_totp_verify($secret, $digits, 1);
+
+            if (!$valid && strlen(preg_replace('/[^A-Z0-9]/i', '', $rawCode) ?? '') === 10) {
+                $valid = admin_recovery_verify_and_consume($rawCode);
+                if ($valid) audit_log('auth.login_with_recovery');
+            }
+
+            if ($valid) {
+                admin_complete_login();
+            }
+
+            ds_security_log(DS_ROOT, 'auth.invalid_totp');
+            $error = 'Неверный код. Введите текущий код из приложения или резервный код.';
+        }
+    }
+
+    if (!$totpEnabled && $action === 'send') {
         $last = (int)($_SESSION['otp_sent_at'] ?? 0);
         $ipAllowed = ds_rate_limit(DS_ROOT, 'admin_otp_send_ip', 5, 900, 'send', true);
         $globalAllowed = ds_rate_limit(DS_ROOT, 'admin_otp_send_global', 30, 3600, $adminEmail, false);
@@ -65,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    if ($action === 'verify') {
+    if (!$totpEnabled && $action === 'verify') {
         $stage = 'verify';
 
         if (!ds_rate_limit(DS_ROOT, 'admin_otp_verify_ip', 15, 900, 'verify', true)) {
@@ -93,24 +124,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ds_security_log(DS_ROOT, 'auth.invalid_otp', ['attempt' => (string)($attempts + 1)]);
             $error = 'Неверный код.';
         } else {
-            session_regenerate_id(true);
-            $now = time();
-            $_SESSION['admin_authenticated'] = true;
-            $_SESSION['admin_login_at'] = $now;
-            $_SESSION['admin_session_started'] = $now;
-            $_SESSION['admin_last_activity'] = $now;
-            $_SESSION['admin_session_rotated'] = $now;
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-            unset($_SESSION['otp_hash'], $_SESSION['otp_expires'], $_SESSION['otp_attempts'], $_SESSION['otp_sent_at']);
-            audit_log('auth.login');
-            $target = (string)($_SESSION['after_login'] ?? '/admin/');
-            unset($_SESSION['after_login']);
-            if (!str_starts_with($target, '/admin')) $target = '/admin/';
-            admin_redirect($target);
+            admin_complete_login();
         }
     }
 
-    if ($action === 'reset') {
+    if (!$totpEnabled && $action === 'reset') {
         unset($_SESSION['otp_hash'], $_SESSION['otp_expires'], $_SESSION['otp_attempts'], $_SESSION['otp_sent_at']);
         $stage = 'request';
     }
@@ -128,14 +146,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <style>:root{--admin-accent:<?= e($accent) ?>;--admin-bg:<?= e($bg) ?>;--admin-panel:<?= e($panel) ?>;--admin-text:<?= e($text) ?>}</style>
 </head>
 <body class="login-body">
-  <section class="login-card">
-    <img class="login-logo" src="<?= e($adminLogo) ?>" alt="DAG STUDIO">
+  <section class="login-card login-card-secure">
+    <div class="login-brand-row">
+      <img class="login-logo" src="<?= e($adminLogo) ?>" alt="DAG STUDIO">
+      <span class="login-security-mark" aria-hidden="true"></span>
+    </div>
+    <p class="login-kicker">Защищённая зона</p>
     <h1>Вход в админку</h1>
-    <p>Доступ подтверждается одноразовым кодом, который отправляется на административную почту сайта.</p>
+
+    <?php if ($totpEnabled): ?>
+      <p>Введите одноразовый код из приложения-аутентификатора. Поддерживаются Google Authenticator, Microsoft Authenticator, 2FAS и другие TOTP-приложения.</p>
+      <div class="login-auth-method"><span class="security-status-dot on"></span><div><strong>Аутентификатор подключён</strong><small>Код обновляется каждые 30 секунд</small></div></div>
+    <?php else: ?>
+      <p>Пока приложение-аутентификатор не подключено, доступ подтверждается одноразовым кодом на административную почту.</p>
+      <div class="login-auth-method"><span class="security-status-dot off"></span><div><strong>Вход по email</strong><small>После входа можно подключить приложение в разделе «Безопасность»</small></div></div>
+    <?php endif; ?>
 
     <?php if ($error !== ''): ?><div class="notice error"><?= e($error) ?></div><?php endif; ?>
 
-    <?php if ($stage === 'request'): ?>
+    <?php if ($stage === 'totp'): ?>
+      <form method="post" class="login-auth-form">
+        <?= csrf_field() ?>
+        <input type="hidden" name="action" value="verify_totp">
+        <div class="field">
+          <label for="code">Код из приложения</label>
+          <div class="otp-row"><input id="code" class="totp-code-input" type="text" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000" required autofocus></div>
+        </div>
+        <button class="btn" type="submit">Войти в админку</button>
+      </form>
+      <details class="login-recovery">
+        <summary>Войти резервным кодом</summary>
+        <form method="post">
+          <?= csrf_field() ?>
+          <input type="hidden" name="action" value="verify_totp">
+          <div class="field">
+            <label for="recovery-code">Резервный код</label>
+            <input id="recovery-code" type="text" name="code" autocomplete="off" maxlength="11" placeholder="ABCDE-12345" required>
+          </div>
+          <button class="toggle-btn" type="submit">Использовать резервный код</button>
+        </form>
+      </details>
+    <?php elseif ($stage === 'request'): ?>
       <form method="post">
         <?= csrf_field() ?>
         <input type="hidden" name="action" value="send">
@@ -162,7 +213,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </form>
     <?php endif; ?>
 
-    <div class="login-help">Код действует 10 минут. После 5 неверных попыток он сбрасывается.</div>
+    <div class="login-help"><?= $totpEnabled ? 'Если телефон недоступен, используйте сохранённый резервный код.' : 'Код действует 10 минут. После входа откройте «Безопасность» и подключите приложение-аутентификатор.' ?></div>
   </section>
 </body>
 </html>

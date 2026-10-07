@@ -254,10 +254,162 @@ function set_plugin_enabled(string $id, bool $enabled): bool {
     return true;
 }
 
+function admin_auth_config(): array {
+    return array_merge([
+        'totp_enabled' => false,
+        'totp_secret' => '',
+        'recovery_hashes' => [],
+        'enabled_at' => '',
+    ], storage_read_json('admin-auth.json', []));
+}
+
+function ds_base32_encode(string $binary): string {
+    $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+    $bits = '';
+    foreach (str_split($binary) as $char) {
+        $bits .= str_pad(decbin(ord($char)), 8, '0', STR_PAD_LEFT);
+    }
+    $encoded = '';
+    for ($i = 0, $len = strlen($bits); $i < $len; $i += 5) {
+        $chunk = substr($bits, $i, 5);
+        if (strlen($chunk) < 5) $chunk = str_pad($chunk, 5, '0', STR_PAD_RIGHT);
+        $encoded .= $alphabet[bindec($chunk)];
+    }
+    return $encoded;
+}
+
+function ds_base32_decode(string $value): string|false {
+    $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+    $value = strtoupper(preg_replace('/[^A-Z2-7]/i', '', $value) ?? '');
+    if ($value === '') return false;
+    $bits = '';
+    foreach (str_split($value) as $char) {
+        $pos = strpos($alphabet, $char);
+        if ($pos === false) return false;
+        $bits .= str_pad(decbin($pos), 5, '0', STR_PAD_LEFT);
+    }
+    $binary = '';
+    for ($i = 0, $len = strlen($bits); $i + 8 <= $len; $i += 8) {
+        $binary .= chr(bindec(substr($bits, $i, 8)));
+    }
+    return $binary;
+}
+
+function admin_totp_generate_secret(): string {
+    return ds_base32_encode(random_bytes(20));
+}
+
+function admin_totp_code(string $secret, ?int $timeSlice = null): string {
+    $key = ds_base32_decode($secret);
+    if ($key === false) return '';
+    $timeSlice ??= intdiv(time(), 30);
+    $counter = pack('N2', 0, $timeSlice);
+    $hash = hash_hmac('sha1', $counter, $key, true);
+    $offset = ord($hash[19]) & 0x0f;
+    $binary = ((ord($hash[$offset]) & 0x7f) << 24)
+        | ((ord($hash[$offset + 1]) & 0xff) << 16)
+        | ((ord($hash[$offset + 2]) & 0xff) << 8)
+        | (ord($hash[$offset + 3]) & 0xff);
+    return str_pad((string)($binary % 1000000), 6, '0', STR_PAD_LEFT);
+}
+
+function admin_totp_verify(string $secret, string $code, int $window = 1): bool {
+    $code = preg_replace('/\D+/', '', $code) ?? '';
+    if (strlen($code) !== 6) return false;
+    $slice = intdiv(time(), 30);
+    for ($offset = -$window; $offset <= $window; $offset++) {
+        if (hash_equals(admin_totp_code($secret, $slice + $offset), $code)) return true;
+    }
+    return false;
+}
+
+function admin_auth_key(): string {
+    return hash('sha256', ds_security_secret(DS_ROOT) . '|dagstudio-admin-auth', true);
+}
+
+function admin_encrypt_totp_secret(string $secret): string {
+    if (!function_exists('openssl_encrypt')) return '';
+    $iv = random_bytes(12);
+    $tag = '';
+    $cipher = openssl_encrypt($secret, 'aes-256-gcm', admin_auth_key(), OPENSSL_RAW_DATA, $iv, $tag);
+    if (!is_string($cipher) || strlen($tag) !== 16) return '';
+    return base64_encode($iv . $tag . $cipher);
+}
+
+function admin_decrypt_totp_secret(string $encrypted): string {
+    if (!function_exists('openssl_decrypt')) return '';
+    $raw = base64_decode($encrypted, true);
+    if ($raw === false || strlen($raw) < 29) return '';
+    $iv = substr($raw, 0, 12);
+    $tag = substr($raw, 12, 16);
+    $cipher = substr($raw, 28);
+    $secret = openssl_decrypt($cipher, 'aes-256-gcm', admin_auth_key(), OPENSSL_RAW_DATA, $iv, $tag);
+    return is_string($secret) ? $secret : '';
+}
+
+function admin_totp_uri(string $secret, string $account): string {
+    $issuer = 'DAG STUDIO';
+    $label = $issuer . ':' . $account;
+    return 'otpauth://totp/' . rawurlencode($label)
+        . '?secret=' . rawurlencode($secret)
+        . '&issuer=' . rawurlencode($issuer)
+        . '&algorithm=SHA1&digits=6&period=30';
+}
+
+function admin_generate_recovery_codes(int $count = 8): array {
+    $alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    $codes = [];
+    for ($n = 0; $n < $count; $n++) {
+        $raw = '';
+        for ($i = 0; $i < 10; $i++) $raw .= $alphabet[random_int(0, strlen($alphabet) - 1)];
+        $codes[] = substr($raw, 0, 5) . '-' . substr($raw, 5);
+    }
+    return $codes;
+}
+
+function admin_recovery_hash(string $code): string {
+    $normalized = strtoupper(preg_replace('/[^A-Z0-9]/i', '', $code) ?? '');
+    return hash_hmac('sha256', $normalized, admin_auth_key());
+}
+
+function admin_recovery_verify_and_consume(string $code): bool {
+    $config = admin_auth_config();
+    $hashes = is_array($config['recovery_hashes'] ?? null) ? $config['recovery_hashes'] : [];
+    $candidate = admin_recovery_hash($code);
+    foreach ($hashes as $index => $hash) {
+        if (is_string($hash) && hash_equals($hash, $candidate)) {
+            unset($hashes[$index]);
+            $config['recovery_hashes'] = array_values($hashes);
+            if (!storage_write_json('admin-auth.json', $config)) return false;
+            audit_log('auth.recovery_code_used', ['remaining' => count($hashes)]);
+            return true;
+        }
+    }
+    return false;
+}
+
+function admin_complete_login(): never {
+    session_regenerate_id(true);
+    $now = time();
+    $_SESSION['admin_authenticated'] = true;
+    $_SESSION['admin_login_at'] = $now;
+    $_SESSION['admin_session_started'] = $now;
+    $_SESSION['admin_last_activity'] = $now;
+    $_SESSION['admin_session_rotated'] = $now;
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    unset($_SESSION['otp_hash'], $_SESSION['otp_expires'], $_SESSION['otp_attempts'], $_SESSION['otp_sent_at']);
+    audit_log('auth.login');
+    $target = (string)($_SESSION['after_login'] ?? '/admin/');
+    unset($_SESSION['after_login']);
+    if (!str_starts_with($target, '/admin')) $target = '/admin/';
+    admin_redirect($target);
+}
+
 function admin_sidebar_available_items(array $plugins, array $states): array {
     $items = [
         'dashboard' => ['id' => 'dashboard', 'label' => 'Обзор', 'href' => '/admin/', 'icon' => '◫', 'counter' => ''],
         'settings' => ['id' => 'settings', 'label' => 'Настройки', 'href' => '/admin/settings.php', 'icon' => '⚙', 'counter' => ''],
+        'security' => ['id' => 'security', 'label' => 'Безопасность', 'href' => '/admin/security.php', 'icon' => '⌾', 'counter' => ''],
         'plugins' => ['id' => 'plugins', 'label' => 'Функции и плагины', 'href' => '/admin/plugins.php', 'icon' => '◆', 'counter' => ''],
     ];
 

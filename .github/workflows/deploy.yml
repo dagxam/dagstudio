@@ -48,6 +48,7 @@ jobs:
             storage/security-secret.txt
             storage/requests.json
             storage/admin-menu.json
+            storage/admin-auth.json
             uploads/audio/**
             uploads/branding/**
 
@@ -75,5 +76,6 @@ jobs:
             storage/security-secret.txt
             storage/requests.json
             storage/admin-menu.json
+            storage/admin-auth.json
             uploads/audio/**
             uploads/branding/**

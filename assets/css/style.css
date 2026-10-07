@@ -532,3 +532,24 @@ button,.btn,.login-btn,.menu-toggle{touch-action:manipulation}
 @media(hover:none){
   .btn:hover,.login-btn:hover,.audio-download-btn:hover{transform:none}
 }
+
+
+/* Administrator button alignment */
+.header-inner{align-items:center}
+.admin-access{display:flex;align-items:center;align-self:stretch;margin-left:0}
+.admin-access-trigger{
+  min-height:42px;height:42px;padding:0 14px;margin:0;
+  line-height:1;align-self:center;vertical-align:middle
+}
+.admin-access.is-authenticated .admin-access-trigger{min-width:148px}
+.admin-access-trigger [data-admin-label]{display:inline-flex;align-items:center;height:100%;line-height:1}
+.admin-access-dot{flex:0 0 auto}
+@media(max-width:900px){
+  .admin-access{align-self:center;height:auto}
+  .admin-access-trigger{height:40px;min-height:40px;margin:0}
+  .admin-access.is-authenticated .admin-access-trigger{min-width:auto}
+}
+@media(max-width:520px){
+  .admin-access-trigger{height:38px;min-height:38px}
+  .admin-access.is-authenticated .admin-access-trigger{padding-inline:8px}
+}
