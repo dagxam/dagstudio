@@ -22,6 +22,8 @@ function admin_header(string $title, string $active = ''): void {
     $text = setting_color($settings, 'theme_text', '#f7f7f5');
     $adminLogo = setting_asset($settings, 'logo_admin', '/assets/img/logo-horizontal-dark.svg');
     $markLogo = setting_asset($settings, 'logo_mark', '/assets/img/logo-mark-square.svg');
+    $sidebarItems = admin_sidebar_available_items($plugins, $states, $requestPending);
+    $sidebarOrder = admin_sidebar_order($sidebarItems);
     ?>
 <!doctype html>
 <html lang="ru">
@@ -41,15 +43,19 @@ function admin_header(string $title, string $active = ''): void {
     <a class="admin-brand" href="/admin/">
       <img src="<?= e($adminLogo) ?>" alt="DAG STUDIO">
     </a>
+    <div class="sidebar-nav-head">
+      <span>Меню</span>
+      <a class="sidebar-order-edit<?= $active === 'sidebar-menu' ? ' active' : '' ?>" href="/admin/sidebar-menu.php" aria-label="Изменить порядок меню" title="Изменить порядок меню">↕</a>
+    </div>
     <nav class="admin-nav">
-      <a class="<?= $active === 'dashboard' ? 'active' : '' ?>" href="/admin/"><span>◫</span>Обзор</a>
-      <a class="<?= $active === 'requests' ? 'active' : '' ?>" href="/admin/requests.php"><span>✉</span>Обращения<?php if ($requestPending > 0): ?><b class="nav-counter"><?= $requestPending > 99 ? '99+' : $requestPending ?></b><?php endif; ?></a>
-      <a class="<?= $active === 'settings' ? 'active' : '' ?>" href="/admin/settings.php"><span>⚙</span>Настройки</a>
-      <a class="<?= $active === 'plugins' ? 'active' : '' ?>" href="/admin/plugins.php"><span>◆</span>Функции и плагины</a>
-      <?php foreach ($plugins as $plugin): ?>
-        <?php if (plugin_enabled($plugin, $states) && !empty($plugin['menu'])): ?>
-          <a class="<?= $active === 'plugin-' . $plugin['id'] ? 'active' : '' ?>" href="/admin/plugin.php?id=<?= e($plugin['id']) ?>"><span><?= e((string)($plugin['icon'] ?? '+')) ?></span><?= e((string)$plugin['menu']) ?></a>
-        <?php endif; ?>
+      <?php foreach ($sidebarOrder as $sidebarId):
+        $item = $sidebarItems[$sidebarId] ?? null;
+        if (!is_array($item)) continue;
+      ?>
+        <a class="<?= $active === $sidebarId ? 'active' : '' ?>" href="<?= e((string)$item['href']) ?>">
+          <span><?= e((string)$item['icon']) ?></span><?= e((string)$item['label']) ?>
+          <?php if ((string)$item['counter'] !== ''): ?><b class="nav-counter"><?= e((string)$item['counter']) ?></b><?php endif; ?>
+        </a>
       <?php endforeach; ?>
     </nav>
     <div class="sidebar-bottom">

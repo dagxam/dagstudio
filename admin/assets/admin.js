@@ -244,5 +244,60 @@
     });
   }
 
+  const sidebarOrderList = document.querySelector('[data-sidebar-order-list]');
+  if (sidebarOrderList) {
+    let dragged = null;
+
+    const refreshSidebarOrderButtons = () => {
+      const rows = [...sidebarOrderList.querySelectorAll('[data-sidebar-order-row]')];
+      rows.forEach((row, index) => {
+        const up = row.querySelector('[data-sidebar-up]');
+        const down = row.querySelector('[data-sidebar-down]');
+        if (up) up.disabled = index === 0;
+        if (down) down.disabled = index === rows.length - 1;
+      });
+    };
+
+    sidebarOrderList.querySelectorAll('[data-sidebar-order-row]').forEach(row => {
+      row.querySelector('[data-sidebar-up]')?.addEventListener('click', () => {
+        const prev = row.previousElementSibling;
+        if (prev) sidebarOrderList.insertBefore(row, prev);
+        refreshSidebarOrderButtons();
+      });
+
+      row.querySelector('[data-sidebar-down]')?.addEventListener('click', () => {
+        const next = row.nextElementSibling;
+        if (next) sidebarOrderList.insertBefore(next, row);
+        refreshSidebarOrderButtons();
+      });
+
+      row.addEventListener('dragstart', event => {
+        dragged = row;
+        row.classList.add('is-dragging');
+        if (event.dataTransfer) {
+          event.dataTransfer.effectAllowed = 'move';
+          event.dataTransfer.setData('text/plain', 'sidebar-order');
+        }
+      });
+
+      row.addEventListener('dragend', () => {
+        row.classList.remove('is-dragging');
+        dragged = null;
+        refreshSidebarOrderButtons();
+      });
+
+      row.addEventListener('dragover', event => {
+        if (!dragged || dragged === row) return;
+        event.preventDefault();
+        const rect = row.getBoundingClientRect();
+        const before = event.clientY < rect.top + rect.height / 2;
+        if (before) sidebarOrderList.insertBefore(dragged, row);
+        else sidebarOrderList.insertBefore(dragged, row.nextSibling);
+      });
+    });
+
+    refreshSidebarOrderButtons();
+  }
+
   applyThemePreview();
 })();

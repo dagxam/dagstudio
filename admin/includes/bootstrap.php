@@ -253,3 +253,59 @@ function set_plugin_enabled(string $id, bool $enabled): bool {
     audit_log($enabled ? 'plugin.enabled' : 'plugin.disabled', ['plugin' => $id]);
     return true;
 }
+
+function admin_sidebar_available_items(array $plugins, array $states, int $requestPending = 0): array {
+    $items = [
+        'dashboard' => ['id' => 'dashboard', 'label' => 'Обзор', 'href' => '/admin/', 'icon' => '◫', 'counter' => ''],
+        'requests' => ['id' => 'requests', 'label' => 'Обращения', 'href' => '/admin/requests.php', 'icon' => '✉', 'counter' => $requestPending > 0 ? ($requestPending > 99 ? '99+' : (string)$requestPending) : ''],
+        'settings' => ['id' => 'settings', 'label' => 'Настройки', 'href' => '/admin/settings.php', 'icon' => '⚙', 'counter' => ''],
+        'plugins' => ['id' => 'plugins', 'label' => 'Функции и плагины', 'href' => '/admin/plugins.php', 'icon' => '◆', 'counter' => ''],
+    ];
+
+    foreach ($plugins as $plugin) {
+        if (!is_array($plugin) || empty($plugin['menu']) || !plugin_enabled($plugin, $states)) continue;
+        $pluginId = (string)($plugin['id'] ?? '');
+        if ($pluginId === '') continue;
+        $id = 'plugin-' . $pluginId;
+        $items[$id] = [
+            'id' => $id,
+            'label' => (string)$plugin['menu'],
+            'href' => '/admin/plugin.php?id=' . rawurlencode($pluginId),
+            'icon' => (string)($plugin['icon'] ?? '+'),
+            'counter' => '',
+        ];
+    }
+
+    return $items;
+}
+
+function admin_sidebar_order(array $available): array {
+    $saved = storage_read_json('admin-menu.json', ['order' => []]);
+    $order = is_array($saved['order'] ?? null) ? $saved['order'] : [];
+    $result = [];
+
+    foreach ($order as $id) {
+        $id = (string)$id;
+        if (isset($available[$id]) && !in_array($id, $result, true)) $result[] = $id;
+    }
+    foreach (array_keys($available) as $id) {
+        if (!in_array($id, $result, true)) $result[] = $id;
+    }
+
+    return $result;
+}
+
+function save_admin_sidebar_order(array $order, array $available): bool {
+    $clean = [];
+    foreach ($order as $id) {
+        $id = preg_replace('/[^a-z0-9_-]/i', '', (string)$id);
+        if ($id !== '' && isset($available[$id]) && !in_array($id, $clean, true)) $clean[] = $id;
+    }
+    foreach (array_keys($available) as $id) {
+        if (!in_array($id, $clean, true)) $clean[] = $id;
+    }
+
+    if (!storage_write_json('admin-menu.json', ['order' => $clean])) return false;
+    audit_log('admin.sidebar_order_updated', ['count' => count($clean)]);
+    return true;
+}

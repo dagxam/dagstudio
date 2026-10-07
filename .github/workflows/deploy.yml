@@ -45,5 +45,6 @@ jobs:
             storage/security.log
             storage/security-secret.txt
             storage/requests.json
+            storage/admin-menu.json
             uploads/audio/**
             uploads/branding/**
