@@ -417,3 +417,101 @@ button,.btn,.toggle-btn,.menu-order-btn,.menu-delete-btn,.request-action,.sideba
 .request-source-security>span{color:#78bd8a;border-color:#315c3b;background:#0d1510;font-size:14px}
 @media(max-width:820px){.request-source-strip{grid-template-columns:1fr 1fr}.request-source-security{grid-column:1/-1}}
 @media(max-width:560px){.request-source-strip{grid-template-columns:1fr}.request-source-security{grid-column:auto}}
+
+
+/* =========================================================
+   DAG STUDIO admin controls: unified buttons and arrows
+   ========================================================= */
+.btn,.toggle-btn,.request-action,.menu-order-btn,.menu-delete-btn,.sidebar-order-edit{
+  border-radius:8px;
+  transition:transform .16s ease,border-color .16s ease,background .16s ease,color .16s ease,box-shadow .16s ease
+}
+.btn{
+  position:relative;overflow:hidden;
+  background:linear-gradient(145deg,color-mix(in srgb,var(--admin-accent) 92%,white 8%),color-mix(in srgb,var(--admin-accent) 84%,#111));
+  border-color:color-mix(in srgb,var(--admin-accent) 82%,#fff 18%);
+  box-shadow:0 8px 22px color-mix(in srgb,var(--admin-accent) 12%,transparent),inset 0 1px 0 rgba(255,255,255,.12)
+}
+.btn:hover{
+  transform:translateY(-1px);
+  background:linear-gradient(145deg,color-mix(in srgb,var(--admin-accent) 88%,white 12%),var(--admin-accent));
+  box-shadow:0 11px 27px color-mix(in srgb,var(--admin-accent) 16%,transparent)
+}
+.btn.secondary{
+  background:linear-gradient(145deg,color-mix(in srgb,var(--admin-accent) 5%,#111),#0a0a0a);
+  border-color:color-mix(in srgb,var(--admin-accent) 44%,#303030);
+  color:var(--admin-accent);box-shadow:inset 0 1px 0 rgba(255,255,255,.025)
+}
+.btn.secondary:hover{background:color-mix(in srgb,var(--admin-accent) 9%,#0b0b0b);border-color:var(--admin-accent)}
+
+.toggle-btn{
+  min-height:38px;display:inline-flex;align-items:center;justify-content:center;
+  background:linear-gradient(145deg,color-mix(in srgb,var(--admin-accent) 4%,#111),#090909);
+  border-color:color-mix(in srgb,var(--admin-accent) 40%,#303030);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)
+}
+.toggle-btn:hover{
+  transform:translateY(-1px);background:color-mix(in srgb,var(--admin-accent) 9%,#0a0a0a);
+  border-color:var(--admin-accent);box-shadow:0 8px 22px rgba(0,0,0,.18)
+}
+.toggle-btn.danger{
+  color:#d9877f!important;border-color:#61332f!important;background:linear-gradient(145deg,rgba(105,43,38,.10),#090909)!important
+}
+.toggle-btn.danger:hover{background:#21100f!important;border-color:#8d4039!important}
+
+.menu-order-btn,.menu-delete-btn{
+  position:relative;display:inline-grid;place-items:center;width:36px;height:36px;
+  padding:0;font-size:0!important;background:linear-gradient(145deg,#121212,#0a0a0a);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)
+}
+.menu-order-btn:before{
+  content:"";width:8px;height:8px;border-left:1.7px solid currentColor;border-top:1.7px solid currentColor
+}
+.menu-order-btn[title="Выше"]:before,.menu-order-btn[data-menu-up]:before,.menu-order-btn[data-sidebar-up]:before{transform:translateY(2px) rotate(45deg)}
+.menu-order-btn[title="Ниже"]:before,.menu-order-btn[data-menu-down]:before,.menu-order-btn[data-sidebar-down]:before{transform:translateY(-2px) rotate(225deg)}
+.menu-order-btn:hover:not(:disabled){
+  transform:translateY(-1px);background:color-mix(in srgb,var(--admin-accent) 8%,#0b0b0b);
+  box-shadow:0 7px 18px rgba(0,0,0,.22)
+}
+.menu-order-btn:disabled{filter:saturate(.4);opacity:.24}
+
+.menu-delete-btn:before,.menu-delete-btn:after{
+  content:"";position:absolute;width:12px;height:1.6px;border-radius:2px;background:currentColor
+}
+.menu-delete-btn:before{transform:rotate(45deg)}
+.menu-delete-btn:after{transform:rotate(-45deg)}
+.menu-delete-btn:hover{transform:translateY(-1px);box-shadow:0 7px 18px rgba(95,31,27,.14)}
+
+.settings-chevron{
+  position:relative;display:inline-block;width:30px!important;height:30px;font-size:0!important;
+  border:1px solid #2d2d2d;border-radius:8px;background:#0c0c0c;transition:.18s
+}
+.settings-chevron:before{
+  content:"";position:absolute;left:10px;top:8px;width:7px;height:7px;
+  border-right:1.5px solid var(--admin-accent);border-bottom:1.5px solid var(--admin-accent);transform:rotate(45deg)
+}
+.settings-section[open] .settings-chevron{border-color:color-mix(in srgb,var(--admin-accent) 45%,#303030);background:color-mix(in srgb,var(--admin-accent) 6%,#0b0b0b)}
+.settings-section[open] .settings-chevron:before{top:12px;transform:rotate(225deg)}
+
+.request-action{
+  position:relative;min-height:38px;padding:0 13px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.02)
+}
+.request-action:hover{box-shadow:0 7px 18px rgba(0,0,0,.18)}
+
+.sidebar-order-edit{
+  border-color:color-mix(in srgb,var(--admin-accent) 32%,#303030);
+  background:linear-gradient(145deg,color-mix(in srgb,var(--admin-accent) 5%,#111),#090909)
+}
+.sidebar-order-edit:hover,.sidebar-order-edit.active{
+  transform:translateY(-1px);box-shadow:0 7px 20px color-mix(in srgb,var(--admin-accent) 9%,transparent)
+}
+
+.page-editor-top-actions,.plugin-actions>div,.audio-row-actions,.page-list-actions,.works-admin-actions,.request-actions{
+  align-items:center
+}
+.page-editor-top-actions{display:flex;gap:7px;flex-wrap:wrap}
+
+@media(hover:none){
+  .btn:hover,.toggle-btn:hover,.request-action:hover,.menu-order-btn:hover:not(:disabled),.menu-delete-btn:hover,.sidebar-order-edit:hover{transform:none}
+}

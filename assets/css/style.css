@@ -435,3 +435,100 @@ button,.btn,.login-btn,.menu-toggle{touch-action:manipulation}
   .admin-access-menu>a{min-height:58px}
 }
 @media(prefers-reduced-motion:reduce){.admin-access.is-open .admin-access-menu{animation:none}}
+
+
+/* =========================================================
+   DAG STUDIO controls: buttons, arrows and small icons
+   ========================================================= */
+.btn{
+  position:relative;isolation:isolate;overflow:hidden;border-radius:8px;
+  gap:10px;box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+  transition:transform .18s ease,border-color .18s ease,background .18s ease,color .18s ease,box-shadow .18s ease
+}
+.btn:before{
+  content:"";position:absolute;inset:0;z-index:-1;opacity:0;
+  background:linear-gradient(110deg,transparent 0 28%,rgba(255,255,255,.08) 47%,transparent 67%);
+  transform:translateX(-115%);transition:transform .42s ease,opacity .18s ease
+}
+.btn:hover:before{opacity:1;transform:translateX(115%)}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(0)}
+.btn-primary{
+  border-color:color-mix(in srgb,var(--accent) 82%,#fff 18%);
+  background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 92%,white 8%),color-mix(in srgb,var(--accent) 84%,#111));
+  box-shadow:0 9px 24px color-mix(in srgb,var(--accent) 13%,transparent),inset 0 1px 0 rgba(255,255,255,.14)
+}
+.btn-primary:hover{
+  background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 88%,white 12%),var(--accent));
+  box-shadow:0 12px 32px color-mix(in srgb,var(--accent) 18%,transparent),inset 0 1px 0 rgba(255,255,255,.17)
+}
+.btn-outline{
+  border-color:color-mix(in srgb,var(--accent) 38%,#444);
+  background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 4%,#101010),#080808);
+  color:#f0f0ef
+}
+.btn-outline:hover{
+  border-color:var(--accent);color:color-mix(in srgb,var(--accent) 78%,white);
+  background:color-mix(in srgb,var(--accent) 7%,#0a0a0a);
+  box-shadow:0 10px 28px rgba(0,0,0,.22)
+}
+.login-btn{
+  border-radius:8px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+  transition:transform .18s ease,border-color .18s ease,color .18s ease,background .18s ease
+}
+.login-btn:hover{transform:translateY(-1px);background:color-mix(in srgb,var(--accent) 7%,#090909)}
+
+.work-arrow{
+  position:relative;display:grid;place-items:center;width:34px;height:34px;border-radius:8px;
+  border:1px solid color-mix(in srgb,var(--accent) 38%,#303030);
+  background:color-mix(in srgb,var(--accent) 4%,#0b0b0b);font-size:0;color:var(--accent);
+  transition:transform .2s ease,border-color .2s ease,background .2s ease
+}
+.work-arrow:before{
+  content:"";width:11px;height:11px;border-top:1.7px solid currentColor;border-right:1.7px solid currentColor
+}
+.work-arrow:after{
+  content:"";position:absolute;width:13px;height:1.7px;background:currentColor;
+  transform:rotate(-45deg);transform-origin:center
+}
+.work-card:hover .work-arrow{
+  transform:translate(2px,-2px);border-color:var(--accent);
+  background:color-mix(in srgb,var(--accent) 10%,#0b0b0b)
+}
+
+.audio-download-btn{
+  position:relative;border-radius:7px;gap:8px;padding-left:39px;
+  background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 4%,#101010),#090909)
+}
+.audio-download-btn:before{
+  content:"";position:absolute;left:14px;top:50%;width:10px;height:10px;
+  border-left:1.6px solid currentColor;border-bottom:1.6px solid currentColor;
+  transform:translateY(-66%) rotate(-45deg)
+}
+.audio-download-btn:after{
+  content:"";position:absolute;left:18px;top:13px;width:1.6px;height:10px;background:currentColor
+}
+.audio-download-btn:hover{transform:translateY(-1px);box-shadow:0 8px 22px color-mix(in srgb,var(--accent) 12%,transparent)}
+
+.admin-access-chevron{position:relative;width:14px;height:14px;font-size:0!important}
+.admin-access-chevron:before{
+  content:"";position:absolute;left:3px;top:3px;width:6px;height:6px;
+  border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg)
+}
+.admin-access.is-open .admin-access-chevron{transform:rotate(180deg)}
+.admin-access-menu-icon{font-size:0!important;position:relative}
+.admin-access-menu>a:first-child .admin-access-menu-icon:before{
+  content:"";width:13px;height:13px;border:1.5px solid currentColor;border-radius:2px;
+  box-shadow:5px 5px 0 -3px #090909,5px 5px 0 -1.5px currentColor
+}
+.admin-access-menu .admin-access-logout .admin-access-menu-icon:before{
+  content:"";width:12px;height:10px;border:1.5px solid currentColor;border-right:0;border-radius:2px 0 0 2px
+}
+.admin-access-menu .admin-access-logout .admin-access-menu-icon:after{
+  content:"";position:absolute;width:8px;height:8px;border-top:1.5px solid currentColor;border-right:1.5px solid currentColor;
+  transform:rotate(45deg);right:7px
+}
+
+@media(hover:none){
+  .btn:hover,.login-btn:hover,.audio-download-btn:hover{transform:none}
+}
