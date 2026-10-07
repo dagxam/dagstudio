@@ -29,6 +29,59 @@
     }, { passive: true });
   }
 
+  const adminAccess = document.querySelector('[data-admin-access]');
+  if (adminAccess) {
+    const trigger = adminAccess.querySelector('[data-admin-trigger]');
+    const label = adminAccess.querySelector('[data-admin-label]');
+    const menu = adminAccess.querySelector('[data-admin-menu]');
+
+    const setAdminMenuOpen = open => {
+      if (!trigger || !menu || !adminAccess.classList.contains('is-authenticated')) return;
+      menu.hidden = !open;
+      adminAccess.classList.toggle('is-open', open);
+      trigger.setAttribute('aria-expanded', String(open));
+    };
+
+    fetch('/admin/session-status.php', {
+      method: 'GET',
+      credentials: 'same-origin',
+      cache: 'no-store',
+      headers: { 'Accept': 'application/json' }
+    })
+      .then(response => response.ok ? response.json() : null)
+      .then(data => {
+        if (!data?.authenticated || !trigger || !label || !menu) return;
+        adminAccess.classList.add('is-authenticated');
+        label.textContent = 'Администратор';
+        trigger.setAttribute('href', '#');
+        trigger.setAttribute('aria-label', 'Меню администратора');
+        menu.hidden = true;
+      })
+      .catch(() => {});
+
+    trigger?.addEventListener('click', event => {
+      if (!adminAccess.classList.contains('is-authenticated')) return;
+      event.preventDefault();
+      setAdminMenuOpen(!adminAccess.classList.contains('is-open'));
+    });
+
+    document.addEventListener('click', event => {
+      if (!adminAccess.classList.contains('is-open')) return;
+      if (!adminAccess.contains(event.target)) setAdminMenuOpen(false);
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && adminAccess.classList.contains('is-open')) {
+        setAdminMenuOpen(false);
+        trigger?.focus();
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (adminAccess.classList.contains('is-open')) setAdminMenuOpen(false);
+    }, { passive: true });
+  }
+
   const reveal = document.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver(entries => {

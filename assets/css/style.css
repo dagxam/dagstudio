@@ -366,3 +366,72 @@ button,.btn,.login-btn,.menu-toggle{touch-action:manipulation}
   .hero-art .hero-ornament{transition:none}
   .hero-art:hover .hero-ornament{transform:none}
 }
+
+
+/* Public administrator access */
+.admin-access{position:relative;flex:none}
+.admin-access-trigger{display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap}
+.admin-access-dot,.admin-access-chevron{display:none}
+.admin-access.is-authenticated .admin-access-trigger{
+  border-color:color-mix(in srgb,var(--accent) 70%,#3a3a3a);
+  color:color-mix(in srgb,var(--accent) 78%,white);
+  background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 7%,#090909),#070707);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)
+}
+.admin-access.is-authenticated .admin-access-dot{
+  display:block;width:7px;height:7px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 10%,transparent)
+}
+.admin-access.is-authenticated .admin-access-chevron{display:inline-block;margin-top:-3px;color:#777;font-size:15px;transition:transform .18s}
+.admin-access.is-open .admin-access-chevron{transform:rotate(180deg)}
+.admin-access-menu{
+  position:absolute;right:0;top:calc(100% + 11px);z-index:90;width:230px;padding:7px;
+  border:1px solid color-mix(in srgb,var(--accent) 32%,#292929);border-radius:10px;
+  background:linear-gradient(160deg,color-mix(in srgb,var(--accent) 5%,#101010),#070707 68%);
+  box-shadow:0 22px 60px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.025);
+  transform-origin:top right
+}
+.admin-access-menu[hidden]{display:none!important}
+.admin-access.is-open .admin-access-menu{animation:adminMenuIn .16s ease both}
+.admin-access-menu:before{
+  content:"";position:absolute;right:21px;top:-6px;width:10px;height:10px;
+  border-left:1px solid color-mix(in srgb,var(--accent) 32%,#292929);
+  border-top:1px solid color-mix(in srgb,var(--accent) 32%,#292929);
+  background:#0d0c0b;transform:rotate(45deg)
+}
+.admin-access-menu>a{
+  position:relative;display:grid;grid-template-columns:36px minmax(0,1fr);gap:10px;align-items:center;
+  min-height:54px;padding:8px 10px;border:1px solid transparent;border-radius:8px;color:#d8d8d8;
+  transition:background .16s,border-color .16s,color .16s
+}
+.admin-access-menu>a:hover{
+  background:color-mix(in srgb,var(--accent) 7%,#101010);
+  border-color:color-mix(in srgb,var(--accent) 24%,#242424);
+  color:#fff
+}
+.admin-access-menu>a+a{margin-top:4px}
+.admin-access-menu-icon{
+  display:grid;place-items:center;width:34px;height:34px;border-radius:8px;
+  border:1px solid color-mix(in srgb,var(--accent) 30%,#292929);
+  background:#090909;color:var(--accent);font-family:"Oswald",Arial,sans-serif;font-size:14px
+}
+.admin-access-menu strong{display:block;font-family:"Oswald",Arial,sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:.055em}
+.admin-access-menu small{display:block;margin-top:2px;color:#666;font-size:10px;line-height:1.2}
+.admin-access-menu .admin-access-logout{color:#b88c87}
+.admin-access-menu .admin-access-logout .admin-access-menu-icon{color:#bd746c;border-color:#4a302e}
+@keyframes adminMenuIn{from{opacity:0;transform:translateY(-5px) scale(.985)}to{opacity:1;transform:none}}
+
+@media(max-width:900px){
+  .admin-access{margin-left:4px}
+  .admin-access.is-authenticated .admin-access-trigger{padding-inline:12px}
+  .admin-access-menu{right:0;top:calc(100% + 9px);width:min(230px,calc(100vw - 24px))}
+}
+@media(max-width:520px){
+  .admin-access.is-authenticated .admin-access-trigger{gap:5px;padding:6px 9px;font-size:10px}
+  .admin-access.is-authenticated .admin-access-dot{width:6px;height:6px}
+  .admin-access.is-authenticated .admin-access-chevron{font-size:13px}
+  .admin-access-menu{position:fixed;left:11px;right:11px;top:calc(64px + env(safe-area-inset-top) + 8px);width:auto}
+  .admin-access-menu:before{display:none}
+  .admin-access-menu>a{min-height:58px}
+}
+@media(prefers-reduced-motion:reduce){.admin-access.is-open .admin-access-menu{animation:none}}

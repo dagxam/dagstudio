@@ -156,7 +156,17 @@ if (is_file($audioFile)) {
         <a<?= $isActive ? ' class="active"' : '' ?> href="<?= h_audio($menuUrl) ?>"<?= $newTab ? ' target="_blank" rel="noopener"' : '' ?>><?= h_audio($menuLabel) ?></a>
       <?php endforeach; ?>
     </nav>
-    <a class="login-btn" href="/admin/">Вход</a>
+    <div class="admin-access" data-admin-access>
+      <a class="login-btn admin-access-trigger" href="/admin/" data-admin-trigger aria-haspopup="true" aria-expanded="false">
+        <span class="admin-access-dot" aria-hidden="true"></span>
+        <span data-admin-label>Вход</span>
+        <span class="admin-access-chevron" aria-hidden="true">⌄</span>
+      </a>
+      <div class="admin-access-menu" data-admin-menu hidden>
+        <a href="/admin/"><span class="admin-access-menu-icon">▦</span><span><strong>Админка</strong><small>Панель управления</small></span></a>
+        <a class="admin-access-logout" href="/admin/logout.php?return=site"><span class="admin-access-menu-icon">↪</span><span><strong>Выйти</strong><small>Завершить сеанс</small></span></a>
+      </div>
+    </div>
   </div>
 </header>
 

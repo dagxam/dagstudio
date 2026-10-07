@@ -15,5 +15,8 @@ if (ini_get('session.use_cookies')) {
     ]);
 }
 session_destroy();
-header('Location: /admin/login.php');
+
+$return = (string)($_GET['return'] ?? '');
+$target = $return === 'site' ? '/' : '/admin/login.php';
+header('Location: ' . $target, true, 303);
 exit;
