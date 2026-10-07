@@ -44,16 +44,19 @@ function admin_header(string $title, string $active = ''): void {
       <img src="<?= e($adminLogo) ?>" alt="DAG STUDIO">
     </a>
     <div class="sidebar-nav-head">
-      <span>Меню</span>
-      <a class="sidebar-order-edit<?= $active === 'sidebar-menu' ? ' active' : '' ?>" href="/admin/sidebar-menu.php" aria-label="Изменить порядок меню" title="Изменить порядок меню">↕</a>
+      <span>Навигация</span>
+      <a class="sidebar-order-edit<?= $active === 'sidebar-menu' ? ' active' : '' ?>" href="/admin/sidebar-menu.php" aria-label="Изменить порядок меню" title="Изменить порядок меню">
+        <span class="sidebar-order-glyph" aria-hidden="true"><i></i><i></i><i></i></span>
+      </a>
     </div>
     <nav class="admin-nav">
       <?php foreach ($sidebarOrder as $sidebarId):
         $item = $sidebarItems[$sidebarId] ?? null;
         if (!is_array($item)) continue;
       ?>
-        <a class="<?= $active === $sidebarId ? 'active' : '' ?>" href="<?= e((string)$item['href']) ?>">
-          <span><?= e((string)$item['icon']) ?></span><?= e((string)$item['label']) ?>
+        <a class="admin-nav-link nav-item-<?= e($sidebarId) ?><?= $active === $sidebarId ? ' active' : '' ?>" href="<?= e((string)$item['href']) ?>">
+          <span class="admin-nav-icon"><?= e((string)$item['icon']) ?></span>
+          <span class="admin-nav-label"><?= e((string)$item['label']) ?></span>
           <?php if ((string)$item['counter'] !== ''): ?><b class="nav-counter"><?= e((string)$item['counter']) ?></b><?php endif; ?>
         </a>
       <?php endforeach; ?>

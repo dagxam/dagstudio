@@ -44,10 +44,14 @@ $order = admin_sidebar_order($available);
 
 admin_header('Порядок меню', 'sidebar-menu');
 ?>
-<div class="page-head">
-  <div>
-    <h1>Левое меню</h1>
-    <p>Меняйте расположение пунктов панели управления. Можно перетаскивать строки мышью или использовать стрелки.</p>
+<div class="page-head sidebar-editor-head">
+  <div class="sidebar-editor-title">
+    <div class="sidebar-editor-mark" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div>
+      <p class="requests-kicker">Настройка интерфейса</p>
+      <h1>Левое меню</h1>
+      <p>Расположите разделы админки в удобном порядке. Перетаскивайте строки или используйте стрелки.</p>
+    </div>
   </div>
 </div>
 

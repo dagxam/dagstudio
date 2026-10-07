@@ -67,21 +67,27 @@ $filtered = array_values(array_filter($items, static function ($item) use ($stat
 admin_header('Обращения', 'requests');
 ?>
 <div class="page-head requests-page-head">
-  <div>
-    <h1>Обращения</h1>
-    <p>Все заявки с форм сайта сохраняются здесь. Почтовая отправка не используется.</p>
+  <div class="requests-title-wrap">
+    <div class="requests-title-icon" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </div>
+    <div>
+      <p class="requests-kicker">Центр входящих</p>
+      <h1>Обращения</h1>
+      <p>Все заявки с сайта собраны в одном месте. Проверяйте их, одобряйте или отклоняйте без почтовой пересылки.</p>
+    </div>
   </div>
   <div class="requests-head-badge">
+    <small>Ожидают решения</small>
     <strong><?= $counts['pending'] ?></strong>
-    <span>новых</span>
   </div>
 </div>
 
 <div class="request-stats">
-  <a class="<?= $status === 'all' ? 'active' : '' ?>" href="/admin/requests.php?status=all"><strong><?= $counts['all'] ?></strong><span>Все</span></a>
-  <a class="<?= $status === 'pending' ? 'active' : '' ?>" href="/admin/requests.php?status=pending"><strong><?= $counts['pending'] ?></strong><span>Новые</span></a>
-  <a class="<?= $status === 'approved' ? 'active' : '' ?>" href="/admin/requests.php?status=approved"><strong><?= $counts['approved'] ?></strong><span>Одобрено</span></a>
-  <a class="<?= $status === 'rejected' ? 'active' : '' ?>" href="/admin/requests.php?status=rejected"><strong><?= $counts['rejected'] ?></strong><span>Отклонено</span></a>
+  <a class="request-stat all <?= $status === 'all' ? 'active' : '' ?>" href="/admin/requests.php?status=all"><span class="request-stat-icon">◫</span><div><strong><?= $counts['all'] ?></strong><span>Все обращения</span></div></a>
+  <a class="request-stat pending <?= $status === 'pending' ? 'active' : '' ?>" href="/admin/requests.php?status=pending"><span class="request-stat-icon">●</span><div><strong><?= $counts['pending'] ?></strong><span>Новые</span></div></a>
+  <a class="request-stat approved <?= $status === 'approved' ? 'active' : '' ?>" href="/admin/requests.php?status=approved"><span class="request-stat-icon">✓</span><div><strong><?= $counts['approved'] ?></strong><span>Одобрено</span></div></a>
+  <a class="request-stat rejected <?= $status === 'rejected' ? 'active' : '' ?>" href="/admin/requests.php?status=rejected"><span class="request-stat-icon">×</span><div><strong><?= $counts['rejected'] ?></strong><span>Отклонено</span></div></a>
 </div>
 
 <section class="panel requests-panel">
@@ -126,8 +132,8 @@ admin_header('Обращения', 'requests');
         </div>
 
         <div class="request-security-meta">
-          <span>ID: <?= e((string)($item['id'] ?? '')) ?></span>
-          <?php if (!empty($item['ip_hash'])): ?><span>IP hash: <?= e(substr((string)$item['ip_hash'], 0, 12)) ?>…</span><?php endif; ?>
+          <span><b>№</b> <?= e((string)($item['id'] ?? '')) ?></span>
+          <?php if (!empty($item['ip_hash'])): ?><span><b>Защита</b> <?= e(substr((string)$item['ip_hash'], 0, 12)) ?>…</span><?php endif; ?>
         </div>
 
         <div class="request-actions">
