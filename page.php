@@ -139,7 +139,7 @@ $contentHtml = ds_bbcode_render((string)($page['content'] ?? ''));
 <html lang="ru">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="<?= h_page($themeBg) ?>">
   <meta name="description" content="<?= h_page($description) ?>">
   <title><?= h_page($title) ?> — <?= h_page((string)$settings['site_name']) ?></title>

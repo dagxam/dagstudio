@@ -117,7 +117,7 @@ $worksCount = count($works);?>
 <html lang="ru">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="<?= h_works($themeBg) ?>">
   <meta name="description" content="Наши работы — проекты и сайты DAG STUDIO.">
   <title>Наши работы — <?= h_works((string)$settings['site_name']) ?></title>

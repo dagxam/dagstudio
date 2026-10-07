@@ -2,14 +2,31 @@
   const toggle = document.querySelector('.menu-toggle');
   const nav = document.querySelector('.main-nav');
   if (toggle && nav) {
-    toggle.addEventListener('click', () => {
-      const open = nav.classList.toggle('is-open');
+    const mobileBreakpoint = 900;
+    const setNavOpen = open => {
+      nav.classList.toggle('is-open', open);
       toggle.setAttribute('aria-expanded', String(open));
+      document.body.classList.toggle('nav-open', open && window.innerWidth <= mobileBreakpoint);
+    };
+
+    toggle.addEventListener('click', () => setNavOpen(!nav.classList.contains('is-open')));
+    nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setNavOpen(false)));
+
+    document.addEventListener('click', event => {
+      if (window.innerWidth > mobileBreakpoint || !nav.classList.contains('is-open')) return;
+      if (!nav.contains(event.target) && !toggle.contains(event.target)) setNavOpen(false);
     });
-    nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-      nav.classList.remove('is-open');
-      toggle.setAttribute('aria-expanded', 'false');
-    }));
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && nav.classList.contains('is-open')) {
+        setNavOpen(false);
+        toggle.focus();
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > mobileBreakpoint) setNavOpen(false);
+    }, { passive: true });
   }
 
   const reveal = document.querySelectorAll('.reveal');

@@ -105,7 +105,7 @@ $publicFormToken = ds_form_token(__DIR__, 'contact');
 <html lang="ru">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="<?= h($themeBg) ?>">
   <meta name="description" content="DAG STUDIO — создание сайтов, дизайн, скрипты и IT-сервис в Дагестане.">
   <title><?= h($settings['site_name']) ?> — создание сайтов & IT-сервис</title>

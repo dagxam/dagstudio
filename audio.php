@@ -124,7 +124,7 @@ if (is_file($audioFile)) {
 <html lang="ru">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="<?= h_audio($themeBg) ?>">
   <meta name="description" content="Наши аудио — DAG STUDIO. Аудиоработы, музыка и звуковые проекты студии.">
   <title>Наши аудио — <?= h_audio((string)$settings['site_name']) ?></title>

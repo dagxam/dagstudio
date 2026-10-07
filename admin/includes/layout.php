@@ -29,7 +29,7 @@ function admin_header(string $title, string $active = ''): void {
 <html lang="ru">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="<?= e($bg) ?>">
   <meta name="robots" content="noindex,nofollow">
   <title><?= e($title) ?> — DAG STUDIO</title>
