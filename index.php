@@ -99,6 +99,7 @@ if (is_file($pluginStateFile)) {
         $worksPluginEnabled = (bool)$pluginStates['works'];
     }
 }
+$publicFormToken = ds_form_token(__DIR__, 'contact');
 ?>
 <!doctype html>
 <html lang="ru">
@@ -207,6 +208,7 @@ if (is_file($pluginStateFile)) {
           </div>
           <form class="request-form" action="/send.php" method="post">
             <input type="hidden" name="source" value="contact">
+            <input type="hidden" name="form_token" value="<?= h($publicFormToken) ?>">
             <div class="form-row">
               <label><span class="sr-only">ФИО</span><input type="text" name="name" maxlength="120" autocomplete="name" placeholder="ФИО" required></label>
               <label><span class="sr-only">Ваш телефон</span><input type="tel" name="phone" maxlength="40" autocomplete="tel" placeholder="ВАШ ТЕЛЕФОН" required></label>
@@ -239,9 +241,10 @@ if (is_file($pluginStateFile)) {
       <div class="order-modal-brand"><img src="<?= h($logoDark) ?>" alt="DAG STUDIO"></div>
       <p class="eyebrow">Новый проект</p>
       <h2 id="orderModalTitle">Заказать услуги</h2>
-      <p class="order-modal-lead">Оставьте контакты и кратко опишите задачу. Заявка придёт напрямую в DAG STUDIO.</p>
+      <p class="order-modal-lead">Оставьте контакты и кратко опишите задачу. Обращение сохранится в защищённой панели DAG STUDIO.</p>
       <form class="request-form order-form" action="/send.php" method="post">
         <input type="hidden" name="source" value="modal">
+        <input type="hidden" name="form_token" value="<?= h($publicFormToken) ?>">
         <div class="form-row">
           <label><span class="sr-only">ФИО</span><input type="text" name="name" maxlength="120" autocomplete="name" placeholder="ФИО" required></label>
           <label><span class="sr-only">Ваш телефон</span><input type="tel" name="phone" maxlength="40" autocomplete="tel" placeholder="ВАШ ТЕЛЕФОН" required></label>
@@ -252,7 +255,7 @@ if (is_file($pluginStateFile)) {
         <button class="btn btn-primary order-submit" type="submit">Отправить заявку</button>
         <p class="form-status order-form-status" role="status" aria-live="polite"></p>
       </form>
-      <div class="order-modal-note">Ответ придёт на указанную вами почту или по телефону.</div>
+      <div class="order-modal-note">Мы рассмотрим обращение в админ-панели и свяжемся по указанным контактам.</div>
     </section>
   </div>
   <div class="site-toast" id="siteToast" role="status" aria-live="polite"></div>

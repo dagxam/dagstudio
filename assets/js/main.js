@@ -75,7 +75,7 @@
   };
 
   if (sent === '1') {
-    const message = 'Заявка отправлена. Мы свяжемся с вами.';
+    const message = 'Обращение принято. Мы рассмотрим его и свяжемся с вами.';
     if (source === 'modal') {
       showToast(message, 'success');
       closeModal();
@@ -88,7 +88,7 @@
   }
 
   if (sent === '0') {
-    const message = 'Не удалось отправить заявку. Попробуйте ещё раз или напишите на admin@dagstudio.ru.';
+    const message = 'Не удалось отправить обращение. Проверьте данные и попробуйте ещё раз.';
     if (source === 'modal') {
       openModal();
       if (modalStatus) {

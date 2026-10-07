@@ -43,5 +43,7 @@ jobs:
             storage/audit.log
             storage/security-rate.json
             storage/security.log
+            storage/security-secret.txt
+            storage/requests.json
             uploads/audio/**
             uploads/branding/**

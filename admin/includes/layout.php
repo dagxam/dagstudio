@@ -11,6 +11,11 @@ function admin_header(string $title, string $active = ''): void {
     $flashes = take_flashes();
     $plugins = plugin_definitions();
     $states = plugin_states();
+    $requestData = storage_read_json('requests.json', ['items' => []]);
+    $requestPending = 0;
+    foreach (($requestData['items'] ?? []) as $requestItem) {
+        if (is_array($requestItem) && (string)($requestItem['status'] ?? 'pending') === 'pending') $requestPending++;
+    }
     $accent = setting_color($settings, 'theme_accent', '#c96f41');
     $bg = setting_color($settings, 'theme_bg', '#050505');
     $panel = setting_color($settings, 'theme_panel', '#1c1c1c');
@@ -38,6 +43,7 @@ function admin_header(string $title, string $active = ''): void {
     </a>
     <nav class="admin-nav">
       <a class="<?= $active === 'dashboard' ? 'active' : '' ?>" href="/admin/"><span>◫</span>Обзор</a>
+      <a class="<?= $active === 'requests' ? 'active' : '' ?>" href="/admin/requests.php"><span>✉</span>Обращения<?php if ($requestPending > 0): ?><b class="nav-counter"><?= $requestPending > 99 ? '99+' : $requestPending ?></b><?php endif; ?></a>
       <a class="<?= $active === 'settings' ? 'active' : '' ?>" href="/admin/settings.php"><span>⚙</span>Настройки</a>
       <a class="<?= $active === 'plugins' ? 'active' : '' ?>" href="/admin/plugins.php"><span>◆</span>Функции и плагины</a>
       <?php foreach ($plugins as $plugin): ?>

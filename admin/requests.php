@@ -1,0 +1,176 @@
+<?php
+declare(strict_types=1);
+
+require __DIR__ . '/includes/bootstrap.php';
+require __DIR__ . '/includes/layout.php';
+require_once DS_ROOT . '/includes/requests-data.php';
+
+admin_require_auth();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_verify();
+
+    $action = (string)($_POST['action'] ?? '');
+    $id = preg_replace('/[^a-z0-9-]/i', '', (string)($_POST['id'] ?? ''));
+    $items = ds_requests_read(DS_ROOT);
+    $found = false;
+
+    foreach ($items as $key => &$item) {
+        if (!is_array($item) || (string)($item['id'] ?? '') !== $id) continue;
+        $found = true;
+
+        if (in_array($action, ['approve', 'reject', 'pending'], true)) {
+            $item['status'] = match ($action) {
+                'approve' => 'approved',
+                'reject' => 'rejected',
+                default => 'pending',
+            };
+            $item['updated_at'] = gmdate('c');
+            audit_log('request.status_changed', ['id' => $id, 'status' => $item['status']]);
+        } elseif ($action === 'delete') {
+            unset($items[$key]);
+            audit_log('request.deleted', ['id' => $id]);
+        }
+        break;
+    }
+    unset($item);
+
+    if (!$found) {
+        flash('error', 'Обращение не найдено.');
+    } elseif (ds_requests_save(DS_ROOT, $items)) {
+        flash('success', $action === 'delete' ? 'Обращение удалено.' : 'Статус обращения обновлён.');
+    } else {
+        flash('error', 'Не удалось сохранить изменения.');
+    }
+
+    $filter = (string)($_POST['return_status'] ?? 'all');
+    if (!in_array($filter, ['all', 'pending', 'approved', 'rejected'], true)) $filter = 'all';
+    admin_redirect('/admin/requests.php?status=' . rawurlencode($filter));
+}
+
+$items = ds_requests_read(DS_ROOT);
+$status = (string)($_GET['status'] ?? 'all');
+if (!in_array($status, ['all', 'pending', 'approved', 'rejected'], true)) $status = 'all';
+
+$counts = ['all' => count($items), 'pending' => 0, 'approved' => 0, 'rejected' => 0];
+foreach ($items as $item) {
+    $itemStatus = (string)($item['status'] ?? 'pending');
+    if (isset($counts[$itemStatus])) $counts[$itemStatus]++;
+}
+
+$filtered = array_values(array_filter($items, static function ($item) use ($status): bool {
+    if (!is_array($item)) return false;
+    if ($status === 'all') return true;
+    return (string)($item['status'] ?? 'pending') === $status;
+}));
+
+admin_header('Обращения', 'requests');
+?>
+<div class="page-head requests-page-head">
+  <div>
+    <h1>Обращения</h1>
+    <p>Все заявки с форм сайта сохраняются здесь. Почтовая отправка не используется.</p>
+  </div>
+  <div class="requests-head-badge">
+    <strong><?= $counts['pending'] ?></strong>
+    <span>новых</span>
+  </div>
+</div>
+
+<div class="request-stats">
+  <a class="<?= $status === 'all' ? 'active' : '' ?>" href="/admin/requests.php?status=all"><strong><?= $counts['all'] ?></strong><span>Все</span></a>
+  <a class="<?= $status === 'pending' ? 'active' : '' ?>" href="/admin/requests.php?status=pending"><strong><?= $counts['pending'] ?></strong><span>Новые</span></a>
+  <a class="<?= $status === 'approved' ? 'active' : '' ?>" href="/admin/requests.php?status=approved"><strong><?= $counts['approved'] ?></strong><span>Одобрено</span></a>
+  <a class="<?= $status === 'rejected' ? 'active' : '' ?>" href="/admin/requests.php?status=rejected"><strong><?= $counts['rejected'] ?></strong><span>Отклонено</span></a>
+</div>
+
+<section class="panel requests-panel">
+  <div class="panel-title-row">
+    <div>
+      <h2><?= e(match ($status) { 'pending' => 'Новые обращения', 'approved' => 'Одобренные', 'rejected' => 'Отклонённые', default => 'Все обращения' }) ?></h2>
+      <span><?= count($filtered) ?> шт.</span>
+    </div>
+  </div>
+
+  <?php if (!$filtered): ?>
+    <div class="empty requests-empty">В этом разделе пока нет обращений.</div>
+  <?php endif; ?>
+
+  <div class="requests-list">
+    <?php foreach ($filtered as $item):
+      $itemStatus = (string)($item['status'] ?? 'pending');
+      $created = strtotime((string)($item['created_at'] ?? '')) ?: 0;
+      $sourceLabel = (string)($item['source'] ?? '') === 'modal' ? 'Заказать услуги' : 'Оставить заявку';
+      $phoneHref = preg_replace('/[^+0-9]/', '', (string)($item['phone'] ?? '')) ?: '';
+    ?>
+      <article class="request-card request-status-<?= e($itemStatus) ?>">
+        <div class="request-card-top">
+          <div class="request-person">
+            <span class="request-avatar"><?= e(mb_strtoupper(mb_substr((string)($item['name'] ?? '?'), 0, 1))) ?></span>
+            <div>
+              <strong><?= e((string)($item['name'] ?? 'Без имени')) ?></strong>
+              <span><?= e($sourceLabel) ?><?= $created ? ' · ' . e(date('d.m.Y H:i', $created)) : '' ?></span>
+            </div>
+          </div>
+          <span class="request-status-badge <?= e($itemStatus) ?>"><?= e(ds_request_status_label($itemStatus)) ?></span>
+        </div>
+
+        <div class="request-contact-grid">
+          <div><small>Телефон</small><a href="tel:<?= e($phoneHref) ?>"><?= e((string)($item['phone'] ?? '')) ?></a></div>
+          <div><small>Почта</small><a href="mailto:<?= e((string)($item['email'] ?? '')) ?>"><?= e((string)($item['email'] ?? '')) ?></a></div>
+        </div>
+
+        <div class="request-message">
+          <small>Сообщение</small>
+          <p><?= nl2br(e((string)($item['message'] ?? ''))) ?></p>
+        </div>
+
+        <div class="request-security-meta">
+          <span>ID: <?= e((string)($item['id'] ?? '')) ?></span>
+          <?php if (!empty($item['ip_hash'])): ?><span>IP hash: <?= e(substr((string)$item['ip_hash'], 0, 12)) ?>…</span><?php endif; ?>
+        </div>
+
+        <div class="request-actions">
+          <?php if ($itemStatus !== 'approved'): ?>
+            <form method="post">
+              <?= csrf_field() ?>
+              <input type="hidden" name="action" value="approve">
+              <input type="hidden" name="id" value="<?= e((string)$item['id']) ?>">
+              <input type="hidden" name="return_status" value="<?= e($status) ?>">
+              <button class="request-action approve" type="submit">✓ Одобрить</button>
+            </form>
+          <?php endif; ?>
+
+          <?php if ($itemStatus !== 'rejected'): ?>
+            <form method="post">
+              <?= csrf_field() ?>
+              <input type="hidden" name="action" value="reject">
+              <input type="hidden" name="id" value="<?= e((string)$item['id']) ?>">
+              <input type="hidden" name="return_status" value="<?= e($status) ?>">
+              <button class="request-action reject" type="submit">× Отклонить</button>
+            </form>
+          <?php endif; ?>
+
+          <?php if ($itemStatus !== 'pending'): ?>
+            <form method="post">
+              <?= csrf_field() ?>
+              <input type="hidden" name="action" value="pending">
+              <input type="hidden" name="id" value="<?= e((string)$item['id']) ?>">
+              <input type="hidden" name="return_status" value="<?= e($status) ?>">
+              <button class="request-action neutral" type="submit">↺ Вернуть в новые</button>
+            </form>
+          <?php endif; ?>
+
+          <form method="post">
+            <?= csrf_field() ?>
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="id" value="<?= e((string)$item['id']) ?>">
+            <input type="hidden" name="return_status" value="<?= e($status) ?>">
+            <button class="request-action delete" type="submit" data-confirm="Удалить обращение без возможности восстановления?">Удалить</button>
+          </form>
+        </div>
+      </article>
+    <?php endforeach; ?>
+  </div>
+</section>
+<?php admin_footer(); ?>

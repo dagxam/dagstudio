@@ -122,6 +122,67 @@ if (!function_exists('ds_is_https')) {
         return $allowed;
     }
 
+    function ds_security_secret(string $root): string {
+        $storage = rtrim($root, '/\\') . '/storage';
+        if (!is_dir($storage) && !@mkdir($storage, 0750, true) && !is_dir($storage)) return '';
+
+        $path = $storage . '/security-secret.txt';
+        $handle = @fopen($path, 'c+');
+        if ($handle === false) return '';
+        if (!@flock($handle, LOCK_EX)) {
+            fclose($handle);
+            return '';
+        }
+
+        rewind($handle);
+        $secret = trim((string)stream_get_contents($handle));
+        if (!preg_match('/^[a-f0-9]{64}$/', $secret)) {
+            $secret = bin2hex(random_bytes(32));
+            rewind($handle);
+            ftruncate($handle, 0);
+            fwrite($handle, $secret);
+            fflush($handle);
+            @chmod($path, 0640);
+        }
+
+        flock($handle, LOCK_UN);
+        fclose($handle);
+        return $secret;
+    }
+
+    function ds_form_token(string $root, string $scope = 'form'): string {
+        $secret = ds_security_secret($root);
+        if ($secret === '') return '';
+        $ts = time();
+        $nonce = bin2hex(random_bytes(8));
+        $payload = $scope . '|' . $ts . '|' . $nonce;
+        $sig = hash_hmac('sha256', $payload, $secret);
+        return $ts . '.' . $nonce . '.' . $sig;
+    }
+
+    function ds_verify_form_token(
+        string $root,
+        string $token,
+        string $scope = 'form',
+        int $minAge = 1,
+        int $maxAge = 7200
+    ): bool {
+        $parts = explode('.', trim($token));
+        if (count($parts) !== 3) return false;
+        [$tsRaw, $nonce, $sig] = $parts;
+        if (!ctype_digit($tsRaw) || !preg_match('/^[a-f0-9]{16}$/', $nonce) || !preg_match('/^[a-f0-9]{64}$/', $sig)) return false;
+
+        $ts = (int)$tsRaw;
+        $age = time() - $ts;
+        if ($age < $minAge || $age > $maxAge) return false;
+
+        $secret = ds_security_secret($root);
+        if ($secret === '') return false;
+        $payload = $scope . '|' . $ts . '|' . $nonce;
+        $expected = hash_hmac('sha256', $payload, $secret);
+        return hash_equals($expected, $sig);
+    }
+
     function ds_security_log(string $root, string $event, array $context = []): void {
         $storage = rtrim($root, '/\\') . '/storage';
         if (!is_dir($storage) && !@mkdir($storage, 0755, true) && !is_dir($storage)) return;
