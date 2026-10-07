@@ -11,18 +11,13 @@ function admin_header(string $title, string $active = ''): void {
     $flashes = take_flashes();
     $plugins = plugin_definitions();
     $states = plugin_states();
-    $requestData = storage_read_json('requests.json', ['items' => []]);
-    $requestPending = 0;
-    foreach (($requestData['items'] ?? []) as $requestItem) {
-        if (is_array($requestItem) && (string)($requestItem['status'] ?? 'pending') === 'pending') $requestPending++;
-    }
     $accent = setting_color($settings, 'theme_accent', '#c96f41');
     $bg = setting_color($settings, 'theme_bg', '#050505');
     $panel = setting_color($settings, 'theme_panel', '#1c1c1c');
     $text = setting_color($settings, 'theme_text', '#f7f7f5');
     $adminLogo = setting_asset($settings, 'logo_admin', '/assets/img/logo-horizontal-dark.svg');
     $markLogo = setting_asset($settings, 'logo_mark', '/assets/img/logo-mark-square.svg');
-    $sidebarItems = admin_sidebar_available_items($plugins, $states, $requestPending);
+    $sidebarItems = admin_sidebar_available_items($plugins, $states);
     $sidebarOrder = admin_sidebar_order($sidebarItems);
     ?>
 <!doctype html>

@@ -8,13 +8,7 @@ admin_require_auth();
 
 $plugins = plugin_definitions();
 $states = plugin_states();
-$requestData = storage_read_json('requests.json', ['items' => []]);
-$requestPending = 0;
-foreach (($requestData['items'] ?? []) as $requestItem) {
-    if (is_array($requestItem) && (string)($requestItem['status'] ?? 'pending') === 'pending') $requestPending++;
-}
-
-$available = admin_sidebar_available_items($plugins, $states, $requestPending);
+$available = admin_sidebar_available_items($plugins, $states);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verify();

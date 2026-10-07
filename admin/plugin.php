@@ -24,6 +24,7 @@ if (isset($plugin['handle']) && is_callable($plugin['handle'])) {
 
 admin_header((string)($plugin['name'] ?? $id), 'plugin-' . $id);
 ?>
+<?php if (empty($plugin['custom_page_head'])): ?>
 <div class="page-head">
   <div>
     <h1><?= e((string)($plugin['name'] ?? $id)) ?></h1>
@@ -31,6 +32,7 @@ admin_header((string)($plugin['name'] ?? $id), 'plugin-' . $id);
   </div>
   <a class="btn secondary" href="/admin/plugins.php">Все плагины</a>
 </div>
+<?php endif; ?>
 <div class="plugin-page plugin-page-wide">
 <?php
 if (isset($plugin['render']) && is_callable($plugin['render'])) {

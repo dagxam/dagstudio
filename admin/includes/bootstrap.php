@@ -254,10 +254,9 @@ function set_plugin_enabled(string $id, bool $enabled): bool {
     return true;
 }
 
-function admin_sidebar_available_items(array $plugins, array $states, int $requestPending = 0): array {
+function admin_sidebar_available_items(array $plugins, array $states): array {
     $items = [
         'dashboard' => ['id' => 'dashboard', 'label' => 'Обзор', 'href' => '/admin/', 'icon' => '◫', 'counter' => ''],
-        'requests' => ['id' => 'requests', 'label' => 'Обращения', 'href' => '/admin/requests.php', 'icon' => '✉', 'counter' => $requestPending > 0 ? ($requestPending > 99 ? '99+' : (string)$requestPending) : ''],
         'settings' => ['id' => 'settings', 'label' => 'Настройки', 'href' => '/admin/settings.php', 'icon' => '⚙', 'counter' => ''],
         'plugins' => ['id' => 'plugins', 'label' => 'Функции и плагины', 'href' => '/admin/plugins.php', 'icon' => '◆', 'counter' => ''],
     ];
@@ -266,13 +265,27 @@ function admin_sidebar_available_items(array $plugins, array $states, int $reque
         if (!is_array($plugin) || empty($plugin['menu']) || !plugin_enabled($plugin, $states)) continue;
         $pluginId = (string)($plugin['id'] ?? '');
         if ($pluginId === '') continue;
+
+        $counter = '';
+        if (isset($plugin['counter'])) {
+            if (is_callable($plugin['counter'])) {
+                try {
+                    $counter = (string)$plugin['counter']();
+                } catch (Throwable) {
+                    $counter = '';
+                }
+            } elseif (is_scalar($plugin['counter'])) {
+                $counter = (string)$plugin['counter'];
+            }
+        }
+
         $id = 'plugin-' . $pluginId;
         $items[$id] = [
             'id' => $id,
             'label' => (string)$plugin['menu'],
             'href' => '/admin/plugin.php?id=' . rawurlencode($pluginId),
             'icon' => (string)($plugin['icon'] ?? '+'),
-            'counter' => '',
+            'counter' => $counter,
         ];
     }
 
@@ -286,6 +299,7 @@ function admin_sidebar_order(array $available): array {
 
     foreach ($order as $id) {
         $id = (string)$id;
+        if ($id === 'requests' && isset($available['plugin-requests'])) $id = 'plugin-requests';
         if (isset($available[$id]) && !in_array($id, $result, true)) $result[] = $id;
     }
     foreach (array_keys($available) as $id) {

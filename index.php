@@ -85,6 +85,7 @@ $phoneHref = preg_replace('/[^+0-9]/', '', (string)$settings['phone']) ?: '';
 $audioPluginEnabled = true;
 $pagesPluginEnabled = true;
 $worksPluginEnabled = true;
+$requestsPluginEnabled = true;
 $pluginStateFile = __DIR__ . '/storage/plugins.json';
 if (is_file($pluginStateFile)) {
     $rawPlugins = @file_get_contents($pluginStateFile);
@@ -98,8 +99,11 @@ if (is_file($pluginStateFile)) {
     if (is_array($pluginStates) && array_key_exists('works', $pluginStates)) {
         $worksPluginEnabled = (bool)$pluginStates['works'];
     }
+    if (is_array($pluginStates) && array_key_exists('requests', $pluginStates)) {
+        $requestsPluginEnabled = (bool)$pluginStates['requests'];
+    }
 }
-$publicFormToken = ds_form_token(__DIR__, 'contact');
+$publicFormToken = $requestsPluginEnabled ? ds_form_token(__DIR__, 'contact') : '';
 ?>
 <!doctype html>
 <html lang="ru">
@@ -154,7 +158,7 @@ $publicFormToken = ds_form_token(__DIR__, 'contact');
           <p class="hero-text">Разрабатываем сайты с уникальным характером, пишем код и оживляем технику. Сочетаем монументальность традиций и скорость современных технологий.</p>
           <div class="hero-actions">
             <?php if ($worksPluginEnabled): ?><a class="btn btn-primary" href="/works.php">Смотреть работы</a><?php endif; ?>
-            <button class="btn btn-outline" type="button" data-order-open>Заказать услуги</button>
+            <?php if ($requestsPluginEnabled): ?><button class="btn btn-outline" type="button" data-order-open>Заказать услуги</button><?php endif; ?>
           </div>
         </div>
         <div class="hero-art reveal" aria-hidden="true">
@@ -206,6 +210,7 @@ $publicFormToken = ds_form_token(__DIR__, 'contact');
             <div><small>Телефон</small><a href="tel:<?= h($phoneHref) ?>"><?= h((string)$settings['phone']) ?></a></div>
             <div><small>Емайл</small><a href="mailto:<?= h((string)$settings['email']) ?>"><?= h((string)$settings['email']) ?></a></div>
           </div>
+          <?php if ($requestsPluginEnabled): ?>
           <form class="request-form" action="/send.php" method="post">
             <input type="hidden" name="source" value="contact">
             <input type="hidden" name="form_token" value="<?= h($publicFormToken) ?>">
@@ -219,6 +224,9 @@ $publicFormToken = ds_form_token(__DIR__, 'contact');
             <button class="btn btn-outline submit-btn" type="submit">Оставить заявку</button>
             <p class="form-status" role="status" aria-live="polite"></p>
           </form>
+          <?php else: ?>
+            <div class="form-status">Приём обращений временно отключён.</div>
+          <?php endif; ?>
         </div>
         <div class="map-wrap reveal">
           <iframe title="DAG STUDIO на карте" src="https://yandex.ru/map-widget/v1/?ll=47.504682%2C42.984857&z=12&l=map" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
@@ -234,6 +242,7 @@ $publicFormToken = ds_form_token(__DIR__, 'contact');
     </section>
   </main>
 
+  <?php if ($requestsPluginEnabled): ?>
   <div class="order-modal" id="orderModal" aria-hidden="true">
     <div class="order-modal-backdrop" data-order-close></div>
     <section class="order-modal-panel" role="dialog" aria-modal="true" aria-labelledby="orderModalTitle">
@@ -258,6 +267,7 @@ $publicFormToken = ds_form_token(__DIR__, 'contact');
       <div class="order-modal-note">Мы рассмотрим обращение в админ-панели и свяжемся по указанным контактам.</div>
     </section>
   </div>
+  <?php endif; ?>
   <div class="site-toast" id="siteToast" role="status" aria-live="polite"></div>
 
   <footer class="site-footer">

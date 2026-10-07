@@ -40,6 +40,20 @@ $source = (string)($_POST['source'] ?? 'contact');
 $source = in_array($source, ['contact', 'modal'], true) ? $source : 'contact';
 $anchor = $source === 'contact' ? '#contacts' : '#top';
 
+$pluginStates = [];
+$pluginStateFile = __DIR__ . '/storage/plugins.json';
+if (is_file($pluginStateFile)) {
+    $rawStates = @file_get_contents($pluginStateFile);
+    $decodedStates = $rawStates !== false ? json_decode($rawStates, true) : null;
+    if (is_array($decodedStates)) $pluginStates = $decodedStates;
+}
+$requestsEnabled = !array_key_exists('requests', $pluginStates) || !empty($pluginStates['requests']);
+if (!$requestsEnabled) {
+    ds_security_log(__DIR__, 'form.requests_plugin_disabled', ['source' => $source]);
+    header('Location: /?sent=0&source=' . rawurlencode($source) . $anchor, true, 303);
+    exit;
+}
+
 if (!empty($_POST['website'] ?? '')) {
     ds_security_log(__DIR__, 'form.honeypot');
     header('Location: /?sent=1&source=' . rawurlencode($source) . $anchor, true, 303);

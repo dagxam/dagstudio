@@ -15,6 +15,7 @@ $audioPublished = 0;
 foreach ($audioItems as $audioItem) {
     if (!empty($audioItem['published'])) $audioPublished++;
 }
+$requestsEnabled = isset($plugins['requests']) && plugin_enabled($plugins['requests'], $states);
 $requestData = storage_read_json('requests.json', ['items' => []]);
 $requestItems = is_array($requestData['items'] ?? null) ? $requestData['items'] : [];
 $requestPending = 0;
@@ -35,7 +36,11 @@ admin_header('Обзор', 'dashboard');
 <div class="grid stats-grid">
   <div class="stat-card"><small>Плагины</small><strong><?= count($plugins) ?></strong><span><?= $activePlugins ?> активных</span></div>
   <div class="stat-card"><small>Аудио</small><strong><?= count($audioItems) ?></strong><span><?= $audioPublished ?> опубликовано</span></div>
-  <div class="stat-card"><small>Обращения</small><strong><?= count($requestItems) ?></strong><span><?= $requestPending ?> новых</span></div>
+  <?php if ($requestsEnabled): ?>
+    <div class="stat-card"><small>Обращения</small><strong><?= count($requestItems) ?></strong><span><?= $requestPending ?> новых</span></div>
+  <?php else: ?>
+    <div class="stat-card"><small>PHP</small><strong><?= e(PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION) ?></strong><span>Сервер работает</span></div>
+  <?php endif; ?>
   <div class="stat-card"><small>Сайт</small><strong>ONLINE</strong><span><?= e($settings['site_name']) ?></span></div>
 </div>
 
@@ -43,7 +48,7 @@ admin_header('Обзор', 'dashboard');
   <section class="panel">
     <h2>Быстрые действия</h2>
     <div class="quick-actions">
-      <a href="/admin/requests.php"><strong>Обращения<?= $requestPending > 0 ? ' · ' . $requestPending : '' ?></strong><span>Проверять новые заявки, одобрять и отклонять</span></a>
+      <?php if ($requestsEnabled): ?><a href="/admin/plugin.php?id=requests"><strong>Обращения<?= $requestPending > 0 ? ' · ' . $requestPending : '' ?></strong><span>Сообщения из обеих форм главной страницы</span></a><?php endif; ?>
       <?php if (isset($plugins['audio']) && plugin_enabled($plugins['audio'], $states)): ?><a href="/admin/plugin.php?id=audio"><strong>Аудио</strong><span>Загружать, редактировать и публиковать треки</span></a><?php endif; ?>
       <a href="/admin/plugins.php"><strong>Функции и плагины</strong><span>Включать и отключать установленные модули</span></a>
       <a href="/admin/settings.php"><strong>Настройки сайта</strong><span>Контакты и основные данные проекта</span></a>
