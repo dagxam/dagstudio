@@ -18,6 +18,7 @@
   <div class="label">РАБОЧЕЕ ПРОСТРАНСТВО</div>
   <nav aria-label="Меню">
     <button class="nav active" data-page="compose">✎ &nbsp; Создать публикацию</button>
+    <button class="nav" data-page="autopilot">◉ &nbsp; Автопилот</button>
     <button class="nav" data-page="drafts">▤ &nbsp; Черновики <span id="draftCount">0</span></button>
     <button class="nav" data-page="accounts">◎ &nbsp; Подключения</button>
     <button class="nav" data-page="about">⚙ &nbsp; О системе</button>
@@ -50,10 +51,34 @@
       </div>
     </div>
   </section>
+  <section class="page hidden" id="page-autopilot">
+    <div class="eyebrow">DAG STUDIO — ПРОДВИЖЕНИЕ</div>
+    <h1>Контент-<em>автопилот.</em></h1>
+    <p class="lead">Каждый день система готовит посты и вертикальные видео, продвигающие услуги DAG STUDIO. Готовые материалы доступны в закрытом от случайных посетителей разделе артефактов GitHub Actions, для скачивания нужен доступ к репозиторию.</p>
+    <div class="columns">
+      <article class="panel">
+        <small>ОСНОВНЫЕ ПЛОЩАДКИ</small><h2>ВКонтакте и Одноклассники</h2>
+        <p class="hint">Черновики готовятся по очереди для личных профилей. Автопубликация ещё не подключена: требуется официальный доступ API и проверка аккаунтов.</p>
+        <div class="account"><span class="logo vk">VK</span><div><b>ВКонтакте</b><small>Личный профиль • подготовка</small></div><span class="status neutral">Доступ API не подтверждён</span></div>
+        <div class="account"><span class="logo ok">OK</span><div><b>Одноклассники</b><small>Личный профиль • подготовка</small></div><span class="status neutral">Не подключено</span></div>
+      </article>
+      <article class="panel">
+        <small>ДОПОЛНИТЕЛЬНЫЕ ВИДЕО</small><h2>Instagram Reels</h2>
+        <p class="hint">Вертикальные MP4 1080×1920 с анимированной графикой и подписью. Загружать в Instagram Business нужно вручную: Meta API недоступен.</p>
+        <div class="account"><span class="logo ok">▶</span><div><b>Настоящие MP4-файлы</b><small>Анимация, не видеосъёмка</small></div><span class="status neutral">Ручная загрузка</span></div>
+      </article>
+    </div>
+    <article class="panel spacer">
+      <small>РЕЗУЛЬТАТЫ АВТОМАТИЗАЦИИ</small><h2>Посты, видео и поиск заказчиков</h2>
+      <p class="hint">Последние выпуски: файлы .md, .mp4, очередь queue.json и public-leads.md с найденными открытыми запросами на услуги. Скачай архив в разделе Artifacts успешного запуска.</p>
+      <div class="actions"><a class="btn accent" href="https://github.com/dagxam/dag-social-manager/actions/workflows/autopilot.yml" target="_blank" rel="noopener noreferrer">Посмотреть выпуски в GitHub ↗</a><a class="btn secondary" href="https://github.com/dagxam/dag-social-manager/blob/main/docs/MARKETING-AUTOPILOT.md" target="_blank" rel="noopener noreferrer">Как это работает ↗</a></div>
+      <p class="hint">Важно: здесь отображается описание режима работы, не подтверждение публикаций в соцсетях.</p>
+    </article>
+  </section>
   <section class="page hidden" id="page-drafts"><div class="eyebrow">КОНТЕНТ — 02</div><h1>Мои <em>черновики.</em></h1><p class="lead">Черновики хранятся только в браузере, а не на сервере.</p><div id="draftItems"></div><p id="emptyDrafts" class="panel">Черновиков ещё нет.</p></section>
   <section class="page hidden" id="page-accounts"><div class="eyebrow">АВТОРИЗАЦИЯ — 03</div><h1>Мои <em>аккаунты.</em></h1><div class="panel"><h2>ВКонтакте</h2><p>Личный профиль: <a href="https://vk.ru/id526046650" target="_blank" rel="noopener noreferrer">id526046650 ↗</a></p><p id="accountStatus">Проверка VK Bridge ожидается.</p><button id="checkVK" class="btn secondary">Проверить подключение</button></div><div class="panel spacer"><h2>Одноклассники</h2><p>Личный профиль: <a href="https://ok.ru/profile/588147594573" target="_blank" rel="noopener noreferrer">588147594573 ↗</a></p><p class="hint">Права публикации в личный профиль и авторизация ОК будут добавлены отдельно.</p></div></section>
-  <section class="page hidden" id="page-about"><div class="eyebrow">СИСТЕМА — 04</div><h1>О <em>приложении.</em></h1><div class="panel"><p>VK Mini App: <b>54811124</b></p><p>Размещение: <b>Render Free</b></p><p>Публикация: <b>через окно VK Bridge</b></p><p>Удалённый MCP, автоматические публикации и ОК: <b>не подключены</b></p><p>Пароли, токены и ключи соцсетей не запрашиваются.</p></div></section>
-  <footer><span>© 2026 DAG SOCIAL MANAGER</span><span>v0.4.1 · <a href="https://dagstudio.ru/" target="_blank" rel="noopener noreferrer">DAG STUDIO</a></span></footer>
+  <section class="page hidden" id="page-about"><div class="eyebrow">СИСТЕМА — 04</div><h1>О <em>приложении.</em></h1><div class="panel"><p>VK Mini App: <b>54811124</b></p><p>Интерфейс: <b>dagstudio.ru/social/</b></p><p>Подготовка контента: <b>GitHub Actions</b></p><p>Публикация: <b>через окно VK Bridge</b></p><p>Удалённый MCP, автопубликации и API Одноклассников: <b>не подключены</b></p><p>Пароли, токены и ключи соцсетей не запрашиваются.</p></div></section>
+  <footer><span>© 2026 DAG SOCIAL MANAGER</span><span>v0.5 · <a href="https://dagstudio.ru/" target="_blank" rel="noopener noreferrer">DAG STUDIO</a></span></footer>
 </main>
 </div>
 <div id="toast" role="status" aria-live="polite"></div>

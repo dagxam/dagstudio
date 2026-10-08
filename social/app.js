@@ -24,7 +24,7 @@ function setIdentity(ok, description) {
 function updateButton() {publishButton.disabled = !authorized || !prepared || prepared !== editor.value.trim();}
 function insideVK() {return !!(window.vkBridge?.send && (window.vkBridge?.isEmbedded?.() || window.vkBridge?.isWebView?.()));}
 async function checkIdentity() {
-  if (!insideVK()) return setIdentity(false, 'Открой приложение из ВКонтакте. Прямая ссылка на Render предназначена для предпросмотра.');
+  if (!insideVK()) return setIdentity(false, 'Открой приложение из ВКонтакте. Открытие сайта в обычном браузере предназначено для предпросмотра.');
   try {
     await window.vkBridge.send('VKWebAppInit');
     const data = await window.vkBridge.send('VKWebAppGetUserInfo');
