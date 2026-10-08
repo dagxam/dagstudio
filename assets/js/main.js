@@ -82,6 +82,45 @@
     }, { passive: true });
   }
 
+  const heroOrnament = document.querySelector('[data-hero-ornament]');
+  if (heroOrnament) {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let angle = 0;
+    let speed = 0;
+    let targetSpeed = 0.022;
+    let lastTime = performance.now();
+
+    const setDirection = reverse => {
+      targetSpeed = reverse ? -0.032 : 0.022;
+    };
+
+    const animateOrnament = now => {
+      const delta = Math.min(40, Math.max(0, now - lastTime));
+      lastTime = now;
+
+      if (!reduceMotion.matches) {
+        speed += (targetSpeed - speed) * Math.min(1, delta * 0.0045);
+        angle = (angle + speed * delta) % 360;
+        heroOrnament.style.transform = `rotate(${angle}deg)`;
+      } else {
+        heroOrnament.style.transform = 'rotate(0deg)';
+      }
+
+      requestAnimationFrame(animateOrnament);
+    };
+
+    heroOrnament.addEventListener('mouseenter', () => setDirection(true));
+    heroOrnament.addEventListener('mouseleave', () => setDirection(false));
+    heroOrnament.addEventListener('focus', () => setDirection(true));
+    heroOrnament.addEventListener('blur', () => setDirection(false));
+
+    document.addEventListener('visibilitychange', () => {
+      lastTime = performance.now();
+    });
+
+    requestAnimationFrame(animateOrnament);
+  }
+
   const reveal = document.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver(entries => {

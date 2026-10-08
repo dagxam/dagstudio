@@ -793,3 +793,91 @@ button,.btn,.login-btn,.menu-toggle{touch-action:manipulation}
   .works-page-compact .works-cta-inner{align-items:stretch;flex-direction:column}
   .works-page-compact .works-cta .btn{width:100%}
 }
+
+
+/* =========================================================
+   Main hero — uploaded Dagestan ornament
+   ========================================================= */
+.hero-art--ornament{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-width:0;
+  perspective:none;
+}
+.hero-art--ornament .hero-glow{
+  width:min(88%,560px);
+  height:min(88%,560px);
+  background:
+    radial-gradient(circle,
+      color-mix(in srgb,var(--accent) 14%,transparent) 0%,
+      color-mix(in srgb,var(--accent) 6%,transparent) 42%,
+      transparent 72%);
+  filter:blur(26px);
+  opacity:.9;
+}
+.hero-ornament-wrap{
+  position:relative;
+  z-index:2;
+  width:min(88%,560px);
+  aspect-ratio:1929 / 2048;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  isolation:isolate;
+}
+.hero-ornament-wrap:before{
+  content:"";
+  position:absolute;
+  inset:10%;
+  z-index:-1;
+  border-radius:50%;
+  background:radial-gradient(circle,color-mix(in srgb,var(--accent) 8%,transparent),transparent 68%);
+  filter:blur(24px);
+  pointer-events:none;
+}
+.hero-art--ornament .hero-ornament{
+  display:block;
+  width:100%;
+  max-width:none;
+  max-height:none;
+  height:auto;
+  object-fit:contain;
+  transform-origin:50% 50%;
+  transition:filter .3s ease;
+  filter:drop-shadow(0 22px 42px rgba(0,0,0,.45));
+  will-change:transform;
+  user-select:none;
+  -webkit-user-drag:none;
+}
+@media(hover:hover) and (pointer:fine){
+  .hero-art--ornament:hover .hero-ornament{
+    filter:
+      drop-shadow(0 24px 46px rgba(0,0,0,.5))
+      drop-shadow(0 0 16px color-mix(in srgb,var(--accent) 13%,transparent));
+  }
+}
+@media(max-width:1024px){
+  .hero-ornament-wrap{width:min(74%,470px)}
+  .hero-art--ornament .hero-glow{width:min(74%,470px);height:min(74%,470px)}
+}
+@media(max-width:900px){
+  .hero-art--ornament{min-height:310px}
+  .hero-ornament-wrap{width:min(66vw,430px)}
+  .hero-art--ornament .hero-glow{width:min(66vw,430px);height:min(66vw,430px)}
+}
+@media(max-width:768px){
+  .hero-art--ornament{min-height:255px}
+  .hero-ornament-wrap{width:min(66vw,360px)}
+}
+@media(max-width:520px){
+  .hero-art--ornament{min-height:210px}
+  .hero-ornament-wrap{width:min(72vw,315px)}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-art--ornament .hero-ornament{
+    transition:none;
+    transform:none!important;
+  }
+}

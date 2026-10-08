@@ -171,9 +171,21 @@ $publicFormToken = $requestsPluginEnabled ? ds_form_token(__DIR__, 'contact') : 
             <?php if ($requestsPluginEnabled): ?><button class="btn btn-outline" type="button" data-order-open>Заказать услуги</button><?php endif; ?>
           </div>
         </div>
-        <div class="hero-art reveal">
+        <div class="hero-art hero-art--ornament reveal">
           <div class="hero-glow" aria-hidden="true"></div>
-          <img class="hero-ornament" src="<?= h(ds_asset_url(__DIR__, '/assets/img/hero-ornament.svg')) ?>" alt="Дагестанский орнамент DAG STUDIO">
+          <div class="hero-ornament-wrap">
+            <img
+              class="hero-ornament"
+              data-hero-ornament
+              src="<?= h(ds_asset_url(__DIR__, '/assets/img/hero-ornament-main.webp')) ?>"
+              alt="Дагестанский орнамент DAG STUDIO"
+              width="900"
+              height="956"
+              loading="eager"
+              decoding="async"
+              fetchpriority="high"
+            >
+          </div>
         </div>
       </div>
     </section>
@@ -296,6 +308,6 @@ $publicFormToken = $requestsPluginEnabled ? ds_form_token(__DIR__, 'contact') : 
     <div class="container footer-bottom"><span>© 2026 DAGSTUDIO. All rights reserved.</span><a href="#">Политика конфиденциальности</a></div>
   </footer>
 
-  <script src="assets/js/main.js"></script>
+  <script src="<?= h(ds_asset_url(__DIR__, '/assets/js/main.js')) ?>"></script>
 </body>
 </html>
