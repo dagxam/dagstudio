@@ -58,9 +58,10 @@
     <div class="columns">
       <article class="panel">
         <small>ОСНОВНЫЕ ПЛОЩАДКИ</small><h2>ВКонтакте и Одноклассники</h2>
-        <p class="hint">Черновики готовятся по очереди для личных профилей. Автопубликация ещё не подключена: требуется официальный доступ API и проверка аккаунтов.</p>
-        <div class="account"><span class="logo vk">VK</span><div><b>ВКонтакте</b><small>Личный профиль • подготовка</small></div><span class="status neutral">Доступ API не подтверждён</span></div>
-        <div class="account"><span class="logo ok">OK</span><div><b>Одноклассники</b><small>Личный профиль • подготовка</small></div><span class="status neutral">Не подключено</span></div>
+        <p class="hint">Личные страницы указаны для подготовки контента. Проверка входа в профиль и доступ к автоматической публикации — разные разрешения. Автопубликация пока не включена ни в одной сети.</p>
+        <div class="account"><span class="logo vk">VK</span><div><b>ВКонтакте</b><small>id526046650 · проверяем вход через VK Bridge</small><small>Автопостинг: разрешение API пока не получено</small></div><span id="autopilotVkStatus" class="status neutral" role="status">Вход не проверен</span></div>
+        <div class="account"><span class="logo ok">OK</span><div><b>Одноклассники</b><small>588147594573 · личная страница указана</small><small>Автопостинг: требуется OAuth-авторизация и права API</small></div><span class="status neutral">Ожидает OAuth</span></div>
+        <div class="actions"><button id="autopilotCheckVK" class="btn secondary" type="button">Проверить вход через ВК →</button></div>
       </article>
       <article class="panel">
         <small>ДОПОЛНИТЕЛЬНЫЕ ВИДЕО</small><h2>Instagram Reels</h2>
@@ -76,7 +77,7 @@
     </article>
   </section>
   <section class="page hidden" id="page-drafts"><div class="eyebrow">КОНТЕНТ — 02</div><h1>Мои <em>черновики.</em></h1><p class="lead">Черновики хранятся только в браузере, а не на сервере.</p><div id="draftItems"></div><p id="emptyDrafts" class="panel">Черновиков ещё нет.</p></section>
-  <section class="page hidden" id="page-accounts"><div class="eyebrow">АВТОРИЗАЦИЯ — 03</div><h1>Мои <em>аккаунты.</em></h1><div class="panel"><h2>ВКонтакте</h2><p>Личный профиль: <a href="https://vk.ru/id526046650" target="_blank" rel="noopener noreferrer">id526046650 ↗</a></p><p id="accountStatus">Проверка VK Bridge ожидается.</p><button id="checkVK" class="btn secondary">Проверить подключение</button></div><div class="panel spacer"><h2>Одноклассники</h2><p>Личный профиль: <a href="https://ok.ru/profile/588147594573" target="_blank" rel="noopener noreferrer">588147594573 ↗</a></p><p class="hint">Права публикации в личный профиль и авторизация ОК будут добавлены отдельно.</p></div></section>
+  <section class="page hidden" id="page-accounts"><div class="eyebrow">АВТОРИЗАЦИЯ — 03</div><h1>Мои <em>аккаунты.</em></h1><div class="panel"><h2>ВКонтакте</h2><p>Личный профиль: <a href="https://vk.ru/id526046650" target="_blank" rel="noopener noreferrer">id526046650 ↗</a></p><p id="accountStatus">Проверка VK Bridge ожидается.</p><button id="checkVK" class="btn secondary">Проверить подключение</button></div><div class="panel spacer"><h2>Одноклассники</h2><p>Личный профиль: <a href="https://ok.ru/profile/588147594573" target="_blank" rel="noopener noreferrer">588147594573 ↗</a></p><p class="hint">Личная страница указана, но OAuth-разрешение для приложения ещё не получено. Это не означает выход из аккаунта ОК. Автоматическая публикация недоступна до авторизации.</p></div></section>
   <section class="page hidden" id="page-about"><div class="eyebrow">СИСТЕМА — 04</div><h1>О <em>приложении.</em></h1><div class="panel"><p>VK Mini App: <b>54811124</b></p><p>Интерфейс: <b>dagstudio.ru/social/</b></p><p>Подготовка контента: <b>GitHub Actions</b></p><p>Публикация: <b>через окно VK Bridge</b></p><p>Удалённый MCP, автопубликации и API Одноклассников: <b>не подключены</b></p><p>Пароли, токены и ключи соцсетей не запрашиваются.</p></div></section>
   <footer><span>© 2026 DAG SOCIAL MANAGER</span><span>v0.5 · <a href="https://dagstudio.ru/" target="_blank" rel="noopener noreferrer">DAG STUDIO</a></span></footer>
 </main>

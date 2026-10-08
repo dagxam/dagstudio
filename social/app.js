@@ -13,10 +13,17 @@ function toast(message) {
   el.classList.add('show'); clearTimeout(toastHandle);
   toastHandle = setTimeout(() => el.classList.remove('show'), 4500);
 }
-function setIdentity(ok, description) {
+function setIdentity(ok, description, checked = false) {
   authorized = ok;
-  byId('vkStatus').textContent = ok ? 'Подключён' : 'Не подключён';
-  byId('vkStatus').classList.toggle('connected', ok);
+  // VK Bridge user identification is not permission for unattended wall.post.
+  const status = ok ? 'Вход подтверждён' : checked ? 'Вход не подтверждён' : 'Вход не проверен';
+  for (const id of ['vkStatus', 'autopilotVkStatus']) {
+    const node = byId(id);
+    if (node) {
+      node.textContent = status;
+      node.classList.toggle('connected', ok);
+    }
+  }
   byId('vkHint').textContent = description;
   byId('accountStatus').textContent = description;
   updateButton();
@@ -29,9 +36,9 @@ async function checkIdentity() {
     await window.vkBridge.send('VKWebAppInit');
     const data = await window.vkBridge.send('VKWebAppGetUserInfo');
     setIdentity(Number(data?.id) === targetUserId, Number(data?.id) === targetUserId
-      ? 'Авторизована нужная личная страница. Публикация требует подтверждения внутри ВКонтакте.'
-      : 'Открыт другой аккаунт или профиль не определён. Публикация заблокирована.');
-  } catch {setIdentity(false, 'Не удалось подтвердить профиль через VK Bridge.');}
+      ? 'Вход в нужный профиль подтверждён через VK Bridge. Это не даёт прав на автоматические публикации.'
+      : 'Открыт другой аккаунт или профиль не определён. Публикация заблокирована.', true);
+  } catch {setIdentity(false, 'Не удалось подтвердить профиль через VK Bridge.', true);}
 }
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.toggle('hidden', p.id !== 'page-' + name));
@@ -90,6 +97,7 @@ byId('previewBtn').onclick = preview;
 byId('saveDraftBtn').onclick = saveDraft;
 byId('publishBtn').onclick = publish;
 byId('checkVK').onclick = checkIdentity;
+byId('autopilotCheckVK').onclick = () => {showPage('accounts'); checkIdentity();};
 byId('copyBtn').onclick = async () => {try {await navigator.clipboard.writeText(prepared);toast('Текст скопирован.');}catch {toast('Копирование недоступно в этом браузере.');}};
 byId('draftCount').textContent = String(loadDrafts().length);
 setIdentity(false,'Проверяем VK Bridge…');
