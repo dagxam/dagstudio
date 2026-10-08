@@ -24,6 +24,8 @@ if (!function_exists('ds_is_https')) {
         header('Cross-Origin-Opener-Policy: same-origin');
         header('Cross-Origin-Resource-Policy: same-origin');
         header('X-Permitted-Cross-Domain-Policies: none');
+        header('Cache-Control: no-cache, must-revalidate, max-age=0');
+        header('Pragma: no-cache');
     }
 
     function ds_admin_security_headers(): void {
@@ -40,6 +42,90 @@ if (!function_exists('ds_is_https')) {
         header('X-Permitted-Cross-Domain-Policies: none');
         header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
         header('Pragma: no-cache');
+    }
+
+
+    function ds_site_cache_version(string $root): string {
+        $root = rtrim($root, '/\\');
+        $storageFile = $root . '/storage/cache-version.json';
+        $stored = 0;
+
+        if (is_file($storageFile)) {
+            $raw = @file_get_contents($storageFile);
+            $data = $raw !== false ? json_decode($raw, true) : null;
+            if (is_array($data)) $stored = max(0, (int)($data['version'] ?? 0));
+        }
+
+        $assetTimes = [];
+        foreach ([
+            '/assets/css/style.css',
+            '/assets/js/main.js',
+            '/assets/js/audio-player.js',
+        ] as $asset) {
+            $path = $root . $asset;
+            if (is_file($path)) {
+                $mtime = @filemtime($path);
+                if (is_int($mtime) && $mtime > 0) $assetTimes[] = $mtime;
+            }
+        }
+
+        $latestAsset = $assetTimes ? max($assetTimes) : 0;
+        return (string)max($stored, $latestAsset, 1);
+    }
+
+    function ds_asset_url(string $root, string $path): string {
+        if ($path === '' || $path[0] !== '/' || str_contains($path, '..')) return $path;
+        $separator = str_contains($path, '?') ? '&' : '?';
+        return $path . $separator . 'v=' . rawurlencode(ds_site_cache_version($root));
+    }
+
+    function ds_reset_site_cache(string $root): array {
+        $root = rtrim($root, '/\\');
+        $storage = $root . '/storage';
+        if (!is_dir($storage) && !@mkdir($storage, 0750, true) && !is_dir($storage)) {
+            return ['ok' => false, 'version' => '', 'opcache' => false, 'apcu' => false];
+        }
+
+        $version = time();
+        $payload = json_encode([
+            'version' => $version,
+            'updated_at' => gmdate('c'),
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        $written = $payload !== false && @file_put_contents(
+            $storage . '/cache-version.json',
+            $payload . PHP_EOL,
+            LOCK_EX
+        ) !== false;
+
+        if ($written) @chmod($storage . '/cache-version.json', 0640);
+
+        $opcache = false;
+        if (function_exists('opcache_reset')) {
+            try {
+                $opcache = (bool)@opcache_reset();
+            } catch (Throwable) {
+                $opcache = false;
+            }
+        }
+
+        $apcu = false;
+        if (function_exists('apcu_clear_cache')) {
+            try {
+                $apcu = (bool)@apcu_clear_cache();
+            } catch (Throwable) {
+                $apcu = false;
+            }
+        }
+
+        clearstatcache(true);
+
+        return [
+            'ok' => $written,
+            'version' => (string)$version,
+            'opcache' => $opcache,
+            'apcu' => $apcu,
+        ];
     }
 
     function ds_client_ip(): string {

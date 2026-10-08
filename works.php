@@ -125,7 +125,7 @@ $worksCount = count($works);?>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="<?= h_works(ds_asset_url(__DIR__, '/assets/css/style.css')) ?>">
   <style>:root{--accent:<?= h_works($themeAccent) ?>;--bg:<?= h_works($themeBg) ?>;--bg-soft:<?= h_works($themeBg) ?>;--panel:<?= h_works($themePanel) ?>;--text:<?= h_works($themeText) ?>}</style>
 </head>
 <body>
@@ -243,6 +243,6 @@ $worksCount = count($works);?>
   </div>
   <div class="container footer-bottom"><span>© 2026 DAGSTUDIO. All rights reserved.</span></div>
 </footer>
-<script src="/assets/js/main.js"></script>
+<script src="<?= h_works(ds_asset_url(__DIR__, '/assets/js/main.js')) ?>"></script>
 </body>
 </html>

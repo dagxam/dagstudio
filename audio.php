@@ -132,7 +132,7 @@ if (is_file($audioFile)) {
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="<?= h_audio(ds_asset_url(__DIR__, '/assets/css/style.css')) ?>">
   <style>:root{--accent:<?= h_audio($themeAccent) ?>;--bg:<?= h_audio($themeBg) ?>;--bg-soft:<?= h_audio($themeBg) ?>;--panel:<?= h_audio($themePanel) ?>;--text:<?= h_audio($themeText) ?>}</style>
 </head>
 <body class="audio-page-compact">
@@ -275,7 +275,7 @@ if (is_file($audioFile)) {
   <div class="container footer-bottom"><span>© 2026 DAGSTUDIO. All rights reserved.</span><a href="#">Политика конфиденциальности</a></div>
 </footer>
 
-<script src="/assets/js/main.js"></script>
-<script src="/assets/js/audio-player.js"></script>
+<script src="<?= h_audio(ds_asset_url(__DIR__, '/assets/js/main.js')) ?>"></script>
+<script src="<?= h_audio(ds_asset_url(__DIR__, '/assets/js/audio-player.js')) ?>"></script>
 </body>
 </html>

@@ -118,7 +118,7 @@ $publicFormToken = $requestsPluginEnabled ? ds_form_token(__DIR__, 'contact') : 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="<?= h(ds_asset_url(__DIR__, '/assets/css/style.css')) ?>">
   <style>:root{--accent:<?= h($themeAccent) ?>;--bg:<?= h($themeBg) ?>;--bg-soft:<?= h($themeBg) ?>;--panel:<?= h($themePanel) ?>;--text:<?= h($themeText) ?>}</style>
 </head>
 <body>
@@ -173,7 +173,7 @@ $publicFormToken = $requestsPluginEnabled ? ds_form_token(__DIR__, 'contact') : 
         </div>
         <div class="hero-art reveal">
           <div class="hero-glow" aria-hidden="true"></div>
-          <img class="hero-ornament" src="/assets/img/hero-ornament.svg" alt="Дагестанский орнамент DAG STUDIO">
+          <img class="hero-ornament" src="<?= h(ds_asset_url(__DIR__, '/assets/img/hero-ornament.svg')) ?>" alt="Дагестанский орнамент DAG STUDIO">
         </div>
       </div>
     </section>

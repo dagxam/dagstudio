@@ -147,7 +147,7 @@ $contentHtml = ds_bbcode_render((string)($page['content'] ?? ''));
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="<?= h_page(ds_asset_url(__DIR__, '/assets/css/style.css')) ?>">
   <style>:root{--accent:<?= h_page($themeAccent) ?>;--bg:<?= h_page($themeBg) ?>;--bg-soft:<?= h_page($themeBg) ?>;--panel:<?= h_page($themePanel) ?>;--text:<?= h_page($themeText) ?>}</style>
 </head>
 <body>
@@ -210,6 +210,6 @@ $contentHtml = ds_bbcode_render((string)($page['content'] ?? ''));
   </div>
   <div class="container footer-bottom"><span>© 2026 DAGSTUDIO. All rights reserved.</span></div>
 </footer>
-<script src="/assets/js/main.js"></script>
+<script src="<?= h_page(ds_asset_url(__DIR__, '/assets/js/main.js')) ?>"></script>
 </body>
 </html>

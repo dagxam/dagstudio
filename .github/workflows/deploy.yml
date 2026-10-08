@@ -49,6 +49,7 @@ jobs:
             storage/requests.json
             storage/admin-menu.json
             storage/admin-auth.json
+            storage/cache-version.json
             uploads/audio/**
             uploads/branding/**
 
@@ -77,5 +78,6 @@ jobs:
             storage/requests.json
             storage/admin-menu.json
             storage/admin-auth.json
+            storage/cache-version.json
             uploads/audio/**
             uploads/branding/**
