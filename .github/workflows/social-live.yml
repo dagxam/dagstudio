@@ -1,0 +1,38 @@
+name: Проверка DAG Social Manager на сайте
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'social/**'
+      - '.github/workflows/social-live.yml'
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Проверить внешний HTTPS-сайт и файлы VK Mini App
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://dagstudio.ru/social/"
+          curl -fL --retry 4 --retry-delay 4 --connect-timeout 10 --max-time 35 -D headers.txt -o index.html "$base"
+          grep -q 'DAG SOCIAL' index.html
+          for path in app.js styles.css favicon.svg; do
+            curl -fL --retry 3 --retry-delay 3 --connect-timeout 10 --max-time 35 -o /dev/null "$base$path"
+          done
+          tr -d '\r' < headers.txt > clean-headers.txt
+          cat clean-headers.txt
+          if grep -iq '^x-frame-options: *deny' clean-headers.txt; then
+            echo "ERROR: X-Frame-Options DENY blocks VK iframe" >&2
+            exit 1
+          fi
+          if ! grep -i '^content-security-policy:' clean-headers.txt | grep -q 'frame-ancestors.*vk'; then
+            echo "ERROR: VK is not in frame-ancestors" >&2
+            exit 1
+          fi
+      - name: Убедиться, что VK Bridge CDN доступен
+        run: |
+          curl -fLs --retry 2 --connect-timeout 12 --max-time 40 -o /dev/null 'https://unpkg.com/@vkontakte/vk-bridge@2.15.0/dist/browser.min.js'
