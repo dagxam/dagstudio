@@ -128,7 +128,7 @@ $worksCount = count($works);?>
   <link rel="stylesheet" href="<?= h_works(ds_asset_url(__DIR__, '/assets/css/style.css')) ?>">
   <style>:root{--accent:<?= h_works($themeAccent) ?>;--bg:<?= h_works($themeBg) ?>;--bg-soft:<?= h_works($themeBg) ?>;--panel:<?= h_works($themePanel) ?>;--text:<?= h_works($themeText) ?>}</style>
 </head>
-<body>
+<body class="works-page-compact">
 <header class="site-header" id="top">
   <div class="container header-inner">
     <a class="brand" href="/" aria-label="DAG STUDIO — главная"><img src="<?= h_works($logoDark) ?>" alt="DAG STUDIO"></a>

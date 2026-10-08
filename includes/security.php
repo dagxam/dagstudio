@@ -24,8 +24,9 @@ if (!function_exists('ds_is_https')) {
         header('Cross-Origin-Opener-Policy: same-origin');
         header('Cross-Origin-Resource-Policy: same-origin');
         header('X-Permitted-Cross-Domain-Policies: none');
-        header('Cache-Control: no-cache, must-revalidate, max-age=0');
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
         header('Pragma: no-cache');
+        header('Expires: 0');
     }
 
     function ds_admin_security_headers(): void {
@@ -61,6 +62,8 @@ if (!function_exists('ds_is_https')) {
             '/assets/css/style.css',
             '/assets/js/main.js',
             '/assets/js/audio-player.js',
+            '/admin/assets/admin.css',
+            '/admin/assets/admin.js',
         ] as $asset) {
             $path = $root . $asset;
             if (is_file($path)) {

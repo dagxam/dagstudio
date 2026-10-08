@@ -29,7 +29,7 @@ function admin_header(string $title, string $active = ''): void {
   <meta name="robots" content="noindex,nofollow">
   <title><?= e($title) ?> — DAG STUDIO</title>
   <link rel="icon" href="<?= e($markLogo) ?>">
-  <link rel="stylesheet" href="/admin/assets/admin.css">
+  <link rel="stylesheet" href="<?= e(ds_asset_url(DS_ROOT, '/admin/assets/admin.css')) ?>">
   <style>:root{--admin-accent:<?= e($accent) ?>;--admin-bg:<?= e($bg) ?>;--admin-panel:<?= e($panel) ?>;--admin-text:<?= e($text) ?>}</style>
 </head>
 <body>
@@ -87,8 +87,8 @@ function admin_footer(): void {
     </main>
   </div>
 </div>
-<script src="/admin/assets/admin.js"></script>
-<script src="/assets/js/audio-player.js"></script>
+<script src="<?= e(ds_asset_url(DS_ROOT, '/admin/assets/admin.js')) ?>"></script>
+<script src="<?= e(ds_asset_url(DS_ROOT, '/assets/js/audio-player.js')) ?>"></script>
 </body>
 </html>
     <?php

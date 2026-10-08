@@ -142,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta name="robots" content="noindex,nofollow">
   <title>Вход — DAG STUDIO</title>
   <link rel="icon" href="<?= e($markLogo) ?>">
-  <link rel="stylesheet" href="/admin/assets/admin.css">
+  <link rel="stylesheet" href="<?= e(ds_asset_url(DS_ROOT, '/admin/assets/admin.css')) ?>">
   <style>:root{--admin-accent:<?= e($accent) ?>;--admin-bg:<?= e($bg) ?>;--admin-panel:<?= e($panel) ?>;--admin-text:<?= e($text) ?>}</style>
 </head>
 <body class="login-body">

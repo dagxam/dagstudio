@@ -666,3 +666,130 @@ button,.btn,.login-btn,.menu-toggle{touch-action:manipulation}
   .audio-page-compact .public-audio-actions{align-items:flex-start;flex-direction:column}
   .audio-page-compact .audio-download-btn{width:100%;justify-content:center}
 }
+
+
+/* =========================================================
+   Works page — compact DAG STUDIO layout
+   ========================================================= */
+.works-page-compact .works-hero{
+  padding:72px 0 54px;
+  background:
+    radial-gradient(circle at 78% 30%,color-mix(in srgb,var(--accent) 11%,transparent),transparent 25%),
+    linear-gradient(180deg,#030303,#070707);
+  border-bottom:1px solid #1d1d1d
+}
+.works-page-compact .works-hero-grid{
+  grid-template-columns:minmax(0,1.2fr) minmax(280px,.65fr);
+  gap:46px;align-items:center
+}
+.works-page-compact .works-hero h1{
+  font-size:clamp(58px,6.8vw,96px);line-height:.88;letter-spacing:-.04em
+}
+.works-page-compact .works-hero-copy{
+  padding:0 0 0 22px;border-left:1px solid color-mix(in srgb,var(--accent) 42%,#242424)
+}
+.works-page-compact .works-hero-copy strong{
+  font-size:13px;letter-spacing:.1em
+}
+.works-page-compact .works-hero-copy p{
+  margin-top:10px;font-size:15px;line-height:1.55
+}
+
+.works-page-compact .works-section{padding:52px 0 68px}
+.works-page-compact .works-intro{
+  margin-bottom:18px;padding-bottom:14px;gap:24px;align-items:center
+}
+.works-page-compact .works-intro>span{font-size:10px;letter-spacing:.11em}
+.works-page-compact .works-intro p{
+  max-width:560px;font-size:12px;line-height:1.5;color:#707070
+}
+.works-page-compact .works-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr));gap:14px
+}
+.works-page-compact .work-card{
+  min-height:0!important;padding:12px;border-radius:10px;
+  background:linear-gradient(145deg,rgba(255,255,255,.014),transparent 46%),#0e0e0e;
+  box-shadow:0 10px 30px rgba(0,0,0,.1)
+}
+.works-page-compact .work-card:hover{
+  transform:translateY(-3px);
+  border-color:color-mix(in srgb,var(--accent) 44%,#2b2b2b);
+  background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 4%,#111),#0d0d0d)
+}
+.works-page-compact .work-card-top{
+  grid-template-columns:auto 1fr auto;gap:9px;margin-bottom:10px
+}
+.works-page-compact .work-number{font-size:10px;color:#575757}
+.works-page-compact .work-category{
+  max-width:160px;padding:4px 6px;border-radius:5px;font-size:8px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+}
+.works-page-compact .work-arrow{
+  width:30px;height:30px;border-radius:7px
+}
+.works-page-compact .work-arrow:before{width:9px;height:9px}
+.works-page-compact .work-arrow:after{width:11px}
+.works-page-compact .work-browser{
+  border-radius:8px;border-color:#252525;overflow:hidden
+}
+.works-page-compact .work-browser-bar{
+  height:31px;padding:0 9px;gap:5px;background:#0b0b0b
+}
+.works-page-compact .work-browser-bar i{width:5px;height:5px}
+.works-page-compact .work-browser-bar span{
+  min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  margin-left:5px;font-size:8px
+}
+.works-page-compact .work-browser-screen{height:175px!important}
+.works-page-compact .work-preview-label{
+  right:8px;bottom:8px;padding:4px 6px;border-radius:5px;font-size:7px
+}
+.works-page-compact .work-card-copy{
+  padding:14px 2px 1px
+}
+.works-page-compact .work-card-copy h2{
+  font-size:21px!important;line-height:1.02
+}
+.works-page-compact .work-card-copy p{
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;
+  min-height:56px;margin:9px 0 13px;font-size:12px!important;line-height:1.5;color:#7d7d7d
+}
+.works-page-compact .work-domain{
+  align-items:center;gap:8px;padding-top:10px;font-size:9px
+}
+.works-page-compact .work-domain>span{
+  flex:none;font-size:8px;letter-spacing:.05em
+}
+.works-page-compact .works-cta{
+  padding:38px 0;background:color-mix(in srgb,var(--panel) 38%,var(--bg))
+}
+.works-page-compact .works-cta-inner{gap:22px}
+.works-page-compact .works-cta span{font-size:9px}
+.works-page-compact .works-cta h2{font-size:32px}
+.works-page-compact .works-cta .btn{min-height:42px}
+
+@media(max-width:1120px){
+  .works-page-compact .works-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .works-page-compact .works-hero-grid{grid-template-columns:1fr .8fr}
+}
+@media(max-width:820px){
+  .works-page-compact .works-hero{padding:58px 0 42px}
+  .works-page-compact .works-hero-grid{grid-template-columns:1fr;gap:24px}
+  .works-page-compact .works-hero-copy{padding-left:16px}
+  .works-page-compact .works-section{padding:42px 0 55px}
+  .works-page-compact .works-grid{grid-template-columns:1fr}
+  .works-page-compact .work-browser-screen{height:240px!important}
+  .works-page-compact .works-intro{align-items:flex-start;flex-direction:column;gap:8px}
+  .works-page-compact .works-intro p{text-align:left}
+}
+@media(max-width:560px){
+  .works-page-compact .works-hero h1{font-size:clamp(48px,15vw,70px)}
+  .works-page-compact .works-hero-copy p{font-size:14px}
+  .works-page-compact .works-section{padding-top:36px}
+  .works-page-compact .work-card{padding:10px!important}
+  .works-page-compact .work-browser-screen{height:190px!important}
+  .works-page-compact .work-card-copy h2{font-size:19px!important}
+  .works-page-compact .work-card-copy p{min-height:0;font-size:11px!important}
+  .works-page-compact .works-cta-inner{align-items:stretch;flex-direction:column}
+  .works-page-compact .works-cta .btn{width:100%}
+}
