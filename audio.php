@@ -135,7 +135,7 @@ if (is_file($audioFile)) {
   <link rel="stylesheet" href="/assets/css/style.css">
   <style>:root{--accent:<?= h_audio($themeAccent) ?>;--bg:<?= h_audio($themeBg) ?>;--bg-soft:<?= h_audio($themeBg) ?>;--panel:<?= h_audio($themePanel) ?>;--text:<?= h_audio($themeText) ?>}</style>
 </head>
-<body>
+<body class="audio-page-compact">
 <header class="site-header" id="top">
   <div class="container header-inner">
     <a class="brand" href="/" aria-label="DAG STUDIO — главная"><img src="<?= h_audio($logoDark) ?>" alt="DAG STUDIO"></a>
