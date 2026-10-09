@@ -171,13 +171,13 @@ $publicFormToken = $requestsPluginEnabled ? ds_form_token(__DIR__, 'contact') : 
             <?php if ($requestsPluginEnabled): ?><button class="btn btn-outline" type="button" data-order-open>Заказать услуги</button><?php endif; ?>
           </div>
         </div>
-        <div class="hero-art hero-art--ornament reveal">
+        <div class="hero-art hero-art--ornament" data-hero-ornament-zone>
           <div class="hero-glow" aria-hidden="true"></div>
           <div class="hero-ornament-wrap">
             <img
               class="hero-ornament"
               data-hero-ornament
-              src="<?= h(ds_asset_url(__DIR__, '/assets/img/hero-ornament-main.webp')) ?>"
+              src="<?= h(ds_asset_url(__DIR__, '/assets/img/hero-ornament-main-v2.webp')) ?>"
               alt="Дагестанский орнамент DAG STUDIO"
               width="900"
               height="956"

@@ -881,3 +881,18 @@ button,.btn,.login-btn,.menu-toggle{touch-action:manipulation}
     transform:none!important;
   }
 }
+
+
+/* Hero ornament visibility guard + server fallback */
+.hero-art--ornament{
+  opacity:1!important;
+  transform:none!important;
+  visibility:visible!important;
+}
+.hero-art--ornament .hero-ornament-wrap{
+  background:url('/assets/img/hero-ornament.svg') center/contain no-repeat;
+}
+.hero-art--ornament .hero-ornament{
+  opacity:1!important;
+  visibility:visible!important;
+}

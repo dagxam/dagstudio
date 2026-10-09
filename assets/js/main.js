@@ -84,35 +84,37 @@
 
   const heroOrnament = document.querySelector('[data-hero-ornament]');
   if (heroOrnament) {
+    const zone = document.querySelector('[data-hero-ornament-zone]') || heroOrnament.parentElement;
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let angle = 0;
     let speed = 0;
-    let targetSpeed = 0.022;
+    let targetSpeed = 0.018;
     let lastTime = performance.now();
 
     const setDirection = reverse => {
-      targetSpeed = reverse ? -0.032 : 0.022;
+      targetSpeed = reverse ? -0.028 : 0.018;
     };
 
     const animateOrnament = now => {
-      const delta = Math.min(40, Math.max(0, now - lastTime));
+      const delta = Math.min(42, Math.max(0, now - lastTime));
       lastTime = now;
 
       if (!reduceMotion.matches) {
-        speed += (targetSpeed - speed) * Math.min(1, delta * 0.0045);
+        speed += (targetSpeed - speed) * Math.min(1, delta * 0.004);
         angle = (angle + speed * delta) % 360;
         heroOrnament.style.transform = `rotate(${angle}deg)`;
       } else {
+        speed = 0;
         heroOrnament.style.transform = 'rotate(0deg)';
       }
 
       requestAnimationFrame(animateOrnament);
     };
 
-    heroOrnament.addEventListener('mouseenter', () => setDirection(true));
-    heroOrnament.addEventListener('mouseleave', () => setDirection(false));
-    heroOrnament.addEventListener('focus', () => setDirection(true));
-    heroOrnament.addEventListener('blur', () => setDirection(false));
+    zone?.addEventListener('pointerenter', event => {
+      if (event.pointerType === 'mouse' || event.pointerType === 'pen') setDirection(true);
+    });
+    zone?.addEventListener('pointerleave', () => setDirection(false));
 
     document.addEventListener('visibilitychange', () => {
       lastTime = performance.now();
