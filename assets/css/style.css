@@ -970,3 +970,27 @@ button,.btn,.login-btn,.menu-toggle{touch-action:manipulation}
   .brand{width:165px}
   .main-nav{gap:22px}
 }
+
+
+/* =========================================================
+   Fixed site header
+   ========================================================= */
+.site-header{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  width:100%;
+  z-index:1000;
+  background:color-mix(in srgb,var(--bg) 94%,transparent);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  box-shadow:0 8px 28px rgba(0,0,0,.18);
+}
+body{
+  padding-top:72px;
+}
+@media(max-width:768px){
+  body{padding-top:64px}
+  .site-header{height:64px}
+}
