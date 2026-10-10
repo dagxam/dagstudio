@@ -890,7 +890,7 @@ button,.btn,.login-btn,.menu-toggle{touch-action:manipulation}
   visibility:visible!important;
 }
 .hero-art--ornament .hero-ornament-wrap{
-  background:url('/assets/img/hero-ornament.svg') center/contain no-repeat;
+  background:none;
 }
 .hero-art--ornament .hero-ornament{
   opacity:1!important;
