@@ -192,6 +192,7 @@ function site_settings(): array {
         'logo_light' => '/assets/img/logo-horizontal.svg',
         'logo_admin' => '/assets/img/logo-horizontal-dark.svg',
         'logo_mark' => '/assets/img/logo-mark-square.svg',
+        'hero_ornament' => '/assets/img/hero-ornament-main-v2.webp',
         'main_menu' => [
             ['label' => 'Главная', 'url' => '/#top', 'visible' => true, 'new_tab' => false],
             ['label' => 'Наши работы', 'url' => '/works.php', 'visible' => true, 'new_tab' => false],

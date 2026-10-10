@@ -20,6 +20,7 @@ $defaults = [
     'logo_light' => '/assets/img/logo-horizontal.svg',
     'logo_admin' => '/assets/img/logo-horizontal-dark.svg',
     'logo_mark' => '/assets/img/logo-mark-square.svg',
+    'hero_ornament' => '/assets/img/hero-ornament-main-v2.webp',
     'main_menu' => [
         ['label' => 'Главная', 'url' => '/#top', 'visible' => true, 'new_tab' => false],
         ['label' => 'Наши работы', 'url' => '/works.php', 'visible' => true, 'new_tab' => false],
@@ -81,6 +82,7 @@ $themePanel = site_hex((string)$settings['theme_panel'], '#1c1c1c');
 $themeText = site_hex((string)$settings['theme_text'], '#f7f7f5');
 $logoDark = site_asset((string)$settings['logo_dark'], '/assets/img/logo-horizontal-dark.svg');
 $logoMark = site_asset((string)$settings['logo_mark'], '/assets/img/logo-mark-square.svg');
+$heroOrnament = site_asset((string)($settings['hero_ornament'] ?? ''), '/assets/img/hero-ornament-main-v2.webp');
 $phoneHref = preg_replace('/[^+0-9]/', '', (string)$settings['phone']) ?: '';
 $audioPluginEnabled = true;
 $pagesPluginEnabled = true;
@@ -177,7 +179,7 @@ $publicFormToken = $requestsPluginEnabled ? ds_form_token(__DIR__, 'contact') : 
             <img
               class="hero-ornament"
               data-hero-ornament
-              src="<?= h(ds_asset_url(__DIR__, '/assets/img/hero-ornament-main-v2.webp')) ?>"
+              src="<?= h(ds_asset_url(__DIR__, $heroOrnament)) ?>"
               alt="Дагестанский орнамент DAG STUDIO"
               width="900"
               height="956"

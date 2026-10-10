@@ -24,6 +24,7 @@ $logoDefaults = [
     'logo_light' => '/assets/img/logo-horizontal.svg',
     'logo_admin' => '/assets/img/logo-horizontal-dark.svg',
     'logo_mark' => '/assets/img/logo-mark-square.svg',
+    'hero_ornament' => '/assets/img/hero-ornament-main-v2.webp',
 ];
 
 function settings_hex(string $value, string $fallback): string {
@@ -156,6 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'logo_light' => 'логотип для светлого фона',
         'logo_admin' => 'логотип админки',
         'logo_mark' => 'знак / favicon',
+        'hero_ornament' => 'орнамент главного экрана',
     ];
 
     foreach ($logoSlots as $field => $label) {
@@ -199,6 +201,7 @@ $logoSlots = [
     'logo_light' => ['title' => 'Светлый фон', 'hint' => 'Версия логотипа для будущих светлых блоков и страниц.', 'fallback' => $logoDefaults['logo_light'], 'light' => true],
     'logo_admin' => ['title' => 'Админка', 'hint' => 'Боковое меню и экран входа в панель управления.', 'fallback' => $logoDefaults['logo_admin'], 'light' => false],
     'logo_mark' => ['title' => 'Знак / favicon', 'hint' => 'Квадратный знак для favicon, PWA и декоративных блоков.', 'fallback' => $logoDefaults['logo_mark'], 'light' => false],
+    'hero_ornament' => ['title' => 'Главный экран · орнамент', 'hint' => 'Правая картина напротив «Создание сайтов & IT-сервис». Анимация вращения сохраняется при замене.', 'fallback' => $logoDefaults['hero_ornament'], 'light' => false],
 ];
 
 admin_header('Настройки', 'settings');
@@ -368,7 +371,7 @@ admin_header('Настройки', 'settings');
     <details class="settings-section" data-settings-section="logos">
       <summary>
         <span class="settings-index">05</span>
-        <span class="settings-summary-copy"><strong>Логотипы</strong><small>Главная страница, светлая версия, админка и favicon</small></span>
+        <span class="settings-summary-copy"><strong>Логотипы и графика</strong><small>Логотипы, favicon и орнамент главного экрана</small></span>
         <span class="settings-chevron">⌄</span>
       </summary>
       <div class="settings-section-body">
@@ -392,7 +395,7 @@ admin_header('Настройки', 'settings');
             </article>
           <?php endforeach; ?>
         </div>
-        <p class="settings-note">Для загружаемых логотипов используйте PNG, JPG или WebP до 5 МБ. Прозрачный PNG/WebP лучше всего подходит для тёмного дизайна.</p>
+        <p class="settings-note">Для логотипов и орнамента используйте PNG, JPG или WebP до 5 МБ. Для орнамента лучше PNG/WebP с прозрачным фоном. После замены на главной сохраняется плавное вращение и обратное направление при наведении.</p>
       </div>
     </details>
   </div>
