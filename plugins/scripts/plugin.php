@@ -82,7 +82,7 @@ return [
     'name' => 'Скрипты',
     'menu' => 'Скрипты',
     'icon' => '⌘',
-    'version' => '1.0.0',
+    'version' => '1.1.0',
     'author' => 'DAG STUDIO',
     'default_enabled' => true,
     'custom_page_head' => true,
@@ -103,9 +103,20 @@ return [
             $compatibility = ds_script_clean((string)($_POST['compatibility'] ?? ''), 100);
             $version = ds_script_clean((string)($_POST['version'] ?? ''), 40);
             $description = ds_script_clean((string)($_POST['description'] ?? ''), 900);
+            $price = ds_script_price_value($_POST['price'] ?? 0);
+            $paymentRaw = trim((string)($_POST['payment_url'] ?? ''));
+            $paymentUrl = ds_script_payment_url($paymentRaw);
 
             if ($title === '') {
                 flash('error', 'Укажите название скрипта.');
+                admin_redirect('/admin/plugin.php?id=scripts' . ($existingId !== '' ? '&edit=' . rawurlencode($existingId) : '&new=1'));
+            }
+            if ($paymentRaw !== '' && $paymentUrl === '') {
+                flash('error', 'Ссылка оплаты должна быть официальной HTTPS-ссылкой банка, СБП или платёжной страницы.');
+                admin_redirect('/admin/plugin.php?id=scripts' . ($existingId !== '' ? '&edit=' . rawurlencode($existingId) : '&new=1'));
+            }
+            if ($price > 0 && $paymentUrl === '') {
+                flash('error', 'Для платного скрипта укажите ссылку оплаты.');
                 admin_redirect('/admin/plugin.php?id=scripts' . ($existingId !== '' ? '&edit=' . rawurlencode($existingId) : '&new=1'));
             }
 
@@ -148,6 +159,8 @@ return [
                 'file' => $file,
                 'original_name' => $originalName,
                 'size' => $size,
+                'price' => $price,
+                'payment_url' => $paymentUrl,
                 'published' => !empty($_POST['published']),
                 'featured' => !empty($_POST['featured']),
                 'created_at' => is_array($existing) ? (string)($existing['created_at'] ?? gmdate('c')) : gmdate('c'),
@@ -218,6 +231,7 @@ return [
             $item = is_array($edit) ? $edit : [
                 'id' => '', 'title' => '', 'category' => '', 'compatibility' => '', 'version' => '',
                 'description' => '', 'file' => '', 'original_name' => '', 'size' => 0,
+                'price' => 0, 'payment_url' => '',
                 'published' => true, 'featured' => false,
             ];
         ?>
@@ -237,6 +251,8 @@ return [
                 <div class="field"><label>Категория</label><input name="category" maxlength="80" value="<?= e((string)$item['category']) ?>" placeholder="WordPress, DLE, доступность..."></div>
                 <div class="field"><label>Совместимость</label><input name="compatibility" maxlength="100" value="<?= e((string)$item['compatibility']) ?>" placeholder="WordPress / DLE / Web"></div>
                 <div class="field"><label>Версия</label><input name="version" maxlength="40" value="<?= e((string)$item['version']) ?>" placeholder="1.0"></div>
+                <div class="field"><label>Цена, ₽</label><input name="price" inputmode="decimal" maxlength="15" value="<?= e((string)($item['price'] ?? 0)) ?>" placeholder="0 = бесплатно"><small>0 — бесплатное скачивание. Для платного скрипта архив не выдаётся напрямую.</small></div>
+                <div class="field"><label>Ссылка оплаты</label><input name="payment_url" type="url" maxlength="1000" value="<?= e((string)($item['payment_url'] ?? '')) ?>" placeholder="https://..."><small>Официальная HTTPS-ссылка СберБанка, СБП или другого банка. На телефоне банк может открыть своё приложение через universal link.</small></div>
                 <div class="field full"><label>Описание</label><textarea name="description" maxlength="900" rows="5"><?= e((string)$item['description']) ?></textarea></div>
                 <div class="field full">
                   <label><?= is_array($edit) ? 'Заменить архив' : 'Архив' ?></label>
@@ -280,7 +296,7 @@ return [
                   <div class="script-admin-main">
                     <div class="script-admin-headline"><div><strong><?= e((string)$item['title']) ?></strong><span><?= e((string)$item['category']) ?></span></div><span class="work-status-pill <?= !empty($item['published']) ? 'published' : 'hidden' ?>"><i></i><?= !empty($item['published']) ? 'На сайте' : 'Скрыто' ?></span></div>
                     <p><?= e((string)$item['description']) ?></p>
-                    <div class="script-admin-meta"><span><?= e((string)$item['compatibility']) ?></span><span>v<?= e((string)$item['version']) ?></span><span><?= e(ds_script_size_label((int)$item['size'])) ?></span><span><?= e((string)$item['original_name']) ?></span></div>
+                    <div class="script-admin-meta"><span><?= e((string)$item['compatibility']) ?></span><span>v<?= e((string)$item['version']) ?></span><span><?= e(ds_script_size_label((int)$item['size'])) ?></span><span class="script-admin-price"><?= e(ds_script_price_label($item['price'] ?? 0)) ?></span><span><?= e((string)$item['original_name']) ?></span></div>
                   </div>
                   <div class="script-admin-actions">
                     <a class="work-action-btn edit" href="/admin/plugin.php?id=scripts&edit=<?= e((string)$item['id']) ?>"><span></span>Редактировать</a>

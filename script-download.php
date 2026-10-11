@@ -25,6 +25,11 @@ if (!is_array($item) || empty($item['published'])) {
     exit('Файл не найден.');
 }
 
+if (ds_script_price_value($item['price'] ?? 0) > 0) {
+    http_response_code(403);
+    exit('Этот архив доступен после покупки.');
+}
+
 $path = ds_script_file_path(__DIR__, (string)($item['file'] ?? ''));
 if ($path === '') {
     http_response_code(404);

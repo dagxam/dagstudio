@@ -14,6 +14,8 @@ if (!function_exists('ds_scripts_defaults')) {
                 'file' => '/assets/downloads/scripts/photoalbums-dle.rar',
                 'original_name' => 'photoalbums.rar',
                 'size' => 22317,
+                'price' => 0,
+                'payment_url' => '',
                 'published' => true,
                 'featured' => true,
                 'created_at' => '2026-10-11T00:00:00Z',
@@ -29,6 +31,8 @@ if (!function_exists('ds_scripts_defaults')) {
                 'file' => '/assets/downloads/scripts/personal-insta-theme.zip',
                 'original_name' => 'themein.zip',
                 'size' => 2470,
+                'price' => 0,
+                'payment_url' => '',
                 'published' => true,
                 'featured' => true,
                 'created_at' => '2026-10-11T00:00:00Z',
@@ -44,6 +48,8 @@ if (!function_exists('ds_scripts_defaults')) {
                 'file' => '/assets/downloads/scripts/accessibility-version.zip',
                 'original_name' => 'версия-слабовидящих.zip',
                 'size' => 1880,
+                'price' => 0,
+                'payment_url' => '',
                 'published' => true,
                 'featured' => true,
                 'created_at' => '2026-10-11T00:00:00Z',
@@ -100,5 +106,27 @@ if (!function_exists('ds_scripts_defaults')) {
         if ($bytes <= 0) return '—';
         if ($bytes >= 1048576) return number_format($bytes / 1048576, 1, ',', ' ') . ' МБ';
         return number_format($bytes / 1024, 0, ',', ' ') . ' КБ';
+    }
+
+    function ds_script_price_value(mixed $value): float {
+        if (is_string($value)) $value = str_replace([' ', ','], ['', '.'], trim($value));
+        $price = is_numeric($value) ? (float)$value : 0.0;
+        if (!is_finite($price) || $price < 0) return 0.0;
+        return min($price, 99999999.99);
+    }
+
+    function ds_script_price_label(mixed $value): string {
+        $price = ds_script_price_value($value);
+        if ($price <= 0) return 'Бесплатно';
+        $decimals = abs($price - round($price)) < 0.001 ? 0 : 2;
+        return number_format($price, $decimals, ',', ' ') . ' ₽';
+    }
+
+    function ds_script_payment_url(string $value): string {
+        $value = trim($value);
+        if ($value === '' || mb_strlen($value) > 1000) return '';
+        if (!filter_var($value, FILTER_VALIDATE_URL)) return '';
+        $scheme = strtolower((string)parse_url($value, PHP_URL_SCHEME));
+        return $scheme === 'https' ? $value : '';
     }
 }

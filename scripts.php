@@ -184,6 +184,9 @@ $count = count($items);
           $compat = mb_strtolower((string)($item['compatibility'] ?? ''));
           $kind = str_contains($compat, 'wordpress') ? 'wordpress' : (str_contains($compat, 'dle') && !str_contains($compat, 'web') ? 'dle' : 'accessibility');
           $ext = strtoupper(pathinfo((string)($item['original_name'] ?? ''), PATHINFO_EXTENSION));
+          $price = ds_script_price_value($item['price'] ?? 0);
+          $paymentUrl = ds_script_payment_url((string)($item['payment_url'] ?? ''));
+          $isPaid = $price > 0;
         ?>
           <article class="script-card script-card--<?= h_scripts($kind) ?><?= !empty($item['featured']) ? ' is-featured' : '' ?>">
             <div class="script-card-top">
@@ -211,7 +214,14 @@ $count = count($items);
                 <span><small>Версия</small><strong><?= h_scripts((string)($item['version'] ?: '—')) ?></strong></span>
                 <span><small>Размер</small><strong><?= h_scripts(ds_script_size_label((int)$item['size'])) ?></strong></span>
               </div>
-              <a class="script-download" href="/script-download.php?id=<?= rawurlencode((string)$item['id']) ?>"><span></span>Скачать архив</a>
+              <div class="script-commerce <?= $isPaid ? 'is-paid' : 'is-free' ?>">
+                <div class="script-price"><small><?= $isPaid ? 'Стоимость' : 'Доступ' ?></small><strong><?= h_scripts(ds_script_price_label($price)) ?></strong></div>
+                <?php if ($isPaid && $paymentUrl !== ''): ?>
+                  <a class="script-buy" href="<?= h_scripts($paymentUrl) ?>" target="_blank" rel="noopener noreferrer"><span></span>Купить</a>
+                <?php else: ?>
+                  <a class="script-download" href="/script-download.php?id=<?= rawurlencode((string)$item['id']) ?>"><span></span>Скачать архив</a>
+                <?php endif; ?>
+              </div>
             </div>
           </article>
         <?php endforeach; ?>

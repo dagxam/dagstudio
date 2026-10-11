@@ -1091,3 +1091,22 @@ body{
   .scripts-grid{grid-template-columns:1fr}.script-visual{height:160px}.scripts-cta-inner{align-items:stretch;flex-direction:column}.scripts-cta .btn{width:100%}
 }
 @media(max-width:520px){.scripts-hero h1{font-size:clamp(48px,15vw,70px)}.scripts-intro h2{font-size:28px}.script-card-body h2{font-size:20px}.script-card-body>p{min-height:0}}
+
+
+/* Scripts pricing + payment */
+.script-commerce{display:grid;grid-template-columns:minmax(112px,.7fr) minmax(0,1.3fr);gap:8px;align-items:stretch;margin-top:10px}
+.script-price{display:flex;flex-direction:column;justify-content:center;min-height:41px;padding:7px 10px;border:1px solid #272727;border-radius:8px;background:#090909}
+.script-price small{display:block;color:#5f5f5f;font-size:7px;text-transform:uppercase;letter-spacing:.08em}
+.script-price strong{display:block;margin-top:2px;color:var(--text);font-family:"Oswald",sans-serif;font-size:15px;line-height:1.1}
+.script-commerce.is-paid .script-price{border-color:color-mix(in srgb,var(--accent) 42%,#292929);background:color-mix(in srgb,var(--accent) 5%,#090909)}
+.script-commerce.is-paid .script-price strong{color:var(--accent)}
+.script-commerce .script-download{margin-top:0}
+.script-buy{
+  display:flex;align-items:center;justify-content:center;gap:8px;min-height:41px;padding:0 14px;
+  border:1px solid var(--accent);border-radius:8px;background:var(--accent);color:#090909;
+  text-decoration:none;font-family:"Oswald",sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;transition:.18s
+}
+.script-buy:hover{transform:translateY(-1px);filter:brightness(1.06);box-shadow:0 10px 24px color-mix(in srgb,var(--accent) 18%,transparent)}
+.script-buy>span{position:relative;width:14px;height:14px;border:1.5px solid currentColor;border-radius:50%}
+.script-buy>span:before{content:"₽";position:absolute;inset:0;display:grid;place-items:center;font-family:Arial,sans-serif;font-size:8px;font-weight:800}
+@media(max-width:520px){.script-commerce{grid-template-columns:1fr}.script-price{min-height:38px}}
