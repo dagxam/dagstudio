@@ -25,7 +25,7 @@ $defaults = [
         ['label' => 'Главная', 'url' => '/#top', 'visible' => true, 'new_tab' => false],
         ['label' => 'Наши работы', 'url' => '/works.php', 'visible' => true, 'new_tab' => false],
         ['label' => 'Наши аудио', 'url' => '/audio.php', 'visible' => true, 'new_tab' => false],
-        ['label' => 'Скрипты', 'url' => '/#services', 'visible' => true, 'new_tab' => false],
+        ['label' => 'Скрипты', 'url' => '/scripts.php', 'visible' => true, 'new_tab' => false],
         ['label' => 'О студии', 'url' => '/#about', 'visible' => true, 'new_tab' => false],
     ],
 ];
@@ -65,9 +65,16 @@ function audio_menu_url(string $value): string {
 function audio_portfolio_menu(array $menu): array {
     foreach ($menu as &$item) {
         if (!is_array($item)) continue;
-        if (mb_strtolower(trim((string)($item['label'] ?? ''))) === 'блог') {
+        $label = mb_strtolower(trim((string)($item['label'] ?? '')));
+        if ($label === 'блог') {
             $item['label'] = 'Наши работы';
             $item['url'] = '/works.php';
+            $item['visible'] = true;
+            $item['new_tab'] = false;
+        }
+        if ($label === 'скрипты') {
+            $item['label'] = 'Скрипты';
+            $item['url'] = '/scripts.php';
             $item['visible'] = true;
             $item['new_tab'] = false;
         }
@@ -87,6 +94,7 @@ $logoMark = audio_asset((string)$settings['logo_mark'], '/assets/img/logo-mark-s
 $audioPluginEnabled = true;
 $pagesPluginEnabled = true;
 $worksPluginEnabled = true;
+$scriptsPluginEnabled = true;
 $pluginStateFile = __DIR__ . '/storage/plugins.json';
 if (is_file($pluginStateFile)) {
     $rawPlugins = @file_get_contents($pluginStateFile);
@@ -99,6 +107,9 @@ if (is_file($pluginStateFile)) {
     }
     if (is_array($pluginStates) && array_key_exists('works', $pluginStates)) {
         $worksPluginEnabled = (bool)$pluginStates['works'];
+    }
+    if (is_array($pluginStates) && array_key_exists('scripts', $pluginStates)) {
+        $scriptsPluginEnabled = (bool)$pluginStates['scripts'];
     }
 }
 if (!$audioPluginEnabled) {
@@ -148,6 +159,7 @@ if (is_file($audioFile)) {
         if (!$audioPluginEnabled && $menuPath === '/audio.php') continue;
         if (!$pagesPluginEnabled && $menuPath === '/page.php') continue;
         if (!$worksPluginEnabled && $menuPath === '/works.php') continue;
+        if (!$scriptsPluginEnabled && $menuPath === '/scripts.php') continue;
         $menuLabel = trim((string)($menuItem['label'] ?? ''));
         if ($menuLabel === '') continue;
         $newTab = !empty($menuItem['new_tab']);

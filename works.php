@@ -24,7 +24,7 @@ $defaults = [
         ['label' => 'Главная', 'url' => '/#top', 'visible' => true, 'new_tab' => false],
         ['label' => 'Наши работы', 'url' => '/works.php', 'visible' => true, 'new_tab' => false],
         ['label' => 'Наши аудио', 'url' => '/audio.php', 'visible' => true, 'new_tab' => false],
-        ['label' => 'Скрипты', 'url' => '/#services', 'visible' => true, 'new_tab' => false],
+        ['label' => 'Скрипты', 'url' => '/scripts.php', 'visible' => true, 'new_tab' => false],
         ['label' => 'О студии', 'url' => '/#about', 'visible' => true, 'new_tab' => false],
     ],
 ];
@@ -67,9 +67,16 @@ function works_screenshot_url(string $url): string {
 function works_portfolio_menu(array $menu): array {
     foreach ($menu as &$item) {
         if (!is_array($item)) continue;
-        if (mb_strtolower(trim((string)($item['label'] ?? ''))) === 'блог') {
+        $label = mb_strtolower(trim((string)($item['label'] ?? '')));
+        if ($label === 'блог') {
             $item['label'] = 'Наши работы';
             $item['url'] = '/works.php';
+            $item['visible'] = true;
+            $item['new_tab'] = false;
+        }
+        if ($label === 'скрипты') {
+            $item['label'] = 'Скрипты';
+            $item['url'] = '/scripts.php';
             $item['visible'] = true;
             $item['new_tab'] = false;
         }
@@ -88,6 +95,7 @@ $logoMark = works_asset((string)$settings['logo_mark'], '/assets/img/logo-mark-s
 
 $audioEnabled = true;
 $pagesEnabled = true;
+$scriptsEnabled = true;
 $stateFile = __DIR__ . '/storage/plugins.json';
 if (is_file($stateFile)) {
     $raw = @file_get_contents($stateFile);
@@ -95,6 +103,7 @@ if (is_file($stateFile)) {
     if (is_array($states)) {
         if (array_key_exists('audio', $states)) $audioEnabled = (bool)$states['audio'];
         if (array_key_exists('pages', $states)) $pagesEnabled = (bool)$states['pages'];
+        if (array_key_exists('scripts', $states)) $scriptsEnabled = (bool)$states['scripts'];
     }
 }
 
@@ -140,6 +149,7 @@ $worksCount = count($works);?>
         $path = parse_url($menuUrl, PHP_URL_PATH);
         if (!$audioEnabled && $path === '/audio.php') continue;
         if (!$pagesEnabled && $path === '/page.php') continue;
+        if (!$scriptsEnabled && $path === '/scripts.php') continue;
         $label = trim((string)($menuItem['label'] ?? ''));
         if ($label === '') continue;
         $active = $path === '/works.php';

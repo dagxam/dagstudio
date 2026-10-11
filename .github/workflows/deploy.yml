@@ -50,8 +50,10 @@ jobs:
             storage/admin-menu.json
             storage/admin-auth.json
             storage/cache-version.json
+            storage/scripts.json
             uploads/audio/**
             uploads/branding/**
+            uploads/scripts/**
 
       - name: Retry FTP deploy
         if: steps.ftp_deploy.outcome == 'failure'
@@ -79,5 +81,7 @@ jobs:
             storage/admin-menu.json
             storage/admin-auth.json
             storage/cache-version.json
+            storage/scripts.json
             uploads/audio/**
             uploads/branding/**
+            uploads/scripts/**
