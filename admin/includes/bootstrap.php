@@ -174,6 +174,12 @@ function ds_portfolio_menu(array $menu): array {
             $item['visible'] = true;
             $item['new_tab'] = false;
         }
+        if ($label === 'о студии') {
+            $item['label'] = 'О студии';
+            $item['url'] = '/about.php';
+            $item['visible'] = true;
+            $item['new_tab'] = false;
+        }
     }
     unset($item);
     return $menu;
@@ -204,7 +210,7 @@ function site_settings(): array {
             ['label' => 'Наши работы', 'url' => '/works.php', 'visible' => true, 'new_tab' => false],
             ['label' => 'Наши аудио', 'url' => '/audio.php', 'visible' => true, 'new_tab' => false],
             ['label' => 'Скрипты', 'url' => '/scripts.php', 'visible' => true, 'new_tab' => false],
-            ['label' => 'О студии', 'url' => '/#about', 'visible' => true, 'new_tab' => false],
+            ['label' => 'О студии', 'url' => '/about.php', 'visible' => true, 'new_tab' => false],
         ],
     ];
     $settings = array_merge($defaults, storage_read_json('settings.json', []));

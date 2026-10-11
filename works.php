@@ -25,7 +25,7 @@ $defaults = [
         ['label' => 'Наши работы', 'url' => '/works.php', 'visible' => true, 'new_tab' => false],
         ['label' => 'Наши аудио', 'url' => '/audio.php', 'visible' => true, 'new_tab' => false],
         ['label' => 'Скрипты', 'url' => '/scripts.php', 'visible' => true, 'new_tab' => false],
-        ['label' => 'О студии', 'url' => '/#about', 'visible' => true, 'new_tab' => false],
+        ['label' => 'О студии', 'url' => '/about.php', 'visible' => true, 'new_tab' => false],
     ],
 ];
 $settings = $defaults;
@@ -77,6 +77,12 @@ function works_portfolio_menu(array $menu): array {
         if ($label === 'скрипты') {
             $item['label'] = 'Скрипты';
             $item['url'] = '/scripts.php';
+            $item['visible'] = true;
+            $item['new_tab'] = false;
+        }
+        if ($label === 'о студии') {
+            $item['label'] = 'О студии';
+            $item['url'] = '/about.php';
             $item['visible'] = true;
             $item['new_tab'] = false;
         }
