@@ -1611,6 +1611,7 @@ body{
   width:max-content;
   max-width:100%;
   white-space:nowrap;
+  color:var(--text);
 }
 .about-page .about-hero-line--main{
   font-size:1em;
