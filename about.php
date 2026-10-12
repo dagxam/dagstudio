@@ -165,7 +165,12 @@ $requestsEnabled = !array_key_exists('requests', $states) || !empty($states['req
     <div class="container about-hero-grid">
       <div class="about-hero-copy reveal">
         <p class="eyebrow">DAG STUDIO · цифровая мастерская</p>
-        <h1>Дизайн<br>с характером.<br><span>Код без лишнего.</span></h1>
+        <h1 class="about-hero-title">
+          <span class="about-hero-line about-hero-line--main">Дизайн</span>
+          <span class="about-hero-line about-hero-line--wide">С характером.</span>
+          <span class="about-hero-line about-hero-line--accent">Код без</span>
+          <span class="about-hero-line about-hero-line--accent about-hero-line--last">лишнего.</span>
+        </h1>
         <p>DAG STUDIO — студия цифровых решений из Дагестана. Создаём сайты, CMS и веб-сервисы, пишем скрипты и плагины, развиваем фирменный стиль и помогаем с IT-задачами.</p>
         <div class="about-hero-actions">
           <?php if ($worksEnabled): ?><a class="btn btn-primary" href="/works.php">Смотреть работы</a><?php endif; ?>
