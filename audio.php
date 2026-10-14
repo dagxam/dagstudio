@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/includes/security.php';
+require_once __DIR__ . '/includes/seo.php';
 ds_public_security_headers();
 
 $defaults = [
@@ -143,9 +144,17 @@ if (is_file($audioFile)) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="<?= h_audio($themeBg) ?>">
-  <meta name="description" content="Наши аудио — DAG STUDIO. Аудиоработы, музыка и звуковые проекты студии.">
-  <title>Наши аудио — <?= h_audio((string)$settings['site_name']) ?></title>
+  <meta name="description" content="Аудио DAG STUDIO — авторские записи, звуковые проекты и опубликованные аудиоматериалы студии.">
+  <title>Наши аудио — звуковые проекты DAG STUDIO</title>
   <link rel="icon" href="<?= h_audio($logoMark) ?>">
+  <?php ds_seo_render([
+    'title' => 'Наши аудио — звуковые проекты DAG STUDIO',
+    'description' => 'Аудио DAG STUDIO — авторские записи, звуковые проекты и опубликованные аудиоматериалы студии.',
+    'path' => '/audio.php',
+    'image' => $logoMark,
+    'schema_type' => 'CollectionPage',
+    'breadcrumb' => 'Наши аудио',
+], $settings); ?>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">

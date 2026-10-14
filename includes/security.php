@@ -24,6 +24,7 @@ if (!function_exists('ds_is_https')) {
         header('Cross-Origin-Opener-Policy: same-origin');
         header('Cross-Origin-Resource-Policy: same-origin');
         header('X-Permitted-Cross-Domain-Policies: none');
+        header('X-Robots-Tag: noindex, nofollow, noarchive');
         header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
         header('Pragma: no-cache');
         header('Expires: 0');

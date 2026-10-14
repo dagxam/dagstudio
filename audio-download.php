@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+header('X-Robots-Tag: noindex, nofollow, noarchive');
+
 require_once __DIR__ . '/includes/security.php';
 ds_public_security_headers();
 

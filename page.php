@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/includes/security.php';
+require_once __DIR__ . '/includes/seo.php';
 ds_public_security_headers();
 
 require __DIR__ . '/includes/bbcode.php';
@@ -99,7 +100,8 @@ foreach ($items as $item) {
         break;
     }
 }
-if (!is_array($page)) {
+$pageFound = is_array($page);
+if (!$pageFound) {
     http_response_code(404);
     $page = [
         'title' => 'Страница не найдена',
@@ -158,6 +160,15 @@ $contentHtml = ds_bbcode_render((string)($page['content'] ?? ''));
   <meta name="description" content="<?= h_page($description) ?>">
   <title><?= h_page($title) ?> — <?= h_page((string)$settings['site_name']) ?></title>
   <link rel="icon" href="<?= h_page($logoMark) ?>">
+  <?php ds_seo_render([
+    'title' => $title . ' — ' . (string)$settings['site_name'],
+    'description' => $description,
+    'path' => '/page.php?slug=' . rawurlencode($slug),
+    'image' => $logoMark,
+    'schema_type' => 'WebPage',
+    'breadcrumb' => $title,
+    'robots' => $pageFound ? 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1' : 'noindex,nofollow',
+  ], $settings); ?>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">

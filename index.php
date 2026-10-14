@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/includes/security.php';
+require_once __DIR__ . '/includes/seo.php';
 ds_public_security_headers();
 $defaults = [
     'site_name' => 'DAG STUDIO',
@@ -130,9 +131,18 @@ $publicFormToken = $requestsPluginEnabled ? ds_form_token(__DIR__, 'contact') : 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="<?= h($themeBg) ?>">
-  <meta name="description" content="DAG STUDIO — создание сайтов, дизайн, скрипты и IT-сервис в Дагестане.">
-  <title><?= h($settings['site_name']) ?> — создание сайтов & IT-сервис</title>
+  <meta name="description" content="DAG STUDIO — разработка сайтов, CMS, скриптов и цифровых сервисов. Веб-дизайн, плагины и IT-сервис в Дагестане.">
+  <title>DAG STUDIO — создание сайтов, CMS, скриптов и IT-сервис</title>
   <link rel="icon" href="<?= h($logoMark) ?>">
+  <?php ds_seo_render([
+    'title' => 'DAG STUDIO — создание сайтов, CMS, скриптов и IT-сервис',
+    'description' => 'DAG STUDIO — разработка сайтов, CMS, скриптов и цифровых сервисов. Веб-дизайн, плагины и IT-сервис в Дагестане.',
+    'path' => '/',
+    'image' => $heroOrnament,
+    'schema_type' => 'WebPage',
+    'organization' => true,
+    'website' => true,
+], $settings); ?>
   <link rel="manifest" href="/manifest.php">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/includes/security.php';
+require_once __DIR__ . '/includes/seo.php';
 ds_public_security_headers();
 
 $defaults = [
@@ -117,9 +118,18 @@ $requestsEnabled = !array_key_exists('requests', $states) || !empty($states['req
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="<?= h_about($themeBg) ?>">
-  <meta name="description" content="О DAG STUDIO — цифровой студии из Дагестана: сайты, CMS, скрипты, плагины, дизайн и IT-сервис.">
-  <title>О студии — <?= h_about((string)$settings['site_name']) ?></title>
+  <meta name="description" content="О DAG STUDIO — цифровой студии из Дагестана: веб-разработка, CMS, скрипты, плагины, дизайн и IT-сервис.">
+  <title>О DAG STUDIO — веб-разработка, дизайн и IT-сервис</title>
   <link rel="icon" href="<?= h_about($logoMark) ?>">
+  <?php ds_seo_render([
+    'title' => 'О DAG STUDIO — веб-разработка, дизайн и IT-сервис',
+    'description' => 'О DAG STUDIO — цифровой студии из Дагестана: веб-разработка, CMS, скрипты, плагины, дизайн и IT-сервис.',
+    'path' => '/about.php',
+    'image' => $heroOrnament,
+    'schema_type' => 'AboutPage',
+    'breadcrumb' => 'О студии',
+    'organization' => true,
+], $settings); ?>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">

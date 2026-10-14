@@ -13,6 +13,9 @@ DirectoryIndex index.php index.html
   RewriteCond %{HTTP:X-Forwarded-Proto} !^https$ [NC]
   RewriteRule ^ https://dagstudio.ru%{REQUEST_URI} [R=301,L,NE]
 
+  # Search-engine sitemap.
+  RewriteRule ^sitemap\.xml$ sitemap.php [L,NC]
+
   # Disable legacy HTTP methods commonly used for probing.
   RewriteCond %{REQUEST_METHOD} ^(?:TRACE|TRACK)$ [NC]
   RewriteRule ^ - [R=405,L]

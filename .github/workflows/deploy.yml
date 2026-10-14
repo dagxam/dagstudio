@@ -56,6 +56,7 @@ jobs:
             uploads/scripts/**
 
       - name: Retry FTP deploy
+        id: ftp_retry
         if: steps.ftp_deploy.outcome == 'failure'
         uses: SamKirkland/FTP-Deploy-Action@a51268f67f6605236975928ae28b0f7e9971d50a # v4.3.6
         with:
@@ -85,3 +86,27 @@ jobs:
             uploads/audio/**
             uploads/branding/**
             uploads/scripts/**
+
+
+      - name: Notify IndexNow
+        if: steps.ftp_deploy.outcome == 'success' || steps.ftp_retry.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        run: |
+          payload='{
+            "host":"dagstudio.ru",
+            "key":"7c4f09b8e1d34a6fa5c2783d91b6e204",
+            "keyLocation":"https://dagstudio.ru/7c4f09b8e1d34a6fa5c2783d91b6e204.txt",
+            "urlList":[
+              "https://dagstudio.ru/",
+              "https://dagstudio.ru/about.php",
+              "https://dagstudio.ru/works.php",
+              "https://dagstudio.ru/scripts.php",
+              "https://dagstudio.ru/audio.php",
+              "https://dagstudio.ru/sitemap.xml"
+            ]
+          }'
+          curl --fail-with-body --silent --show-error --retry 2 \
+            -X POST "https://api.indexnow.org/indexnow" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            --data "$payload"

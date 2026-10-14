@@ -2,6 +2,12 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /storage/
-Disallow: /plugins/
 Disallow: /includes/
+Disallow: /plugins/
+Disallow: /uploads/audio/
+Disallow: /uploads/scripts/
+Disallow: /audio-download.php
+Disallow: /script-download.php
+Disallow: /send.php
+
 Sitemap: https://dagstudio.ru/sitemap.xml

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/includes/security.php';
+require_once __DIR__ . '/includes/seo.php';
 ds_public_security_headers();
 
 require __DIR__ . '/includes/works-data.php';
@@ -134,9 +135,17 @@ $worksCount = count($works);?>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="<?= h_works($themeBg) ?>">
-  <meta name="description" content="Наши работы — проекты и сайты DAG STUDIO.">
-  <title>Наши работы — <?= h_works((string)$settings['site_name']) ?></title>
+  <meta name="description" content="Портфолио DAG STUDIO — сайты, образовательные платформы, муниципальные проекты и цифровые сервисы.">
+  <title>Наши работы — сайты и веб-проекты DAG STUDIO</title>
   <link rel="icon" href="<?= h_works($logoMark) ?>">
+  <?php ds_seo_render([
+    'title' => 'Наши работы — сайты и веб-проекты DAG STUDIO',
+    'description' => 'Портфолио DAG STUDIO — сайты, образовательные платформы, муниципальные проекты и цифровые сервисы.',
+    'path' => '/works.php',
+    'image' => $logoMark,
+    'schema_type' => 'CollectionPage',
+    'breadcrumb' => 'Наши работы',
+], $settings); ?>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
